@@ -56,17 +56,32 @@ ZÉRO décoration. Pas de span coloré, pas d'accent sur H ou AV.
 - Toujours utiliser les variables CSS (`var(--n900)`) — jamais de couleurs brutes (`#1B2A4A`)
 - Toujours utiliser les tokens d'espacement (`var(--s4)`) — jamais de valeurs brutes (`16px`)
 - Le dark mode se gère via `[data-theme="dark"]` sur `<html>` — utiliser next-themes
+- **Interdit : `@import url('https://fonts.googleapis.com/...')` dans les CSS** — toutes les fonts passent par `next/font/google` dans `app/layout.tsx`
  
 ### React / Next.js
 - Server Components par défaut — `'use client'` seulement si interaction ou hooks nécessaires
 - Données depuis Supabase : `lib/supabase/server.ts` côté serveur
 - Jamais de secret dans le code — toujours `.env.local`
 - Variables publiques : `NEXT_PUBLIC_` seulement pour données non sensibles
+- **Langue** : tout le contenu front est en **français** — `<html lang="fr">`, textes UI en français
+- **Dark mode** : `next-themes` configuré avec `attribute="data-theme"`, `defaultTheme="light"`, `enableSystem={false}`. Provider unique : `components/providers/ThemeProvider.tsx`
  
 ### Composants
 - Composants shadcn/ui dans `components/ui/`
 - Composants métier hedjav dans `components/features/`
-- Layouts dans `components/layout/`
+- Layouts dans `components/layout/` (Header, Footer, MobileNav, ThemeToggle, nav-links.ts)
+- Providers globaux dans `components/providers/`
+
+### Contacts & comptes publics
+- **Email public unique** : `hedjav@gmail.com` — seul email affichable côté front
+- **Privé, jamais en front** : `ktalyzconseils@gmail.com`
+- **Réseaux sociaux officiels** (validés HEAD 200 le 2026-04-08) :
+  - Facebook : https://www.facebook.com/hedjav
+  - Instagram : https://www.instagram.com/hedjav
+  - X : https://x.com/hedjav
+  - TikTok : https://www.tiktok.com/@hedjav
+  - WhatsApp : https://wa.me/22901978903630
+  - LinkedIn : ⚠️ compte inexistant au 2026-04-08 — ne pas afficher tant que non créé
  
 ### Git
 - Branches : `feature/nom-feature` pour chaque nouvelle fonctionnalité
