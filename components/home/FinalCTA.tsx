@@ -11,22 +11,28 @@ export function FinalCTA() {
     >
       <div className="hedjav-container" style={{ textAlign: 'center' }}>
         <h2 className="h2" style={{ marginBottom: 'var(--s6)' }}>
-          Prêt à structurer votre patrimoine ?
+          Prêt à bâtir votre patrimoine en UEMOA ?
         </h2>
         <p
           style={{
             fontSize: 'var(--text-lg)',
             color: 'var(--muted)',
-            maxWidth: 540,
+            maxWidth: 600,
             marginInline: 'auto',
             marginBottom: 'var(--s8)',
           }}
         >
-          Commencez par nos guides essentiels — pensés pour l&apos;Afrique francophone.
+          Découvrez nos ebooks pratiques, nos guides BRVM et nos premières
+          formations en ligne — pensés et écrits pour l&apos;Afrique francophone.
         </p>
-        <Link href="/ebooks" className="btn btn-gold btn-lg">
-          Commencer maintenant
-        </Link>
+        <div style={{ display: 'flex', gap: 'var(--s3)', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <Link href="/ebooks" className="btn btn-gold btn-lg">
+            Voir les ebooks
+          </Link>
+          <Link href="/blog" className="btn btn-outline btn-lg">
+            Lire le blog
+          </Link>
+        </div>
       </div>
     </section>
   )
