@@ -3,8 +3,15 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { navLinks } from './nav-links'
+import { LogoutButton } from '@/components/features/LogoutButton'
 
-export function MobileNav() {
+type Props = {
+  isAuthenticated?: boolean
+  fullName?: string | null
+  email?: string | null
+}
+
+export function MobileNav({ isAuthenticated, fullName, email }: Props) {
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
@@ -60,6 +67,7 @@ export function MobileNav() {
             display: 'flex',
             flexDirection: 'column',
             padding: 'var(--s6)',
+            overflow: 'auto',
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--s8)' }}>
@@ -103,16 +111,65 @@ export function MobileNav() {
             ))}
           </nav>
 
-          <Link
-            href="/login"
-            onClick={() => setOpen(false)}
-            className="btn btn-gold btn-lg"
-            style={{ marginTop: 'var(--s8)', justifyContent: 'center' }}
-          >
-            Espace membre
-          </Link>
+          {isAuthenticated ? (
+            <div style={{ marginTop: 'var(--s8)' }}>
+              {(fullName || email) && (
+                <div
+                  style={{
+                    padding: 'var(--s4) 0',
+                    marginBottom: 'var(--s4)',
+                    borderBottom: '1px solid var(--border)',
+                  }}
+                >
+                  <div style={{ fontSize: 'var(--text-xs)', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.1em', fontWeight: 600 }}>
+                    Connecté
+                  </div>
+                  <div style={{ fontSize: 'var(--text-base)', fontWeight: 600, marginTop: 'var(--s1)' }}>
+                    {fullName || email}
+                  </div>
+                </div>
+              )}
+              <nav style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s3)', marginBottom: 'var(--s5)' }}>
+                <Link href="/dashboard"               onClick={() => setOpen(false)} style={memberLink}>Tableau de bord</Link>
+                <Link href="/dashboard/profil"        onClick={() => setOpen(false)} style={memberLink}>Mon profil</Link>
+                <Link href="/dashboard/mes-ebooks"    onClick={() => setOpen(false)} style={memberLink}>Mes ebooks</Link>
+                <Link href="/dashboard/mes-commandes" onClick={() => setOpen(false)} style={memberLink}>Mes commandes</Link>
+              </nav>
+              <LogoutButton
+                style={{
+                  width: '100%',
+                  padding: 'var(--s4)',
+                  background: 'transparent',
+                  color: 'var(--err)',
+                  border: '1.5px solid var(--err)',
+                  borderRadius: 'var(--r8)',
+                  fontFamily: 'var(--fb)',
+                  fontSize: 'var(--text-base)',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              />
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              onClick={() => setOpen(false)}
+              className="btn btn-gold btn-lg"
+              style={{ marginTop: 'var(--s8)', justifyContent: 'center' }}
+            >
+              Espace membre
+            </Link>
+          )}
         </div>
       )}
     </>
   )
 }
+
+const memberLink = {
+  fontFamily: 'var(--fb)',
+  fontSize: 'var(--text-lg)',
+  fontWeight: 500,
+  color: 'var(--text)',
+  padding: 'var(--s2) 0',
+} as const
