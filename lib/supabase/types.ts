@@ -9,6 +9,7 @@ export type Purchase = {
   status: 'pending' | 'paid' | 'failed' | 'refunded'
   payment_method: string | null
   raw_payload: unknown
+  metadata: Record<string, unknown>
   created_at: string
   updated_at: string
 }
@@ -21,6 +22,7 @@ export type Profile = {
   phone: string | null
   newsletter_opt: boolean
   role: 'member' | 'admin'
+  metadata: Record<string, unknown>
   created_at: string
   updated_at: string
 }
@@ -40,6 +42,7 @@ export type Article = {
   created_by: string | null
   source: 'manual' | 'ai'
   quality_score: number | null
+  metadata: Record<string, unknown>
   created_at: string
   updated_at: string
 }
@@ -58,6 +61,7 @@ export type Ebook = {
   target_audience: string[]
   is_published: boolean
   is_featured: boolean
+  metadata: Record<string, unknown>
   created_at: string
   updated_at: string
 }
