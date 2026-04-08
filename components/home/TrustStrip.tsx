@@ -36,29 +36,33 @@ export function TrustStrip() {
                 alignItems: 'center',
                 gap: 'var(--s3)',
                 color: 'var(--muted)',
+                flex: '1 1 220px',
+                justifyContent: 'center',
+                minWidth: 0,
               }}
             >
               <svg
-                width="20"
-                height="20"
+                width="28"
+                height="28"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="var(--g500)"
-                strokeWidth="1.8"
+                strokeWidth="1.6"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 aria-hidden
+                style={{ flexShrink: 0 }}
               >
                 <path d={item.path} />
               </svg>
               <span
                 style={{
                   fontFamily: 'var(--fb)',
-                  fontSize: 'var(--text-xs)',
+                  fontSize: 'var(--text-sm)',
                   fontWeight: 600,
-                  textTransform: 'uppercase',
-                  letterSpacing: '.15em',
+                  letterSpacing: '.02em',
                   color: 'var(--text)',
+                  lineHeight: 1.3,
                 }}
               >
                 {item.label}
