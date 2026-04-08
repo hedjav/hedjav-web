@@ -2,8 +2,12 @@ import Link from 'next/link'
 import { navLinks } from './nav-links'
 import { ThemeToggle } from './ThemeToggle'
 import { MobileNav } from './MobileNav'
+import { getCurrentProfile } from '@/lib/auth/session'
+import { UserMenu } from '@/components/features/UserMenu'
 
-export function Header() {
+export async function Header() {
+  const profile = await getCurrentProfile()
+
   return (
     <header
       style={{
@@ -51,9 +55,13 @@ export function Header() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s3)' }}>
           <ThemeToggle />
-          <Link href="/login" className="btn btn-gold hedjav-cta-desktop">
-            Espace membre
-          </Link>
+          {profile ? (
+            <UserMenu fullName={profile.full_name ?? ''} email={profile.email} />
+          ) : (
+            <Link href="/login" className="btn btn-gold hedjav-cta-desktop">
+              Espace membre
+            </Link>
+          )}
           <div className="hedjav-mobile-only">
             <MobileNav />
           </div>
