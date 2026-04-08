@@ -14,36 +14,37 @@ export function EbookPriceBlock({ price, originalPrice, size = 'sm' }: Props) {
     <div
       style={{
         display: 'flex',
-        alignItems: 'baseline',
-        gap: 'var(--s3)',
-        flexWrap: 'wrap',
+        flexDirection: 'column',
+        gap: 'var(--s1)',
       }}
     >
-      <span
-        className="price"
-        style={{
-          fontSize: isLg ? 'var(--text-4xl)' : 'var(--text-2xl)',
-          color: 'var(--g700)',
-          fontWeight: 600,
-        }}
-      >
-        {formatPriceFcfa(price)}
-      </span>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 'var(--s2)', flexWrap: 'wrap' }}>
+        <span
+          className="price"
+          style={{
+            fontSize: isLg ? 'var(--text-4xl)' : 'var(--text-2xl)',
+            color: 'var(--g700)',
+            fontWeight: 700,
+            lineHeight: 1,
+          }}
+        >
+          {formatPriceFcfa(price)}
+        </span>
+        {discount > 0 && (
+          <span className="badge badge-gold">−{discount} %</span>
+        )}
+      </div>
       {originalPrice > price && (
         <span
           className="price"
           style={{
-            fontSize: isLg ? 'var(--text-lg)' : 'var(--text-sm)',
+            fontSize: isLg ? 'var(--text-base)' : 'var(--text-xs)',
             color: 'var(--muted)',
             textDecoration: 'line-through',
+            lineHeight: 1,
           }}
         >
           {formatPriceFcfa(originalPrice)}
-        </span>
-      )}
-      {discount > 0 && (
-        <span className="badge badge-gold" style={{ marginLeft: 'var(--s1)' }}>
-          −{discount} %
         </span>
       )}
     </div>

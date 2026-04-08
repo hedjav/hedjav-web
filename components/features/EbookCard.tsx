@@ -67,8 +67,18 @@ export function EbookCard({ ebook }: Props) {
         }}
       >
         <h3
-          className="h3"
-          style={{ fontSize: 'var(--text-xl)', lineHeight: 1.3 }}
+          style={{
+            fontFamily: 'var(--fd)',
+            fontSize: 'var(--text-2xl)',
+            fontWeight: 600,
+            lineHeight: 1.2,
+            color: 'var(--text)',
+            // Limit to 3 lines so cards align across the grid
+            display: '-webkit-box',
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+          }}
         >
           {ebook.title}
         </h3>
@@ -86,15 +96,15 @@ export function EbookCard({ ebook }: Props) {
         >
           {ebook.short_description}
         </p>
-        <div style={{ marginTop: 'auto' }}>
+        <div
+          style={{
+            marginTop: 'auto',
+            paddingTop: 'var(--s4)',
+            borderTop: '1px solid var(--border)',
+          }}
+        >
           <EbookPriceBlock price={ebook.price} originalPrice={ebook.original_price} />
         </div>
-        <span
-          className="btn btn-outline btn-sm"
-          style={{ alignSelf: 'flex-start' }}
-        >
-          Découvrir
-        </span>
       </div>
     </Link>
   )
