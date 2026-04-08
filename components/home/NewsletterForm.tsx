@@ -4,19 +4,39 @@ import { useState, type FormEvent } from 'react'
 
 type Status = 'idle' | 'loading' | 'success' | 'error'
 
-export function NewsletterForm() {
+type Props = { source?: string; theme?: 'dark' | 'light' }
+
+export function NewsletterForm({ source = 'home', theme = 'dark' }: Props) {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<Status>('idle')
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!email || status === 'loading') return
     setStatus('loading')
-    // Stub UI — vraie intégration Brevo en couche 7
-    await new Promise((r) => setTimeout(r, 600))
-    setStatus('success')
-    setEmail('')
+    setErrorMsg(null)
+    try {
+      const res = await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, source }),
+      })
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}))
+        setErrorMsg(j.error ?? 'Inscription impossible. Réessayez.')
+        setStatus('error')
+        return
+      }
+      setStatus('success')
+      setEmail('')
+    } catch {
+      setErrorMsg('Erreur réseau. Réessayez.')
+      setStatus('error')
+    }
   }
+
+  const isDark = theme === 'dark'
 
   return (
     <form
@@ -55,19 +75,33 @@ export function NewsletterForm() {
           role="status"
           style={{
             fontSize: 'var(--text-sm)',
-            color: 'var(--g300)',
+            color: isDark ? 'var(--g300)' : 'var(--g700)',
             textAlign: 'center',
             marginTop: 'var(--s2)',
           }}
         >
-          Merci ! Vous recevrez bientôt nos prochaines analyses.
+          Merci ! Vérifiez votre email pour confirmer votre inscription.
+        </p>
+      )}
+
+      {status === 'error' && errorMsg && (
+        <p
+          role="alert"
+          style={{
+            fontSize: 'var(--text-sm)',
+            color: isDark ? '#ffb4b4' : 'var(--err)',
+            textAlign: 'center',
+            marginTop: 'var(--s2)',
+          }}
+        >
+          {errorMsg}
         </p>
       )}
 
       <p
         style={{
           fontSize: 'var(--text-xs)',
-          color: 'rgba(255,255,255,.55)',
+          color: isDark ? 'rgba(255,255,255,.55)' : 'var(--muted)',
           textAlign: 'center',
           marginTop: 'var(--s2)',
         }}
