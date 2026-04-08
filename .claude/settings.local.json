@@ -20,7 +20,10 @@
       "Read(//tmp/**)",
       "Bash(curl -s -X POST http://localhost:3000/api/articles -H \"Authorization: Bearer 8de881f98ea2abd50a5c467d2a96d5ab2c4ac784ed455b6a78f50f9a7801ab0f\" -H \"Content-Type: application/json\" -d '{\"title\":\"Test API\",\"excerpt\":\"Test\",\"body\":\"## Hello\\\\n\\\\nWorld\",\"category\":\"Test\",\"created_by\":\"claude-test\",\"source\":\"manual\"}')",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/blog)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/blog)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/blog)",
+      "Bash(curl -s -o /dev/null -w \"blog=%{http_code} apropos=\" http://localhost:3000/blog)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} login=\" http://localhost:3000/a-propos)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/login)"
     ]
   }
 }
