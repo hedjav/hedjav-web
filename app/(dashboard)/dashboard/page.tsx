@@ -51,11 +51,68 @@ export default async function DashboardHome() {
     .sort((a, b) => +new Date(b.date) - +new Date(a.date))
     .slice(0, 5)
 
+  const isAdmin = profile?.role === 'admin'
+
   return (
     <div>
-      {/* === Stats en ligne === */}
-      <section className="hedjav-dash-section" style={{ paddingTop: 0 }}>
-        <div className="hedjav-dash-stats">
+      {isAdmin && (
+        <div
+          style={{
+            marginBottom: 'var(--s8)',
+            padding: 'var(--s5) var(--s6)',
+            background: 'var(--n900)',
+            color: '#fff',
+            borderRadius: 'var(--r12)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: 'var(--s4)',
+            flexWrap: 'wrap',
+          }}
+        >
+          <div>
+            <div style={{ fontSize: 'var(--text-xs)', color: 'var(--g400)', textTransform: 'uppercase', letterSpacing: '.1em', fontWeight: 600 }}>
+              ★ Compte administrateur
+            </div>
+            <div style={{ fontSize: 'var(--text-base)', marginTop: 'var(--s1)' }}>
+              Vous avez accès à l&apos;espace admin (CRUD ebooks, articles, membres, ventes).
+            </div>
+          </div>
+          <Link
+            href="/admin"
+            style={{
+              padding: 'var(--s3) var(--s5)',
+              background: 'var(--g500)',
+              color: '#fff',
+              borderRadius: 'var(--r8)',
+              fontFamily: 'var(--fb)',
+              fontSize: 'var(--text-sm)',
+              fontWeight: 600,
+              textDecoration: 'none',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            Aller à l&apos;admin →
+          </Link>
+        </div>
+      )}
+
+      {/* === Stats en ligne — grille bulletproof inline === */}
+      <section
+        style={{
+          paddingBottom: 'var(--s10)',
+          borderBottom: '1px solid var(--border)',
+          marginBottom: 'var(--s10)',
+        }}
+      >
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: 'var(--s6)',
+          }}
+          className="hedjav-stats-grid"
+        >
           <Stat value={paidEbooks.length} label="Ebooks achetés" />
           <Stat value={`${completion}%`} label="Profil complété" />
           <Stat value={badge.label} label="Statut membre" small />
@@ -64,8 +121,8 @@ export default async function DashboardHome() {
       </section>
 
       {/* === Bibliothèque === */}
-      <section className="hedjav-dash-section">
-        <div className="hedjav-dash-section-head">
+      <section style={sectionStyle}>
+        <div style={sectionHeadStyle}>
           <div>
             <h2 className="h3" style={{ fontSize: 'var(--text-2xl)' }}>Ma bibliothèque</h2>
             <p style={{ color: 'var(--muted)', fontSize: 'var(--text-sm)', marginTop: 'var(--s2)' }}>
@@ -92,8 +149,8 @@ export default async function DashboardHome() {
       </section>
 
       {/* === Outils === */}
-      <section className="hedjav-dash-section">
-        <div className="hedjav-dash-section-head">
+      <section style={sectionStyle}>
+        <div style={sectionHeadStyle}>
           <div>
             <h2 className="h3" style={{ fontSize: 'var(--text-2xl)' }}>Outils patrimoniaux</h2>
             <p style={{ color: 'var(--muted)', fontSize: 'var(--text-sm)', marginTop: 'var(--s2)' }}>
@@ -115,8 +172,8 @@ export default async function DashboardHome() {
       </section>
 
       {/* === Activité récente === */}
-      <section className="hedjav-dash-section">
-        <div className="hedjav-dash-section-head">
+      <section style={sectionStyle}>
+        <div style={sectionHeadStyle}>
           <div>
             <h2 className="h3" style={{ fontSize: 'var(--text-2xl)' }}>Activité récente</h2>
             <p style={{ color: 'var(--muted)', fontSize: 'var(--text-sm)', marginTop: 'var(--s2)' }}>
@@ -155,14 +212,44 @@ function Stat({ value, label, small }: { value: string | number; label: string; 
   return (
     <div>
       <div
-        className="hedjav-dash-stat-value"
-        style={small ? { fontSize: 'var(--text-xl)' } : undefined}
+        style={{
+          fontFamily: 'var(--fd)',
+          fontSize: small ? 'var(--text-xl)' : 'var(--text-4xl)',
+          fontWeight: 700,
+          color: 'var(--text)',
+          lineHeight: 1.1,
+        }}
       >
         {value || '—'}
       </div>
-      <div className="hedjav-dash-stat-label">{label}</div>
+      <div
+        style={{
+          fontSize: 'var(--text-xs)',
+          textTransform: 'uppercase',
+          letterSpacing: '.1em',
+          color: 'var(--muted)',
+          fontWeight: 600,
+          marginTop: 'var(--s2)',
+        }}
+      >
+        {label}
+      </div>
     </div>
   )
+}
+
+const sectionStyle = {
+  paddingBlock: 'var(--s10)',
+  borderBottom: '1px solid var(--border)',
+} as const
+
+const sectionHeadStyle = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'baseline',
+  gap: 'var(--s4)',
+  marginBottom: 'var(--s6)',
+  flexWrap: 'wrap' as const,
 }
 
 const listReset = {

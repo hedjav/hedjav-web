@@ -56,7 +56,11 @@ export async function Header() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s3)' }}>
           <ThemeToggle />
           {profile ? (
-            <UserMenu fullName={profile.full_name ?? ''} email={profile.email} />
+            <UserMenu
+              fullName={profile.full_name ?? ''}
+              email={profile.email}
+              isAdmin={profile.role === 'admin'}
+            />
           ) : (
             <Link href="/login" className="btn btn-gold hedjav-cta-desktop">
               Espace membre
