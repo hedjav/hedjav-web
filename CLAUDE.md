@@ -18,7 +18,7 @@ Maître d'œuvre : **KTALYZ SARL**.
 | **Phase 3 — Hub SaaS & Consulting** | M19–M36 | MonPatrimoine SaaS (sous-domaine), booking Calendly, chatbot IA, widget BRVM live | 380k–650k FCFA |
 | **Phase 4 — SGP & Rayonnement** | M37–M48 | Page SGP CREPMF, podcast, annuaire CGP, app mobile React Native | 300k–500k FCFA |
 
-**Stack pérenne 2026–2029** : Next.js 16 + Supabase + TypeScript + Tailwind + Brevo + FedaPay + Cloudflare. Architecture pensée pour évoluer **sans refonte** : site vitrine → LMS → SaaS → app mobile (réutilise 80% du code via React Native).
+**Stack pérenne 2026–2029** : Next.js 16 + Supabase + TypeScript + Tailwind + Resend (email) + Claude API (génération contenu) + FedaPay + Cloudflare. Architecture pensée pour évoluer **sans refonte** : site vitrine → LMS → SaaS → app mobile (réutilise 80% du code via React Native).
 
 ---
 
@@ -32,9 +32,9 @@ Maître d'œuvre : **KTALYZ SARL**.
 | Backend / BDD | Supabase (PostgreSQL + Auth + RLS) |
 | Hébergement | **Hostinger VPS** — PM2 + Nginx (PAS Vercel) |
 | CDN / DNS | Cloudflare |
-| Email | Brevo (newsletter + transactionnel) |
+| Email | **Resend** REST API — fallback console.log si non configuré |
+| Génération contenu | **Claude API** (claude-sonnet-4-6) — newsletter hebdo, articles auto |
 | Paiement | **FedaPay** (Wave, Orange Money, MTN MoMo, carte) |
-| IA | Claude API — claude-sonnet-4-6 (futur, pas encore branché) |
 | Versioning | GitHub — repo `hedjav/hedjav-web` |
 
 ---
@@ -135,7 +135,7 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 | — | Photo Hermann FounderBlock | #4 | ✅ |
 | 4 | Blog Supabase + API d'injection IA | #5 | ✅ |
 | 5 | Auth Supabase + dashboard membre | #6 | ✅ |
-| 6 | Newsletter Brevo + double opt-in | #7 | ✅ |
+| 6 | Newsletter Supabase + Resend + Claude API (Brevo retiré) | #7 | ✅ |
 | 7 | Paiement FedaPay + dashboard ebooks achetés | #8 | ✅ |
 | — | Pré-fixes : nav `/#newsletter`, `/a-propos` Supabase, `metadata jsonb` partout | #9 | ✅ |
 | 8 | Admin UI dark + CRUD + section Outils IA | #10 | ✅ |
@@ -154,7 +154,7 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 - `/blog/[slug]` — article markdown + ToC + related + newsletter inline
 - `/a-propos` — bio Hermann (contenu en table `pages` Supabase)
 - `/merci` — retour paiement (lit `?ref=`)
-- `/newsletter/confirmation` — retour double opt-in Brevo
+- `/newsletter/confirmation` — page de confirmation après inscription
 
 ### Auth
 - `/login`, `/register`, `/forgot-password`, `/reset-password`
@@ -174,10 +174,12 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 - `/admin/ia` — placeholder 7 outils IA à venir
 
 ### API
-- `POST /api/articles` (bearer `INTERNAL_API_TOKEN`) — injection IA
-- `POST /api/newsletter/subscribe` — public
-- `POST /api/purchases/init` — pré-paiement
-- `POST /api/webhooks/fedapay` (HMAC-SHA256)
+- `POST /api/articles` (bearer `INTERNAL_API_TOKEN`) — injection IA d'articles
+- `POST /api/newsletter/subscribe` — public, insère dans `newsletter_subscribers`
+- `POST /api/newsletter/send` (bearer `INTERNAL_API_TOKEN`) — génère via Claude + envoie via Resend
+- `POST /api/purchases/init` — pré-paiement FedaPay
+- `POST /api/webhooks/fedapay` (HMAC-SHA256) — confirme paiement + email transactionnel
+- `POST /api/auth/signout` — clear cookies sb-* + retour client
 
 ---
 
@@ -191,6 +193,7 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 | `articles` | title, slug, body markdown, excerpt, category, source (manual/ai), quality_score, featured, is_published, metadata |
 | `purchases` | user_id (nullable), email, ebook_id, amount, payment_ref, status, payment_method, raw_payload jsonb, metadata |
 | `pages` | slug, title, body markdown, cover, meta_description, metadata |
+| `newsletter_subscribers` | email, source, is_active, unsubscribed_at, metadata, subscribed_at |
 
 **Migrations** dans `supabase/migrations/` (à exécuter en ordre dans Supabase Dashboard SQL Editor) :
 1. `001_ebooks.sql`
@@ -199,6 +202,9 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 4. `004_purchases.sql`
 5. `005_pages.sql`
 6. `006_metadata.sql` (ALTER TABLE ajoute `metadata jsonb` partout)
+7. `007_last_visit.sql` (profiles.last_visit_at)
+8. `008_fix_rls_recursion.sql` (drop policy récursive `profiles_admin_read`)
+9. `009_newsletter_subscribers.sql` (table newsletter dédiée — remplace Brevo)
 
 ---
 
@@ -207,8 +213,11 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 Voir `.env.local.example`. Clés sensibles :
 - `SUPABASE_SERVICE_ROLE_KEY` (admin)
 - `INTERNAL_API_TOKEN` (bearer pour `/api/articles`)
-- `BREVO_API_KEY`, `BREVO_NEWSLETTER_LIST_ID`, `BREVO_DOI_TEMPLATE_ID` (graceful no-op si vides)
+- `RESEND_API_KEY` (envoi email — fallback console.log si vide)
+- `HEDJAV_SENDER_EMAIL`, `HEDJAV_SENDER_NAME` (expéditeur par défaut)
+- `ANTHROPIC_API_KEY` (génération newsletter hebdo — no-op si vide)
 - `FEDAPAY_API_KEY`, `FEDAPAY_WEBHOOK_SECRET`
+- `ADMIN_SETUP_CODE` (bootstrap premier admin via `/admin-setup`)
 
 ---
 

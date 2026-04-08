@@ -25,7 +25,7 @@ cd hedjav-web
 ```
 
 ### Créer `.env.local` sur le VPS
-**⚠️ Ne JAMAIS pousser `.env.local` dans Git.** Recopier manuellement les vraies valeurs depuis Supabase / Brevo / FedaPay :
+**⚠️ Ne JAMAIS pousser `.env.local` dans Git.** Recopier manuellement les vraies valeurs depuis Supabase / Resend / Claude / FedaPay :
 
 ```bash
 nano /var/www/hedjav-web/.env.local

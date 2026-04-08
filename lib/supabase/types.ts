@@ -1,3 +1,13 @@
+export type NewsletterSubscriber = {
+  id: string
+  email: string
+  source: string | null
+  is_active: boolean
+  unsubscribed_at: string | null
+  metadata: Record<string, unknown>
+  subscribed_at: string
+}
+
 export type Purchase = {
   id: string
   user_id: string | null

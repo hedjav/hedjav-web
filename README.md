@@ -40,8 +40,8 @@ Hedjav est l'**école en ligne** de référence pour la gestion de patrimoine en
 - **`/admin-setup`** : bootstrap du premier admin via code secret
 
 ### 💳 Paiement & emails
-- **API webhook FedaPay** signé HMAC-SHA256 → upsert `purchases` → email Brevo
-- **Newsletter Brevo** avec double opt-in
+- **API webhook FedaPay** signé HMAC-SHA256 → upsert `purchases` → email transactionnel via Resend
+- **Newsletter** : table `newsletter_subscribers` Supabase + envoi Resend, contenu hebdo généré par Claude API (`POST /api/newsletter/send`)
 - **API d'injection IA** : `POST /api/articles` (bearer token) — un agent IA peut publier sans toucher au code
 
 ### 🔍 SEO & perf
@@ -59,7 +59,8 @@ Hedjav est l'**école en ligne** de référence pour la gestion de patrimoine en
 | Langage | **TypeScript 5.x** strict mode |
 | Styles | **Tailwind CSS v4** + variables CSS hedjav (charte navy/or/cream) |
 | BDD / Auth | **Supabase** PostgreSQL + RLS + `@supabase/ssr` |
-| Email | **Brevo** REST API (graceful no-op si non configuré) |
+| Email | **Resend** REST API (fallback console.log si non configuré) |
+| Génération contenu | **Claude API** (claude-sonnet-4-6) — newsletter hebdo |
 | Paiement | **FedaPay** (webhook HMAC) |
 | Hébergement | **Hostinger VPS** (PM2 + Nginx + standalone) |
 | CDN / DNS | **Cloudflare** |
@@ -88,7 +89,7 @@ npm install
 
 # 3. Configurer l'environnement
 cp .env.local.example .env.local
-# → remplir les vraies clés Supabase, Brevo, FedaPay…
+# → remplir les vraies clés Supabase, Resend, Claude, FedaPay…
 
 # 4. Lancer le serveur de dev
 npm run dev
@@ -146,7 +147,8 @@ components/
 lib/
   admin/        → server actions admin + setup
   auth/         → helpers session, server actions, pays UEMOA
-  brevo/        → client REST Brevo
+  email/        → client Resend (envoi transactionnel)
+  claude/       → client Claude API (génération contenu)
   ebooks/, articles/, purchases/, pages/, dashboard/  → queries Supabase
   fedapay/      → vérif HMAC webhook
   supabase/     → clients SSR + types
