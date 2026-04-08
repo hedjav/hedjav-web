@@ -1,18 +1,18 @@
 const items = [
   {
-    label: 'Conseil indépendant',
-    path: 'M12 2 4 6v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V6l-8-4z',
+    label: 'École en ligne',
+    path: 'M12 3 2 9l10 6 10-6-10-6zM2 17l10 6 10-6M2 13l10 6 10-6',
   },
   {
     label: 'Expertise BRVM',
     path: 'M3 3v18h18M7 14l4-4 4 4 5-5',
   },
   {
-    label: 'Ancrage Afrique francophone',
+    label: 'Patrimoine UEMOA',
     path: 'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 0v20M2 12h20',
   },
   {
-    label: 'Approche fiscale OHADA',
+    label: 'Approche OHADA',
     path: 'M9 12h6m-6 4h6m-7 4h8a2 2 0 0 0 2-2V6l-4-4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2z',
   },
 ]

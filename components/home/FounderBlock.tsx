@@ -36,16 +36,49 @@ export function FounderBlock() {
             <h2 className="h2" style={{ marginTop: 'var(--s4)', marginBottom: 'var(--s5)' }}>
               Hermann D. AVAHOUIN
             </h2>
+            <p
+              style={{
+                color: 'var(--muted)',
+                lineHeight: 1.8,
+                marginBottom: 'var(--s4)',
+              }}
+            >
+              <strong style={{ color: 'var(--text)' }}>
+                Analyste financier — 17 ans d&apos;expérience à Bank of Africa Bénin (BOA).
+              </strong>{' '}
+              Hermann a accompagné des centaines de cadres, entrepreneurs et
+              familles ouest-africaines sur des sujets de financement,
+              d&apos;investissement et de gestion de patrimoine.
+            </p>
             <p style={{ color: 'var(--muted)', lineHeight: 1.8, marginBottom: 'var(--s4)' }}>
-              Expert en gestion de patrimoine basé à Cotonou, Hermann accompagne
-              depuis plus d&apos;une décennie particuliers, familles et entrepreneurs
-              d&apos;Afrique francophone dans la structuration de leurs actifs.
+              Aujourd&apos;hui à la tête de <strong style={{ color: 'var(--text)' }}>KTALYZ Conseils</strong>,
+              il dirige Hedjav — l&apos;école en ligne de la gestion de
+              patrimoine pour la zone UEMOA. Ebooks, formations BRVM, analyses
+              exclusives et outils patrimoniaux pour démocratiser une expertise
+              jusqu&apos;ici réservée à une élite.
             </p>
             <p style={{ color: 'var(--muted)', lineHeight: 1.8, marginBottom: 'var(--s6)' }}>
-              Sa mission avec Hedjav : démocratiser une expertise patrimoniale
-              jusqu&apos;ici réservée à une élite, ancrée dans les réalités
-              fiscales, économiques et culturelles du continent.
+              Sa mission : ancrer la culture patrimoniale dans les réalités
+              fiscales (OHADA), économiques (BRVM, FCFA, UEMOA) et culturelles
+              du continent — par et pour les Africains francophones.
             </p>
+
+            <ul
+              style={{
+                listStyle: 'none',
+                padding: 0,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 'var(--s2)',
+                marginBottom: 'var(--s6)',
+              }}
+            >
+              <Bullet>17 ans Bank of Africa Bénin (BOA)</Bullet>
+              <Bullet>Fondateur KTALYZ Conseils — Cotonou</Bullet>
+              <Bullet>Expert BRVM, fiscalité OHADA, structuration patrimoniale</Bullet>
+              <Bullet>Auteur d&apos;ebooks et de formations sur la finance UEMOA</Bullet>
+            </ul>
+
             <Link
               href="/a-propos"
               style={{
@@ -61,5 +94,14 @@ export function FounderBlock() {
         </div>
       </div>
     </section>
+  )
+}
+
+function Bullet({ children }: { children: React.ReactNode }) {
+  return (
+    <li style={{ display: 'flex', gap: 'var(--s3)', alignItems: 'flex-start', fontSize: 'var(--text-sm)' }}>
+      <span style={{ color: 'var(--g500)', fontWeight: 700, flexShrink: 0 }}>✓</span>
+      <span style={{ color: 'var(--text)' }}>{children}</span>
+    </li>
   )
 }
