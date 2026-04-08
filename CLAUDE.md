@@ -252,3 +252,65 @@ pm2 reload hedjav
 - Créer une branche git pour chaque feature : `git checkout -b feature/nom`
 - Committer après chaque étape validée
 - Ne jamais toucher à globals.css sans demande explicite
+
+---
+
+## Mise à jour couche 2 → 3
+
+- ✅ Couche 2 mergée (PR #2, commit c162398)
+- 🔄 Couche 3 en cours : branche `feature/ebooks-catalogue`
+- Paiement : **FedaPay** (pas CinetPay) — liens externes `https://me.fedapay.com/<slug>`
+- Chaque ebook a son propre lien FedaPay créé manuellement dans le dashboard FedaPay
+
+---
+
+## Skills disponibles (Claude.ai projet)
+
+Claude.ai dispose de skills spécialisés que le développeur peut consulter pour obtenir des briefs détaillés. Les voici pour référence :
+
+### ghost-writer
+Système éditorial complet pour produire et vendre des livres professionnels en français ciblant le marché francophone africain (UEMOA). Couvre 4 phases : brief → rédaction → mise en page HTML/PDF → textes de vente. Utilisé pour les ebooks KTALYZ.
+
+### hedjav-brvm-analyse
+Workflow complet d'analyse boursière pour titres BRVM. Produit : article HTML charte hedjav.com, carte WhatsApp 1080×1080, infographie 1080×1420, texte WhatsApp, étiquettes SEO, guide publication WordPress.
+
+### Création de documents
+- **docx** : Word documents (.docx)
+- **pdf** : Lecture, création, manipulation PDF
+- **pptx** : Présentations PowerPoint
+- **xlsx** : Tableurs Excel
+
+### Frontend & design
+- **frontend-design** : Interfaces web production-grade, design tokens, styling
+- **canvas-design** : Posters, visuels statiques .png/.pdf
+- **algorithmic-art** : Art génératif p5.js
+
+### Technique
+- **skill-creator** : Créer, modifier, tester des skills
+- **web-artifacts-builder** : Artifacts React/Tailwind/shadcn multi-composants
+- **mcp-builder** : Serveurs MCP (Model Context Protocol)
+- **doc-coauthoring** : Co-rédaction documentaire structurée
+
+### Theming & branding
+- **theme-factory** : 10 thèmes pré-faits + génération à la volée
+- **brand-guidelines** : Charte visuelle Anthropic (référence, pas pour hedjav)
+
+---
+
+## Vision future (ne PAS coder maintenant — juste préparer l'architecture)
+
+Ces fonctionnalités viendront après la Phase 1. Le code actuel doit être extensible pour les accueillir sans tout casser.
+
+### Automatisation contenu IA
+- Génération automatique d'ebooks via ghost-writer à fréquence régulière
+- Génération automatique d'articles blog
+- Système IA de supervision avec scoring qualité
+- Dashboard admin pour monitorer la production IA
+- Référence : fichier `catalogue_ktalyz_transcription.md` dans le projet Claude.ai
+
+### Principes d'architecture pour le futur
+- **Zéro contenu hardcodé** : tout passe par Supabase (ebooks, articles, configs)
+- **Tables extensibles** : prévoir des colonnes jsonb pour metadata flexible
+- **API routes prêtes** : `/api/` pour que l'IA puisse injecter du contenu plus tard
+- **Rôles Supabase** : admin, editor, member — pour contrôler qui (humain ou IA) peut publier
+- **Champs audit** : created_by, updated_by, source (manual/ai) sur chaque table de contenu

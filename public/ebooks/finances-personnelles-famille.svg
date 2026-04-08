@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" role="img" aria-label="Finances personnelles de la famille africaine">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1B2A4A"/>
+      <stop offset="1" stop-color="#0D1628"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="800" fill="url(#g)"/>
+  <rect x="30" y="30" width="540" height="740" fill="none" stroke="#C5A028" stroke-width="2"/>
+  <text x="300" y="120" fill="#C5A028" font-family="Georgia, serif" font-size="22" text-anchor="middle" letter-spacing="6">EBOOK HEDJAV</text>
+  <line x1="240" y1="150" x2="360" y2="150" stroke="#C5A028" stroke-width="1.5"/>
+  <text x="300" y="350" fill="#F8F5EE" font-family="Georgia, serif" font-size="54" font-weight="600" text-anchor="middle">Finances</text>
+  <text x="300" y="415" fill="#F8F5EE" font-family="Georgia, serif" font-size="54" font-weight="600" text-anchor="middle">de la famille</text>
+  <text x="300" y="480" fill="#C5A028" font-family="Georgia, serif" font-size="54" font-weight="600" text-anchor="middle">africaine</text>
+  <text x="300" y="560" fill="#C5A028" font-family="Georgia, serif" font-size="26" font-style="italic" text-anchor="middle">Budget · Épargne · Avenir</text>
+  <text x="300" y="730" fill="#6B82B0" font-family="monospace" font-size="14" text-anchor="middle" letter-spacing="3">HEDJAV.COM</text>
+</svg>
