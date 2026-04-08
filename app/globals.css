@@ -192,7 +192,7 @@ a {
 /* ============================================================
    UTILITAIRES — CONTAINER
    ============================================================ */
-.container {
+.hedjav-container {
   width: 100%;
   max-width: var(--container-max);
   margin-inline: auto;
@@ -509,4 +509,68 @@ a {
   border-color: var(--g500) !important;
   color: #fff !important;
   transform: translateY(-2px);
+}
+
+/* ============================================================
+   PAGE D'ACCUEIL — UTILITAIRES (couche 2)
+   ============================================================ */
+
+/* ── Hero title fluide ────────────── */
+.hedjav-hero-title {
+  font-size: clamp(var(--text-4xl), 7vw, var(--text-6xl));
+}
+
+/* ── Grilles responsives ──────────── */
+.hedjav-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--s6);
+}
+.hedjav-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--s8);
+}
+
+@media (min-width: 700px) {
+  .hedjav-grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 900px) {
+  .hedjav-grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .hedjav-grid-2 { grid-template-columns: 1fr 1.4fr; }
+}
+
+/* ── Trust strip ──────────────────── */
+.hedjav-trust-strip {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--s8);
+  padding: 0;
+}
+
+/* ── Empty state ──────────────────── */
+.hedjav-empty-state {
+  text-align: center;
+  padding: var(--s12) var(--s6);
+  border: 1.5px dashed var(--border2);
+  border-radius: var(--r24);
+  background: var(--bg);
+  max-width: 720px;
+  margin-inline: auto;
+}
+
+/* ── Newsletter form row ──────────── */
+.hedjav-newsletter-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+}
+@media (min-width: 560px) {
+  .hedjav-newsletter-row {
+    flex-direction: row;
+    align-items: center;
+  }
 }

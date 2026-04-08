@@ -58,7 +58,7 @@ export function Footer() {
         marginTop: 'var(--s20)',
       }}
     >
-      <div className="container" style={{ paddingBlock: 'var(--s16)' }}>
+      <div className="hedjav-container" style={{ paddingBlock: 'var(--s16)' }}>
         <div className="hedjav-footer-grid">
           {/* Col 1 — brand */}
           <div>
