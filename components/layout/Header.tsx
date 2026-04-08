@@ -63,7 +63,11 @@ export async function Header() {
             </Link>
           )}
           <div className="hedjav-mobile-only">
-            <MobileNav />
+            <MobileNav
+              isAuthenticated={Boolean(profile)}
+              fullName={profile?.full_name ?? null}
+              email={profile?.email ?? null}
+            />
           </div>
         </div>
       </div>
