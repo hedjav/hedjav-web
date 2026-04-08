@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verifyFedaPaySignature } from '@/lib/fedapay/verify'
 import { sendEmail } from '@/lib/email/sender'
+import { purchaseConfirmEmail } from '@/lib/email/templates'
 
 /**
  * POST /api/webhooks/fedapay
@@ -78,28 +79,12 @@ export async function POST(request: Request) {
   // Email de confirmation si paiement validé
   if (newStatus === 'paid' && purchase.email) {
     const ebookTitle = (purchase.ebook as { title?: string } | null)?.title ?? 'votre ebook'
-    const downloadUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'}/dashboard/mes-ebooks`
-
+    const tpl = purchaseConfirmEmail({ ebookTitle, customerEmail: purchase.email as string })
     await sendEmail({
-      to: purchase.email,
-      subject: `Votre achat Hedjav est confirmé — ${ebookTitle}`,
-      html: `
-        <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto;">
-          <h2 style="color: #1B2A4A;">Merci pour votre achat 🎉</h2>
-          <p>Votre paiement pour <strong>${ebookTitle}</strong> a bien été enregistré.</p>
-          <p>Vous pouvez télécharger votre ebook depuis votre espace membre :</p>
-          <p style="margin: 24px 0;">
-            <a href="${downloadUrl}" style="background:#C5A028;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;">
-              Accéder à mon ebook
-            </a>
-          </p>
-          <p style="color:#666;font-size:14px;">
-            Si le bouton ne fonctionne pas, copiez ce lien : ${downloadUrl}
-          </p>
-          <hr style="border:none;border-top:1px solid #eee;margin:32px 0;" />
-          <p style="color:#999;font-size:12px;">Hedjav — École en ligne de la Gestion de Patrimoine — Zone UEMOA</p>
-        </div>
-      `,
+      to: purchase.email as string,
+      subject: tpl.subject,
+      html: tpl.html,
+      text: tpl.text,
     })
   }
 

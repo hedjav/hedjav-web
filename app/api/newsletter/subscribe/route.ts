@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { sendEmail } from '@/lib/email/sender'
+import { welcomeNewsletterEmail } from '@/lib/email/templates'
 
 /**
  * POST /api/newsletter/subscribe
@@ -44,8 +46,23 @@ export async function POST(request: Request) {
 
   if (error) {
     console.error('[newsletter] insert failed', error)
+    // Message clair selon la cause probable
+    if (error.message.includes('relation') && error.message.includes('does not exist')) {
+      return NextResponse.json(
+        {
+          error: 'Table newsletter_subscribers manquante. Exécute supabase/migrations/009_newsletter_subscribers.sql dans Supabase Dashboard.',
+        },
+        { status: 500 },
+      )
+    }
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
+
+  // Email de bienvenue (no-op si RESEND_API_KEY non configuré)
+  const tpl = welcomeNewsletterEmail()
+  sendEmail({ to: email, subject: tpl.subject, html: tpl.html, text: tpl.text }).catch((e) => {
+    console.error('[newsletter] welcome email failed', e)
+  })
 
   // Si l'utilisateur est connecté, on met aussi à jour son profil
   try {

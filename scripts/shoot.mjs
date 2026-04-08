@@ -16,23 +16,34 @@ const pages = [
   { name: 'merci',         url: 'http://localhost:3000/merci' },
 ]
 
-const viewports = [
-  { name: 'desktop', width: 1440, height: 900 },
-]
+const themes = ['light', 'dark']
+const viewport = { width: 1440, height: 900 }
 
 const browser = await chromium.launch()
-for (const vp of viewports) {
-  const ctx = await browser.newContext({ viewport: { width: vp.width, height: vp.height } })
+for (const theme of themes) {
+  const ctx = await browser.newContext({ viewport })
   const page = await ctx.newPage()
+
+  // Force le thème via cookie/localStorage avant le premier goto
+  await ctx.addInitScript((t) => {
+    try {
+      window.localStorage.setItem('theme', t)
+    } catch {}
+  }, theme)
+
   for (const p of pages) {
     try {
-      const res = await page.goto(p.url, { waitUntil: 'networkidle', timeout: 15000 })
-      const status = res?.status() ?? 0
-      const path = `${OUT}/${p.name}-${vp.name}.png`
-      await page.screenshot({ path, fullPage: true })
-      console.log(`✓ ${p.name} [${status}] ${path}`)
+      await page.goto(p.url, { waitUntil: 'networkidle', timeout: 15000 })
+      // Force le data-theme côté DOM (next-themes lit localStorage au mount)
+      await page.evaluate((t) => {
+        document.documentElement.setAttribute('data-theme', t)
+      }, theme)
+      await page.waitForTimeout(200)
+      const filename = `${OUT}/${p.name}-${theme}.png`
+      await page.screenshot({ path: filename, fullPage: true })
+      console.log(`✓ ${p.name.padEnd(15)} [${theme}]`)
     } catch (e) {
-      console.error(`✗ ${p.name} ${e.message}`)
+      console.error(`✗ ${p.name} ${theme}: ${e.message}`)
     }
   }
   await ctx.close()
