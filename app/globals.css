@@ -119,29 +119,70 @@
    DESIGN TOKENS — MODE SOMBRE
    ============================================================ */
 [data-theme="dark"] {
-  --bg:      #0D1628;
-  --surface: #1B2A4A;
-  --text:    #E0E6EF;
-  --muted:   #7A94B8;
-  --border:  rgba(255,255,255,.08);
-  --border2: rgba(255,255,255,.15);
+  /* ── Surfaces & sémantique ────────── */
+  --bg:      #0A1220;
+  --surface: #131F36;
+  --text:    #F0F3F8;
+  --muted:   #A0B3CC;
+  --border:  rgba(255,255,255,.10);
+  --border2: rgba(255,255,255,.18);
 
-  --n50:  #243660;
-  --n100: #2E4278;
-  --n200: #3A5496;
-  --n400: #7A94B8;
-  --n600: #9AAEC8;
-  --n700: #C2CEDE;
+  /* ── Palette Navy inversée pour dark ── */
+  --n975: #FFFFFF;
+  --n950: #1B2A4A;     /* fond footer dark — distinct du bg */
+  --n900: #F0F3F8;     /* texte clair en dark */
   --n800: #E0E6EF;
-  --n900: #F0F3F8;
+  --n700: #C2CEDE;
+  --n600: #A0B3CC;
+  --n400: #7A94B8;
+  --n200: #3A5496;
+  --n100: #243660;     /* skeleton bg en dark */
+  --n50:  #1D2A45;     /* hover surface en dark */
 
-  --g500: #D4B440;
+  /* ── Palette Or — éclaircie pour dark ── */
+  --g900: #F7E9B8;
+  --g800: #F2DC8F;
+  --g700: #ECCC60;     /* texte or sur fond sombre */
+  --g600: #DEB845;
+  --g500: #D4B440;     /* accent CTA */
   --g400: #C5A028;
-  --g100: #3A2E00;
-  --g50:  #2A2000;
+  --g300: #9A6800;
+  --g200: #5C3D00;
+  --g100: #3A2800;
+  --g50:  #1F1500;
 
-  --cream: #0D1628;
-  --white: #1B2A4A;
+  /* ── Sémantiques ajustées ──────────── */
+  --ok-bg:   rgba(46,179,108,.15);
+  --ok-bdr:  rgba(46,179,108,.35);
+  --err-bg:  rgba(255,80,80,.12);
+  --err-bdr: rgba(255,80,80,.35);
+  --warn-bg: rgba(255,190,0,.12);
+  --warn-bdr: rgba(255,190,0,.35);
+  --info-bg: rgba(80,160,255,.12);
+  --info-bdr: rgba(80,160,255,.35);
+
+  /* ── Surfaces aliases ──────────────── */
+  --cream: var(--bg);
+  --white: var(--surface);
+
+  /* ── Ombres adaptées ───────────────── */
+  --sha: 0 1px 3px rgba(0,0,0,.4), 0 1px 2px rgba(0,0,0,.3);
+  --shb: 0 4px 12px rgba(0,0,0,.45), 0 2px 4px rgba(0,0,0,.3);
+  --shc: 0 10px 30px rgba(0,0,0,.55), 0 4px 8px rgba(0,0,0,.35);
+  --shg: 0 4px 20px rgba(212,180,64,.30);
+}
+
+/* Dark : boutons outline contraste */
+[data-theme="dark"] .btn-outline {
+  color: var(--text);
+  border-color: var(--text);
+}
+[data-theme="dark"] .btn-outline:hover {
+  background: var(--n50);
+}
+/* Dark : focus ring sur input */
+[data-theme="dark"] .input:focus {
+  box-shadow: 0 0 0 3px rgba(212,180,64,.20);
 }
 
 /* ============================================================

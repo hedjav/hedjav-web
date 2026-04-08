@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { generateText } from '@/lib/claude/client'
 import { sendEmail } from '@/lib/email/sender'
+import { newsletterEmail } from '@/lib/email/templates'
 
 /**
  * POST /api/newsletter/send
@@ -111,17 +112,8 @@ Pas de balise <html>, <body>, <head> — uniquement le contenu interne. Pas de s
     body.override_subject ??
     `Hedjav — ${articlesCount} article${articlesCount > 1 ? 's' : ''}, ${ebooksCount} ebook${ebooksCount > 1 ? 's' : ''} cette semaine`
 
-  const fullHtml = `
-    <div style="font-family: sans-serif; max-width: 640px; margin: 0 auto; padding: 24px; color: #1B2A4A;">
-      <h1 style="font-family: Georgia, serif; color: #1B2A4A;">Hedjav</h1>
-      ${generated.text}
-      <hr style="border: none; border-top: 1px solid #eee; margin: 32px 0;" />
-      <p style="color: #999; font-size: 12px; text-align: center;">
-        Hedjav — École en ligne de la Gestion de Patrimoine — Zone UEMOA<br />
-        Vous recevez cet email parce que vous êtes inscrit à la newsletter Hedjav.
-      </p>
-    </div>
-  `
+  const tpl = newsletterEmail({ subject, innerHtml: generated.text })
+  const fullHtml = tpl.html
 
   // Dry run : ne pas envoyer
   if (body.dry_run) {
