@@ -1,3 +1,18 @@
+export type Purchase = {
+  id: string
+  user_id: string | null
+  email: string
+  ebook_id: string
+  amount: number
+  currency: string
+  payment_ref: string
+  status: 'pending' | 'paid' | 'failed' | 'refunded'
+  payment_method: string | null
+  raw_payload: unknown
+  created_at: string
+  updated_at: string
+}
+
 export type Profile = {
   id: string
   email: string
