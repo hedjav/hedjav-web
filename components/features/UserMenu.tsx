@@ -4,9 +4,9 @@ import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { LogoutButton } from './LogoutButton'
 
-type Props = { fullName: string; email: string }
+type Props = { fullName: string; email: string; isAdmin?: boolean }
 
-export function UserMenu({ fullName, email }: Props) {
+export function UserMenu({ fullName, email, isAdmin }: Props) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -140,6 +140,11 @@ export function UserMenu({ fullName, email }: Props) {
             </div>
           </div>
 
+          {isAdmin && (
+            <MenuLink href="/admin" onClick={() => setOpen(false)}>
+              <span style={{ color: 'var(--g700)', fontWeight: 700 }}>★ Espace admin</span>
+            </MenuLink>
+          )}
           <MenuLink href="/dashboard" onClick={() => setOpen(false)}>
             Tableau de bord
           </MenuLink>

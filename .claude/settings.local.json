@@ -23,7 +23,8 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/blog)",
       "Bash(curl -s -o /dev/null -w \"blog=%{http_code} apropos=\" http://localhost:3000/blog)",
       "Bash(curl -s -o /dev/null -w \"%{http_code} login=\" http://localhost:3000/a-propos)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/login)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/login)",
+      "Bash(curl:*)"
     ]
   }
 }
