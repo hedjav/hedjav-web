@@ -1,3 +1,15 @@
+export type Profile = {
+  id: string
+  email: string
+  full_name: string | null
+  country: string | null
+  phone: string | null
+  newsletter_opt: boolean
+  role: 'member' | 'admin'
+  created_at: string
+  updated_at: string
+}
+
 export type Article = {
   id: string
   title: string
