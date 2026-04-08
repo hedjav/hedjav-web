@@ -57,7 +57,7 @@ export async function signInAction(formData: FormData): Promise<ActionResult> {
   redirect(next)
 }
 
-export async function signOutAction(): Promise<void> {
+export async function signOutAction(_formData?: FormData): Promise<void> {
   const supabase = await createSupabaseServerClient()
   await supabase.auth.signOut()
   revalidatePath('/', 'layout')
@@ -106,15 +106,21 @@ export async function updateProfileAction(
   } = await supabase.auth.getUser()
   if (!user) return { ok: false, error: 'Non authentifié.' }
 
+  // Upsert pour gérer le cas où le trigger handle_new_user n'a pas créé le profil
+  // (utilisateur créé avant que la migration 003 ne soit appliquée).
   const { error } = await supabase
     .from('profiles')
-    .update({
-      full_name: fullName,
-      country,
-      phone,
-      newsletter_opt: newsletterOpt,
-    })
-    .eq('id', user.id)
+    .upsert(
+      {
+        id: user.id,
+        email: user.email!,
+        full_name: fullName,
+        country,
+        phone,
+        newsletter_opt: newsletterOpt,
+      },
+      { onConflict: 'id' },
+    )
 
   if (error) return { ok: false, error: error.message }
   revalidatePath('/dashboard/profil')
