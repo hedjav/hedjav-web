@@ -4,6 +4,7 @@ import './globals.css'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
+import { JsonLd, organizationJsonLd } from '@/components/features/JsonLd'
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -56,6 +57,7 @@ export default function RootLayout({
       className={`${cormorant.variable} ${dmSans.variable} ${dmMono.variable}`}
     >
       <body className="min-h-screen flex flex-col">
+        <JsonLd data={organizationJsonLd()} />
         <ThemeProvider>
           <Header />
           <main className="flex-1">{children}</main>

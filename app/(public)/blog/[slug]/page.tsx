@@ -11,6 +11,7 @@ import {
 import { ArticleBody } from '@/components/features/ArticleBody'
 import { RelatedArticles } from '@/components/features/RelatedArticles'
 import { InlineNewsletterCTA } from '@/components/features/InlineNewsletterCTA'
+import { JsonLd, articleJsonLd } from '@/components/features/JsonLd'
 
 export const revalidate = 60
 
@@ -45,6 +46,7 @@ export default async function ArticlePage({ params }: PageProps) {
 
   return (
     <article className="section">
+      <JsonLd data={articleJsonLd(article)} />
       <div className="hedjav-container" style={{ maxWidth: 800 }}>
         <nav
           aria-label="Fil d’ariane"
