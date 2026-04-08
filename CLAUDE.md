@@ -114,6 +114,17 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 
 ---
 
+## Comptes & rôles
+- Premier admin : créer un compte via `/register`, puis aller sur **`/admin-setup`** et saisir `ADMIN_SETUP_CODE` (`.env.local`).
+- Promouvoir/rétrograder ensuite depuis `/admin/membres` (impossible de rétrograder le dernier admin).
+- Le proxy `proxy.ts` protège `/admin` (admin role) et `/dashboard` (user connecté). `/admin-setup` n'est pas intercepté.
+
+## Dashboard membre
+- Header avec avatar 64px + tabs horizontales (Vue d'ensemble / Mes ebooks / Mes commandes / Outils / Alertes / Mon profil).
+- 4 cards visuelles : ebooks, outils, progression (+ badge), alertes.
+- `/dashboard/outils` : 2 simulateurs client-side (épargne avec graphique SVG, locatif UEMOA).
+- `last_visit_at` mis à jour à chaque visite (migration 007) — sert pour les alertes.
+
 ## État d'avancement (Phase 1 — TERMINÉE ✅)
 
 | # | Couche | PR | État |
