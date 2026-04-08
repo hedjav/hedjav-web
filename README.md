@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# hedjav.com
 
-## Getting Started
+Site web de [Hedjav](https://hedjav.com) — gestion de patrimoine pour l'Afrique francophone.
 
-First, run the development server:
+## Stack
+
+| Composant | Solution |
+|-----------|---------|
+| Framework | Next.js 16 (App Router) |
+| Langage   | TypeScript |
+| Styles    | Tailwind CSS v4 + variables CSS hedjav |
+| Backend   | Supabase (PostgreSQL + Auth + RLS) |
+| Email     | Brevo (newsletter + transactionnel) |
+| Paiement  | FedaPay (Wave, Orange Money, MTN MoMo) |
+| Hébergement | Hostinger VPS (PM2 + Nginx) |
+| CDN/DNS   | Cloudflare |
+
+## Démarrage local
 
 ```bash
+git clone https://github.com/hedjav/hedjav-web.git
+cd hedjav-web
+npm install
+cp .env.local.example .env.local   # puis remplir les vraies valeurs
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Ouvrir `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Documentation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- [`CLAUDE.md`](./CLAUDE.md) — instructions Claude Code, état du projet
+- [`AGENTS.md`](./AGENTS.md) — règles pour les agents IA
+- [`DEPLOY.md`](./DEPLOY.md) — guide complet de déploiement Hostinger VPS
 
-## Learn More
+## Structure
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+app/
+  (admin)/    → admin UI dark, protégé role='admin'
+  (auth)/     → login, register, forgot/reset password
+  (dashboard)/ → espace membre protégé
+  (public)/   → pages publiques (ebooks, blog, a-propos, merci)
+  api/        → endpoints (articles, newsletter, purchases, webhooks)
+components/
+  features/   → cards, formulaires, composants métier
+  home/       → sections de la page d'accueil
+  layout/     → header, footer, mobile nav
+  providers/  → ThemeProvider
+lib/
+  admin/      → server actions admin
+  auth/       → helpers session + actions
+  brevo/      → client REST Brevo
+  ebooks/, articles/, purchases/, pages/ → queries Supabase
+  fedapay/    → vérif HMAC webhook
+  supabase/   → clients SSR + types
+supabase/
+  migrations/ → scripts SQL à exécuter dans Supabase Dashboard
+scripts/
+  seed-*.mjs  → seed initial des tables
+  shoot.mjs   → screenshots playwright pour QA visuelle
+  deploy.sh   → script de déploiement VPS
+```
