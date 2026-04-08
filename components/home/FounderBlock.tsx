@@ -1,30 +1,32 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 export function FounderBlock() {
   return (
     <section className="section" style={{ background: 'var(--bg)' }}>
       <div className="hedjav-container">
         <div className="hedjav-grid-2" style={{ alignItems: 'center', gap: 'var(--s12)' }}>
-          {/* Portrait placeholder */}
+          {/* Portrait Hermann */}
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <div
-              aria-hidden
               style={{
-                width: 240,
-                height: 240,
+                position: 'relative',
+                width: 280,
+                height: 280,
                 borderRadius: 'var(--rfull)',
-                background: 'linear-gradient(135deg, var(--n900), var(--n700))',
-                color: 'var(--g500)',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontFamily: 'var(--fd)',
-                fontSize: 'var(--text-6xl)',
-                fontWeight: 600,
+                overflow: 'hidden',
                 boxShadow: 'var(--shc)',
+                border: '4px solid var(--g500)',
               }}
             >
-              HA
+              <Image
+                src="/DSC_0010 copy.jpeg"
+                alt="Hermann D. AVAHOUIN, fondateur de Hedjav"
+                fill
+                sizes="280px"
+                style={{ objectFit: 'cover', objectPosition: 'center top' }}
+                priority
+              />
             </div>
           </div>
 

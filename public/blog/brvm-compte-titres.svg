@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Ouvrir son compte titres BRVM">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1B2A4A"/>
+      <stop offset="1" stop-color="#0D1628"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#g)"/>
+  <rect x="60" y="60" width="1480" height="780" fill="none" stroke="#C5A028" stroke-width="3"/>
+  <text x="800" y="240" fill="#C5A028" font-family="Georgia, serif" font-size="36" text-anchor="middle" letter-spacing="10">HEDJAV BLOG · BRVM</text>
+  <line x1="700" y1="300" x2="900" y2="300" stroke="#C5A028" stroke-width="2"/>
+  <text x="800" y="500" fill="#F8F5EE" font-family="Georgia, serif" font-size="92" font-weight="600" text-anchor="middle">Ouvrir son compte titres</text>
+  <text x="800" y="600" fill="#C5A028" font-family="Georgia, serif" font-size="48" font-style="italic" text-anchor="middle">en 7 jours, étape par étape</text>
+</svg>
