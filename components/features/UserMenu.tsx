@@ -34,7 +34,12 @@ export function UserMenu({ fullName, email }: Props) {
     .toUpperCase()
 
   return (
-    <div ref={ref} style={{ position: 'relative' }}>
+    <div
+      ref={ref}
+      style={{ position: 'relative' }}
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+    >
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
