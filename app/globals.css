@@ -103,12 +103,16 @@
   --ts: 400ms cubic-bezier(.4, 0, .2, 1);   /* slow  */
 
   /* ── Tokens sémantiques UI ──────── */
-  --bg:      var(--cream);
-  --surface: var(--white);
-  --text:    var(--n900);
-  --muted:   var(--n600);
-  --border:  var(--n100);
-  --border2: var(--n200);
+  --bg:         var(--cream);
+  --surface:    var(--white);
+  --surface-2:  #F0EBDC;            /* surface élevée hover (light) */
+  --text:       var(--n900);
+  --text-strong:#0D1628;
+  --muted:      var(--n600);
+  --border:     var(--n100);
+  --border2:    var(--n200);
+  --accent:     var(--g500);        /* accent or stable */
+  --accent-soft: var(--g100);
 
   /* ── Container ──────────────────── */
   --container-max: 1200px;
@@ -125,12 +129,16 @@
    ============================================================ */
 [data-theme="dark"] {
   /* ── Sémantiques flippés ───────────── */
-  --bg:      #0A1220;
-  --surface: #131F36;
-  --text:    #F0F3F8;
-  --muted:   #A0B3CC;
-  --border:  rgba(255,255,255,.10);
-  --border2: rgba(255,255,255,.18);
+  --bg:          #0A1220;
+  --surface:     #131F36;
+  --surface-2:   #1B2A4A;            /* surface élevée hover (dark) */
+  --text:        #F0F3F8;
+  --text-strong: #FFFFFF;
+  --muted:       #A0B3CC;
+  --border:      rgba(255,255,255,.10);
+  --border2:     rgba(255,255,255,.18);
+  --accent:      #ECCC60;            /* or éclairci en dark pour rester lisible */
+  --accent-soft: rgba(212,180,64,.15);
 
   /* ── Aliases couleur ──────────────── */
   --cream: var(--bg);
@@ -209,6 +217,11 @@
 [data-theme="dark"] .card {
   background: var(--surface);
   border-color: var(--border);
+}
+[data-theme="dark"] .card:hover {
+  background: var(--surface-2);
+  border-color: rgba(212,180,64,.30);
+  box-shadow: 0 12px 32px rgba(0,0,0,.55), 0 0 0 1px rgba(212,180,64,.15);
 }
 
 /* Badges */
