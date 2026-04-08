@@ -36,6 +36,16 @@ export function NewsletterForm({ source = 'home', theme = 'dark' }: Props) {
     }
   }
 
+  // Style : la newsletter est dans une section navy fixe (NewsletterCTA),
+  // donc on garde un input clair (cream) avec texte navy peu importe le thème.
+  // C'est cohérent avec le design : la section reste navy en light comme en dark.
+  const inputStyle: React.CSSProperties = {
+    flex: 1,
+    background: '#F8F5EE', // cream fixe, lisible sur navy
+    color: '#1B2A4A',       // navy fixe, lisible sur cream
+    border: '1.5px solid rgba(255,255,255,.20)',
+  }
+
   const isDark = theme === 'dark'
 
   return (
@@ -59,7 +69,7 @@ export function NewsletterForm({ source = 'home', theme = 'dark' }: Props) {
           disabled={status === 'loading' || status === 'success'}
           aria-label="Adresse email"
           className="input"
-          style={{ flex: 1, background: '#fff', color: 'var(--n900)' }}
+          style={inputStyle}
         />
         <button
           type="submit"
@@ -75,12 +85,12 @@ export function NewsletterForm({ source = 'home', theme = 'dark' }: Props) {
           role="status"
           style={{
             fontSize: 'var(--text-sm)',
-            color: isDark ? 'var(--g300)' : 'var(--g700)',
+            color: '#F2DC8F',
             textAlign: 'center',
             marginTop: 'var(--s2)',
           }}
         >
-          Merci ! Vérifiez votre email pour confirmer votre inscription.
+          Merci ! Vérifiez votre boîte mail pour le message de bienvenue.
         </p>
       )}
 
@@ -89,7 +99,7 @@ export function NewsletterForm({ source = 'home', theme = 'dark' }: Props) {
           role="alert"
           style={{
             fontSize: 'var(--text-sm)',
-            color: isDark ? '#ffb4b4' : 'var(--err)',
+            color: '#ffb4b4',
             textAlign: 'center',
             marginTop: 'var(--s2)',
           }}
@@ -101,7 +111,7 @@ export function NewsletterForm({ source = 'home', theme = 'dark' }: Props) {
       <p
         style={{
           fontSize: 'var(--text-xs)',
-          color: isDark ? 'rgba(255,255,255,.55)' : 'var(--muted)',
+          color: 'rgba(255,255,255,.55)',
           textAlign: 'center',
           marginTop: 'var(--s2)',
         }}
