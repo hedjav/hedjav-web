@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { getEbookBySlug } from '@/lib/ebooks/queries'
 import { EbookPriceBlock } from '@/components/features/EbookPriceBlock'
 import { EbookBuyButton } from '@/components/features/EbookBuyButton'
+import { JsonLd, ebookJsonLd } from '@/components/features/JsonLd'
 
 export const revalidate = 60
 
@@ -32,6 +33,7 @@ export default async function EbookSalesPage({ params }: PageProps) {
 
   return (
     <section className="section">
+      <JsonLd data={ebookJsonLd(ebook)} />
       <div className="hedjav-container">
         <nav
           aria-label="Fil d’ariane"
