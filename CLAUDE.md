@@ -1,316 +1,247 @@
 @AGENTS.md
 # hedjav.com — Contexte projet pour Claude Code
- 
+
 ## Qui suis-je ?
-Je suis le développeur de hedjav.com, débutant en Next.js.
+Développeur de hedjav.com.
 Maître d'ouvrage : Hermann D. AVAHOUIN — expert gestion de patrimoine, Bénin.
 Maître d'œuvre : KTALYZ SARL.
- 
+
 ---
- 
+
 ## Stack technique
- 
+
 | Composant | Solution |
 |-----------|---------|
 | Framework | Next.js 16 App Router |
 | Langage | TypeScript |
-| Styles | Tailwind CSS v4 + CSS variables custom |
-| Composants UI | shadcn/ui |
-| Backend / BDD | Supabase (PostgreSQL + Auth + Storage + RLS) |
+| Styles | Tailwind CSS v4 + CSS variables custom hedjav |
+| Backend / BDD | Supabase (PostgreSQL + Auth + RLS) |
 | Hébergement | **Hostinger VPS** — PM2 + Nginx (PAS Vercel) |
 | CDN / DNS | Cloudflare |
-| Email | Brevo (SMTP transactionnel + automation) |
-| Paiement | CinetPay (Wave, Orange Money, MTN MoMo) |
-| IA | Claude API — claude-sonnet-4-6 |
-| Versioning | GitHub — repo : hedjav/hedjav-web |
- 
+| Email | Brevo (newsletter + transactionnel) |
+| Paiement | **FedaPay** (Wave, Orange Money, MTN MoMo, carte) |
+| IA | Claude API — claude-sonnet-4-6 (futur, pas encore branché) |
+| Versioning | GitHub — repo `hedjav/hedjav-web` |
+
 ---
- 
+
 ## Identité visuelle
- 
-### Couleurs (variables CSS dans globals.css)
+
+### Couleurs (variables CSS dans `app/globals.css`)
 ```
---n900: #1B2A4A   Navy primaire — textes, backgrounds foncés
---n950: #0D1628   Navy profond — sidebar, footer
---g500: #C5A028   Or accent — CTA, badges, liens actifs
+--n900: #1B2A4A   Navy primaire
+--n950: #0D1628   Navy profond — admin, sidebar, footer
+--g500: #C5A028   Or accent — CTA, badges
 --cream:#F8F5EE   Fond de page
---white:#FFFFFF   Surfaces cartes
 ```
- 
-### Typographies
+
+### Typographies (next/font dans `app/layout.tsx`)
 ```
 --fd : 'Cormorant Garamond' — titres, hero, logo
 --fb : 'DM Sans'            — corps, navigation, UI
---fm : 'DM Mono'            — prix FCFA, données BRVM, tokens
+--fm : 'DM Mono'            — prix FCFA, données BRVM
 ```
- 
+
 ### Logo
-`Hedjav` — texte brut, font Cormorant Garamond weight 600.
-ZÉRO décoration. Pas de span coloré, pas d'accent sur H ou AV.
- 
+`Hedjav` — texte brut, font Cormorant Garamond weight 600. ZÉRO décoration.
+
 ---
- 
+
 ## Règles absolues de code
- 
+
 ### CSS
-- Toujours utiliser les variables CSS (`var(--n900)`) — jamais de couleurs brutes (`#1B2A4A`)
-- Toujours utiliser les tokens d'espacement (`var(--s4)`) — jamais de valeurs brutes (`16px`)
-- Le dark mode se gère via `[data-theme="dark"]` sur `<html>` — utiliser next-themes
-- **Interdit : `@import url('https://fonts.googleapis.com/...')` dans les CSS** — toutes les fonts passent par `next/font/google` dans `app/layout.tsx`
- 
-### React / Next.js
-- Server Components par défaut — `'use client'` seulement si interaction ou hooks nécessaires
-- Données depuis Supabase : `lib/supabase/server.ts` côté serveur
-- Jamais de secret dans le code — toujours `.env.local`
-- Variables publiques : `NEXT_PUBLIC_` seulement pour données non sensibles
-- **Langue** : tout le contenu front est en **français** — `<html lang="fr">`, textes UI en français
-- **Dark mode** : `next-themes` configuré avec `attribute="data-theme"`, `defaultTheme="light"`, `enableSystem={false}`. Provider unique : `components/providers/ThemeProvider.tsx`
- 
-### Composants
-- Composants shadcn/ui dans `components/ui/`
-- Composants métier hedjav dans `components/features/`
-- Layouts dans `components/layout/` (Header, Footer, MobileNav, ThemeToggle, nav-links.ts)
-- Providers globaux dans `components/providers/`
+- Variables CSS uniquement (`var(--n900)`) — jamais de couleurs brutes
+- Tokens d'espacement (`var(--s4)`) — jamais de valeurs brutes
+- **Interdit** : `.container` custom (collision Tailwind v4) → toujours `.hedjav-container`
+- Fonts via `next/font/google` uniquement, jamais de `@import url`
 
-### Contacts & comptes publics
-- **Email public unique** : `hedjav@gmail.com` — seul email affichable côté front
-- **Privé, jamais en front** : `ktalyzconseils@gmail.com`
-- **Réseaux sociaux officiels** (validés HEAD 200 le 2026-04-08) :
-  - Facebook : https://www.facebook.com/hedjav
-  - Instagram : https://www.instagram.com/hedjav
-  - X : https://x.com/hedjav
-  - TikTok : https://www.tiktok.com/@hedjav
-  - WhatsApp : https://wa.me/22901978903630
-  - LinkedIn : ⚠️ compte inexistant au 2026-04-08 — ne pas afficher tant que non créé
- 
+### React / Next.js 16
+- Server Components par défaut, `'use client'` uniquement si interaction
+- Données via `lib/supabase/server.ts` côté serveur
+- Jamais de secret dans le code → `.env.local` (ignoré par git)
+- Langue : tout le contenu en français, `<html lang="fr">`
+- `proxy.ts` (renommé depuis `middleware.ts` en Next 16) protège `/dashboard` et `/admin`
+
+### Architecture extensible (RÈGLE TRANSVERSALE)
+- **Rien n'est figé.** Tout contenu passe par Supabase, jamais hardcodé.
+- Chaque table a un champ `metadata jsonb default '{}'` pour ajouter des données arbitraires sans migration (scoring IA, tags, A/B test, telemetry).
+- Toutes les routes API (`/api/articles`, `/api/newsletter/subscribe`, `/api/purchases/init`, `/api/webhooks/fedapay`) sont conçues pour être appelables par un agent IA.
+- L'admin UI a une section `/admin/ia` avec placeholders pour les futurs outils IA.
+
+### Contacts publics
+- **Email public unique** : `hedjav@gmail.com`
+- **Privé jamais en front** : `ktalyzconseils@gmail.com`
+- **Réseaux sociaux** : Facebook, Instagram, X, TikTok, WhatsApp `+22901978903630` (LinkedIn n'existe pas encore)
+
 ### Git
-- Branches : `feature/nom-feature` pour chaque nouvelle fonctionnalité
-- Commits courts et descriptifs en français : `feat: hero section`, `fix: nav mobile`
-- Toujours committer avant de demander une grosse modification à Claude Code
- 
+- Branches `feature/nom-feature`
+- Commits courts en français
+- Auto-accept en cours sur ce projet : crée branche → code → push → PR → merge sans demander
+
 ---
- 
-## Structure du projet
- 
-```
-hedjav-web/
-├── CLAUDE.md                    ← ce fichier
-├── app/
-│   ├── layout.tsx               ← layout global (fonts, providers, metadata)
-│   ├── page.tsx                 ← page d'accueil
-│   ├── globals.css              ← tokens CSS hedjav (NE PAS modifier les tokens)
-│   ├── (public)/
-│   │   ├── blog/
-│   │   │   ├── page.tsx         ← liste articles
-│   │   │   └── [slug]/page.tsx  ← article MDX
-│   │   ├── ebooks/
-│   │   │   ├── page.tsx         ← catalogue ebooks
-│   │   │   └── [slug]/page.tsx  ← page de vente
-│   │   └── newsletter/page.tsx
-│   ├── (auth)/
-│   │   ├── login/page.tsx
-│   │   └── register/page.tsx
-│   ├── (dashboard)/
-│   │   └── page.tsx             ← espace membre connecté
-│   ├── (admin)/
-│   │   ├── layout.tsx           ← layout admin dark (role='admin' requis)
-│   │   ├── page.tsx             ← dashboard stats
-│   │   ├── articles/
-│   │   ├── ebooks/
-│   │   └── membres/
-│   ├── api/
-│   │   └── webhooks/
-│   │       └── cinetpay/route.ts ← webhook paiement HMAC
-│   ├── sitemap.ts
-│   └── robots.ts
-├── components/
-│   ├── ui/                      ← shadcn/ui customisés charte hedjav
-│   ├── features/                ← composants métier (EbookCard, ArticleCard...)
-│   └── layout/                  ← Header, Footer, Sidebar
-├── lib/
-│   ├── supabase/
-│   │   ├── server.ts            ← client Supabase SSR (cookies)
-│   │   └── client.ts            ← client Supabase navigateur
-│   ├── brevo/                   ← emails transactionnels
-│   ├── cinetpay/                ← paiement Wave/OM + webhook
-│   └── claude/                  ← prompts et appels Claude API
-├── content/
-│   └── blog/                    ← articles .mdx
-├── middleware.ts                ← protection routes /dashboard /admin
-├── ecosystem.config.js          ← config PM2 pour Hostinger VPS
-└── .env.local                   ← variables d'environnement (NE PAS committer)
-```
- 
+
+## État d'avancement (Phase 1 — TERMINÉE ✅)
+
+| # | Couche | PR | État |
+|---|--------|----|----|
+| 1 | globals.css + layout + Header/Footer | #1 | ✅ |
+| 2 | Page d'accueil 8 sections | #2 | ✅ |
+| 3 | Catalogue ebooks + page de vente FedaPay | #3 | ✅ |
+| — | Photo Hermann FounderBlock | #4 | ✅ |
+| 4 | Blog Supabase + API d'injection IA | #5 | ✅ |
+| 5 | Auth Supabase + dashboard membre | #6 | ✅ |
+| 6 | Newsletter Brevo + double opt-in | #7 | ✅ |
+| 7 | Paiement FedaPay + dashboard ebooks achetés | #8 | ✅ |
+| — | Pré-fixes : nav `/#newsletter`, `/a-propos` Supabase, `metadata jsonb` partout | #9 | ✅ |
+| 8 | Admin UI dark + CRUD + section Outils IA | #10 | ✅ |
+| 9 | SEO sitemap + robots + JSON-LD | #11 | ✅ |
+| 10 | Préparation déploiement VPS | #12 | ✅ |
+
 ---
- 
-## Variables d'environnement (.env.local)
- 
-```bash
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJxxx
-SUPABASE_SERVICE_ROLE_KEY=eyJxxx
- 
-# CinetPay
-CINETPAY_API_KEY=xxx
-CINETPAY_SITE_ID=xxx
-CINETPAY_SECRET_KEY=xxx
- 
-# Brevo
-BREVO_API_KEY=xxx
-BREVO_NEWSLETTER_LIST_ID=xxx
- 
-# Claude API
-ANTHROPIC_API_KEY=sk-ant-xxx
- 
-# App
-NEXT_PUBLIC_APP_URL=https://hedjav.com
-```
- 
+
+## Routes du site
+
+### Public
+- `/` — accueil 8 sections
+- `/ebooks` — catalogue
+- `/ebooks/[slug]` — page de vente individuelle (FedaPay)
+- `/blog` — liste avec filtres catégorie
+- `/blog/[slug]` — article markdown + ToC + related + newsletter inline
+- `/a-propos` — bio Hermann (contenu en table `pages` Supabase)
+- `/merci` — retour paiement (lit `?ref=`)
+- `/newsletter/confirmation` — retour double opt-in Brevo
+
+### Auth
+- `/login`, `/register`, `/forgot-password`, `/reset-password`
+
+### Membre (protégé via `proxy.ts`)
+- `/dashboard` — vue d'ensemble
+- `/dashboard/profil` — édition profil
+- `/dashboard/mes-ebooks` — bibliothèque (purchases status='paid')
+- `/dashboard/mes-commandes` — historique
+
+### Admin (protégé `role='admin'`)
+- `/admin` — stats live
+- `/admin/ebooks` `/new` `/[id]` — CRUD
+- `/admin/articles` `/new` `/[id]` — CRUD
+- `/admin/membres` — liste profils + nb achats
+- `/admin/ventes` — historique purchases + total encaissé
+- `/admin/ia` — placeholder 7 outils IA à venir
+
+### API
+- `POST /api/articles` (bearer `INTERNAL_API_TOKEN`) — injection IA
+- `POST /api/newsletter/subscribe` — public
+- `POST /api/purchases/init` — pré-paiement
+- `POST /api/webhooks/fedapay` (HMAC-SHA256)
+
 ---
- 
-## Tables Supabase (Phase 1)
- 
-```sql
-users        -- Auth Supabase (géré automatiquement)
-profiles     -- user_id, subscription_level, country, newsletter_opt
-ebooks       -- id, title, slug, price_fcfa, cover_url, file_url, published
-purchases    -- id, user_id, ebook_id, amount, payment_ref, status
-articles     -- id, slug, title, body_mdx, category, published_at, author_id
-```
- 
+
+## Tables Supabase
+
+| Table | Description |
+|-------|-------------|
+| `auth.users` | Géré automatiquement |
+| `profiles` | id, email, full_name, country, phone, newsletter_opt, role (member/admin), metadata |
+| `ebooks` | title, slug, description, price, fedapay_link, features jsonb, target_audience jsonb, is_published, is_featured, metadata |
+| `articles` | title, slug, body markdown, excerpt, category, source (manual/ai), quality_score, featured, is_published, metadata |
+| `purchases` | user_id (nullable), email, ebook_id, amount, payment_ref, status, payment_method, raw_payload jsonb, metadata |
+| `pages` | slug, title, body markdown, cover, meta_description, metadata |
+
+**Migrations** dans `supabase/migrations/` (à exécuter en ordre dans Supabase Dashboard SQL Editor) :
+1. `001_ebooks.sql`
+2. `002_articles.sql`
+3. `003_profiles.sql`
+4. `004_purchases.sql`
+5. `005_pages.sql`
+6. `006_metadata.sql` (ALTER TABLE ajoute `metadata jsonb` partout)
+
 ---
- 
-## Flux paiement CinetPay
- 
-```
-Clic [Acheter] → Server Action → API CinetPay init →
-Redirect page paiement Wave/OM → Paiement utilisateur →
-Webhook POST /api/webhooks/cinetpay → Vérif HMAC-SHA256 →
-INSERT purchases Supabase → Email PDF Brevo → Accès débloqué RLS
-```
- 
+
+## Variables d'environnement (`.env.local`)
+
+Voir `.env.local.example`. Clés sensibles :
+- `SUPABASE_SERVICE_ROLE_KEY` (admin)
+- `INTERNAL_API_TOKEN` (bearer pour `/api/articles`)
+- `BREVO_API_KEY`, `BREVO_NEWSLETTER_LIST_ID`, `BREVO_DOI_TEMPLATE_ID` (graceful no-op si vides)
+- `FEDAPAY_API_KEY`, `FEDAPAY_WEBHOOK_SECRET`
+
 ---
- 
+
 ## Déploiement Hostinger VPS
- 
+
+Voir [`DEPLOY.md`](./DEPLOY.md) pour le guide complet (Nginx, PM2, Cloudflare, migrations, granting admin).
+
+Déploiement courant sur le VPS :
 ```bash
-# Build local
-npm run build
- 
-# Copier sur VPS et recharger PM2
-pm2 reload hedjav
- 
-# Config Nginx : /etc/nginx/sites-available/hedjav.com
-# Config PM2   : ecosystem.config.js (output: 'standalone')
+cd /var/www/hedjav-web
+bash scripts/deploy.sh
 ```
- 
----
- 
-## Ordre de développement (Phase 1)
- 
-1. ✅ globals.css + layout.tsx (couche 1, mergée PR #1)
-2. ✅ Header + Footer (couche 1, mergée PR #1)
-3. 🔄 Page d'accueil (couche 2, branche `feature/page-accueil` — **PR à créer/merger**)
-4. ⏳ Page ebook + page de vente
-5. ⏳ Blog MDX
-6. ⏳ Supabase Auth + tables
-7. ⏳ CinetPay + webhook
-8. ⏳ Dashboard membre
-9. ⏳ Admin UI
-10. ⏳ Déploiement VPS
+
+Le script `scripts/deploy.sh` fait : `git pull → npm ci → npm run build → pm2 reload`.
+
+`next.config.ts` est en `output: 'standalone'`, `ecosystem.config.js` configure PM2 cluster mode.
 
 ---
 
-## État de reprise (dernière session)
+## QA visuelle
 
-**Branche active** : `feature/page-accueil` (commit `7909adb` — pushée sur origin)
+`scripts/shoot.mjs` (playwright) capture toutes les pages en desktop+mobile dans `.shots/` (gitignored).
 
-**Couche 2 livrée — page d'accueil 8 sections** :
-- `app/page.tsx` assemble les 8 sections
-- `components/home/` : `Hero`, `TrustStrip`, `Pillars`, `EbooksTeaser`, `BlogTeaser`, `NewsletterCTA`, `NewsletterForm` (client stub UI), `FounderBlock`, `FinalCTA`
-- Empty states « Bientôt » sur Ebooks/Blog (pas de mocks, vraies données viendront en couche 3)
-- Newsletter form : stub UI uniquement (vraie intégration Brevo en couche 7)
-- Hero : pure typographie, pas d'image
-- Trust strip : 4 mentions sans chiffres (libellés validés)
-- Founder : placeholder « HA » dans cercle navy
-
-**Fix critique appliqué** : `.container` → `.hedjav-container` dans `globals.css` + composants. Tailwind v4 génère sa propre utility `.container` qui entrait en collision et empêchait le padding de s'appliquer. **À ne JAMAIS réintroduire** une classe `.container` custom.
-
-**Reprise prévue** :
-1. Créer/merger la PR couche 2 (`gh pr create --base main --head feature/page-accueil` ou via web)
-2. Valider visuellement sur main mergé
-3. Démarrer **couche 3** : pages réelles `/ebooks` (catalogue + page de vente) et début du système de produits
- 
----
- 
-## Ce que Claude Code doit toujours faire
- 
-- Lire les fichiers existants AVANT de modifier quoi que ce soit
-- Proposer un plan (fichiers créés / modifiés) avant de coder
-- Utiliser UNIQUEMENT les variables CSS définies dans globals.css
-- Créer une branche git pour chaque feature : `git checkout -b feature/nom`
-- Committer après chaque étape validée
-- Ne jamais toucher à globals.css sans demande explicite
+```bash
+node scripts/shoot.mjs
+```
 
 ---
 
-## Mise à jour couche 2 → 3
+## Granter le rôle admin
 
-- ✅ Couche 2 mergée (PR #2, commit c162398)
-- 🔄 Couche 3 en cours : branche `feature/ebooks-catalogue`
-- Paiement : **FedaPay** (pas CinetPay) — liens externes `https://me.fedapay.com/<slug>`
-- Chaque ebook a son propre lien FedaPay créé manuellement dans le dashboard FedaPay
-
----
-
-## Skills disponibles (Claude.ai projet)
-
-Claude.ai dispose de skills spécialisés que le développeur peut consulter pour obtenir des briefs détaillés. Les voici pour référence :
-
-### ghost-writer
-Système éditorial complet pour produire et vendre des livres professionnels en français ciblant le marché francophone africain (UEMOA). Couvre 4 phases : brief → rédaction → mise en page HTML/PDF → textes de vente. Utilisé pour les ebooks KTALYZ.
-
-### hedjav-brvm-analyse
-Workflow complet d'analyse boursière pour titres BRVM. Produit : article HTML charte hedjav.com, carte WhatsApp 1080×1080, infographie 1080×1420, texte WhatsApp, étiquettes SEO, guide publication WordPress.
-
-### Création de documents
-- **docx** : Word documents (.docx)
-- **pdf** : Lecture, création, manipulation PDF
-- **pptx** : Présentations PowerPoint
-- **xlsx** : Tableurs Excel
-
-### Frontend & design
-- **frontend-design** : Interfaces web production-grade, design tokens, styling
-- **canvas-design** : Posters, visuels statiques .png/.pdf
-- **algorithmic-art** : Art génératif p5.js
-
-### Technique
-- **skill-creator** : Créer, modifier, tester des skills
-- **web-artifacts-builder** : Artifacts React/Tailwind/shadcn multi-composants
-- **mcp-builder** : Serveurs MCP (Model Context Protocol)
-- **doc-coauthoring** : Co-rédaction documentaire structurée
-
-### Theming & branding
-- **theme-factory** : 10 thèmes pré-faits + génération à la volée
-- **brand-guidelines** : Charte visuelle Anthropic (référence, pas pour hedjav)
+Après inscription d'un user via `/register`, dans Supabase SQL Editor :
+```sql
+update profiles set role='admin' where email='<email>';
+```
+L'utilisateur peut alors accéder à `/admin`.
 
 ---
 
-## Vision future (ne PAS coder maintenant — juste préparer l'architecture)
+## Vision future (Phase 2 — pas encore codée)
 
-Ces fonctionnalités viendront après la Phase 1. Le code actuel doit être extensible pour les accueillir sans tout casser.
+L'architecture est prête pour :
 
 ### Automatisation contenu IA
-- Génération automatique d'ebooks via ghost-writer à fréquence régulière
-- Génération automatique d'articles blog
-- Système IA de supervision avec scoring qualité
-- Dashboard admin pour monitorer la production IA
-- Référence : fichier `catalogue_ktalyz_transcription.md` dans le projet Claude.ai
+- **Génération d'articles** : `POST /api/articles` avec `source='ai'` + `created_by='claude-sonnet-4-6'` → article visible immédiatement sans rebuild
+- **Scoring qualité** : champ `quality_score` (0-100) déjà en base, à remplir via un endpoint `PATCH /api/articles/[id]/score`
+- **Publication automatique** : scheduler (cron) qui publie les articles dont le score dépasse un seuil
+- **Génération d'ebooks** via ghost-writer (skill Claude.ai)
+- **Veille BRVM** : scraping + résumé quotidien
+- **Génération de covers** SVG/PNG à partir du titre
 
-### Principes d'architecture pour le futur
-- **Zéro contenu hardcodé** : tout passe par Supabase (ebooks, articles, configs)
-- **Tables extensibles** : prévoir des colonnes jsonb pour metadata flexible
-- **API routes prêtes** : `/api/` pour que l'IA puisse injecter du contenu plus tard
-- **Rôles Supabase** : admin, editor, member — pour contrôler qui (humain ou IA) peut publier
-- **Champs audit** : created_by, updated_by, source (manual/ai) sur chaque table de contenu
+Tout ça se branchera dans `/admin/ia` qui est déjà câblé avec 7 placeholder cards.
+
+### Pages institutionnelles
+- Toutes en table `pages` (CGV, mentions légales, politique de confidentialité)
+
+### Monitoring
+- Sentry, Vercel Analytics ou équivalent
+- PM2 monit déjà disponible côté VPS
+
+---
+
+## Ce que Claude Code doit toujours faire
+
+- Lire les fichiers existants AVANT de modifier
+- Variables CSS hedjav uniquement (jamais de valeurs brutes)
+- `.hedjav-container` jamais `.container`
+- Branche `feature/nom` pour chaque feature
+- Commits courts en français
+- Ne jamais hardcoder du contenu — Supabase only
+- Champ `metadata jsonb` exploitable sur toutes les nouvelles tables
+- Toute nouvelle route API doit être pensée pour être appelable par un agent IA
+
+---
+
+## Skills Claude.ai disponibles (référence)
+- `ghost-writer` — production d'ebooks complets en français UEMOA
+- `hedjav-brvm-analyse` — analyses boursières BRVM (HTML hedjav, cartes WhatsApp, infographies)
+- Création docs : `docx`, `pdf`, `pptx`, `xlsx`
+- Frontend : `frontend-design`, `canvas-design`
+- `theme-factory`, `brand-guidelines`, `mcp-builder`
