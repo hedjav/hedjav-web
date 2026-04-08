@@ -22,6 +22,7 @@ export type Profile = {
   phone: string | null
   newsletter_opt: boolean
   role: 'member' | 'admin'
+  last_visit_at: string | null
   metadata: Record<string, unknown>
   created_at: string
   updated_at: string
