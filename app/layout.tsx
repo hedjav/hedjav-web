@@ -31,19 +31,19 @@ const dmMono = DM_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL('https://hedjav.com'),
   title: {
-    default: 'Hedjav — Gestion de patrimoine en Afrique',
+    default: 'Hedjav — École en ligne de la Gestion de Patrimoine · Zone UEMOA',
     template: '%s · Hedjav',
   },
   description:
-    "Hedjav accompagne particuliers et entrepreneurs d'Afrique francophone dans la construction et la transmission de leur patrimoine.",
+    "Hedjav est l'école en ligne de la gestion de patrimoine pour la zone UEMOA. Ebooks, formations BRVM, analyses exclusives et outils patrimoniaux pour l'Afrique francophone.",
   openGraph: {
     type: 'website',
     locale: 'fr_FR',
     url: 'https://hedjav.com',
     siteName: 'Hedjav',
-    title: 'Hedjav — Gestion de patrimoine en Afrique',
+    title: 'Hedjav — École en ligne de la Gestion de Patrimoine · Zone UEMOA',
     description:
-      "Conseil patrimonial, ebooks, formations et veille BRVM pour l'Afrique francophone.",
+      'Ebooks, formations BRVM, analyses patrimoniales et outils pour bâtir un patrimoine durable en zone UEMOA.',
   },
 }
 

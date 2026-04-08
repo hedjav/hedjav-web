@@ -34,7 +34,7 @@ const navCols = [
     links: [
       { href: '/ebooks', label: 'Ebooks' },
       { href: '/blog', label: 'Blog' },
-      { href: '/newsletter', label: 'Newsletter' },
+      { href: '/#newsletter', label: 'Newsletter' },
       { href: '/a-propos', label: 'À propos' },
     ],
   },
@@ -76,7 +76,7 @@ export function Footer() {
               Hedjav
             </Link>
             <p style={{ fontSize: 'var(--text-sm)', lineHeight: 1.7, color: '#C2CEDE', marginBottom: 'var(--s4)' }}>
-              La référence en gestion de patrimoine pour l&apos;Afrique francophone.
+              École en ligne de la gestion de patrimoine pour la zone UEMOA. Ebooks, formations BRVM et analyses patrimoniales.
             </p>
             <p style={{ fontSize: 'var(--text-xs)', color: '#7A94B8' }}>
               Édité par KTALYZ SARL · Cotonou, Bénin

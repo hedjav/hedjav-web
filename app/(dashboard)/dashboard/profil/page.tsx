@@ -1,17 +1,15 @@
 import type { Metadata } from 'next'
 import { getCurrentUser, getCurrentProfile } from '@/lib/auth/session'
 import { ProfileForm } from '@/components/features/ProfileForm'
+import { ChangePasswordForm } from '@/components/features/ChangePasswordForm'
+import { LogoutButton } from '@/components/features/LogoutButton'
 import type { Profile } from '@/lib/supabase/types'
 
 export const metadata: Metadata = { title: 'Mon profil' }
 
 export default async function ProfilePage() {
-  // Le layout (dashboard) appelle déjà requireUser() — donc on a forcément un user ici.
   const [user, profile] = await Promise.all([getCurrentUser(), getCurrentProfile()])
 
-  // Si le profil n'existe pas (trigger handle_new_user pas exécuté, ex: user
-  // créé avant la migration 003), on construit un profil stub à partir des
-  // données de auth.users. L'upsert dans updateProfileAction le créera.
   const stub: Profile =
     profile ?? {
       id: user!.id,
@@ -32,7 +30,54 @@ export default async function ProfilePage() {
       <h1 className="h2" style={{ marginTop: 'var(--s3)', marginBottom: 'var(--s8)' }}>
         Mon profil
       </h1>
-      <ProfileForm profile={stub} />
+
+      <section style={{ marginBottom: 'var(--s12)' }}>
+        <h2
+          className="h3"
+          style={{
+            marginBottom: 'var(--s5)',
+            fontSize: 'var(--text-xl)',
+            paddingBottom: 'var(--s2)',
+            borderBottom: '1px solid var(--border)',
+          }}
+        >
+          Informations personnelles
+        </h2>
+        <ProfileForm profile={stub} />
+      </section>
+
+      <section style={{ marginBottom: 'var(--s12)' }}>
+        <h2
+          className="h3"
+          style={{
+            marginBottom: 'var(--s5)',
+            fontSize: 'var(--text-xl)',
+            paddingBottom: 'var(--s2)',
+            borderBottom: '1px solid var(--border)',
+          }}
+        >
+          Sécurité
+        </h2>
+        <ChangePasswordForm />
+      </section>
+
+      <section>
+        <h2
+          className="h3"
+          style={{
+            marginBottom: 'var(--s5)',
+            fontSize: 'var(--text-xl)',
+            paddingBottom: 'var(--s2)',
+            borderBottom: '1px solid var(--border)',
+          }}
+        >
+          Session
+        </h2>
+        <LogoutButton
+          className="btn btn-outline"
+          style={{ color: 'var(--err)', borderColor: 'var(--err)' }}
+        />
+      </section>
     </>
   )
 }

@@ -1,10 +1,24 @@
 @AGENTS.md
 # hedjav.com — Contexte projet pour Claude Code
 
-## Qui suis-je ?
-Développeur de hedjav.com.
-Maître d'ouvrage : Hermann D. AVAHOUIN — expert gestion de patrimoine, Bénin.
-Maître d'œuvre : KTALYZ SARL.
+## Positionnement
+**hedjav.com — École en ligne de la Gestion de Patrimoine — Zone UEMOA**
+
+Plateforme numérique centrale d'un écosystème intégrant ebooks, formations, analyses BRVM, club d'investissement, magazine HEDJAV Finance, SaaS MonPatrimoine, et future SGP. Cible : 174 M FCFA/an de revenus à maturité (Phase 4 — An 4).
+
+Maître d'ouvrage : **Hermann D. AVAHOUIN** — analyste financier, 17 ans d'expérience BOA Bénin, fondateur KTALYZ Conseils, expert patrimoine UEMOA.
+Maître d'œuvre : **KTALYZ SARL**.
+
+## Vision 4 phases (cahier des charges V1.0 — Avril 2026)
+
+| Phase | Période | Objectif | Budget total |
+|---|---|---|---|
+| **Phase 1 — Fondations** | M1–M6 | Communauté & Ebooks (site vitrine + e-commerce + auth) | 600k–950k FCFA |
+| **Phase 2 — Académie & Club ETF** | M7–M18 | LMS, espace membres, abonnements, webinaires Zoom | 600k–900k FCFA |
+| **Phase 3 — Hub SaaS & Consulting** | M19–M36 | MonPatrimoine SaaS (sous-domaine), booking Calendly, chatbot IA, widget BRVM live | 380k–650k FCFA |
+| **Phase 4 — SGP & Rayonnement** | M37–M48 | Page SGP CREPMF, podcast, annuaire CGP, app mobile React Native | 300k–500k FCFA |
+
+**Stack pérenne 2026–2029** : Next.js 16 + Supabase + TypeScript + Tailwind + Brevo + FedaPay + Cloudflare. Architecture pensée pour évoluer **sans refonte** : site vitrine → LMS → SaaS → app mobile (réutilise 80% du code via React Native).
 
 ---
 
@@ -77,6 +91,26 @@ Maître d'œuvre : KTALYZ SARL.
 - Branches `feature/nom-feature`
 - Commits courts en français
 - Auto-accept en cours sur ce projet : crée branche → code → push → PR → merge sans demander
+
+---
+
+## Stack future à intégrer (Phases 2–4)
+
+Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
+
+| Composant | Solution prévue | Phase |
+|---|---|---|
+| LMS / vidéo formations | **Mux** (streaming adaptatif) | 2 |
+| Recherche full-text | **Typesense Cloud** | 2 |
+| Booking webinaires/consulting | **Calendly API** | 2/3 |
+| Chatbot IA patrimoine | **Vercel AI SDK + Claude API** | 3 |
+| Cours BRVM live | Edge Function + Supabase Realtime | 3 |
+| Analytics produit | **PostHog** (events, funnels, A/B) | 3 |
+| Error tracking | **Sentry** | 3 |
+| App mobile | **Expo + React Native** | 4 |
+| Recherche IA SEO | JSON-LD + AEO long-form | 3 |
+
+> Aucun de ces composants n'est encore branché. L'architecture actuelle (Phase 1) a été conçue pour les accueillir sans refonte (champs `metadata jsonb` partout, route groups extensibles, API IA-ready).
 
 ---
 
