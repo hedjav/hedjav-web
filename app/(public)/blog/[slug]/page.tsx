@@ -10,6 +10,7 @@ import {
 } from '@/lib/articles/queries'
 import { ArticleBody } from '@/components/features/ArticleBody'
 import { RelatedArticles } from '@/components/features/RelatedArticles'
+import { InlineNewsletterCTA } from '@/components/features/InlineNewsletterCTA'
 
 export const revalidate = 60
 
@@ -126,6 +127,8 @@ export default async function ArticlePage({ params }: PageProps) {
         )}
 
         <ArticleBody markdown={article.body} />
+
+        <InlineNewsletterCTA />
 
         <RelatedArticles articles={related} />
       </div>
