@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { requireAdmin } from '@/lib/auth/session'
-import { signOutAction } from '@/lib/auth/actions'
+import { LogoutButton } from '@/components/features/LogoutButton'
 
 const NAV = [
   { href: '/admin', label: 'Vue d’ensemble' },
@@ -82,24 +82,19 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </div>
           <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600 }}>{profile.full_name ?? profile.email}</div>
           <div style={{ fontSize: 'var(--text-xs)', color: 'rgba(255,255,255,.5)', marginBottom: 'var(--s4)' }}>{profile.email}</div>
-          <form action={signOutAction}>
-            <button
-              type="submit"
-              style={{
-                width: '100%',
-                padding: 'var(--s2) var(--s4)',
-                background: 'transparent',
-                color: '#ff9b9b',
-                border: '1px solid rgba(255,155,155,.3)',
-                borderRadius: 'var(--r8)',
-                fontFamily: 'var(--fb)',
-                fontSize: 'var(--text-xs)',
-                cursor: 'pointer',
-              }}
-            >
-              Se déconnecter
-            </button>
-          </form>
+          <LogoutButton
+            style={{
+              width: '100%',
+              padding: 'var(--s2) var(--s4)',
+              background: 'transparent',
+              color: '#ff9b9b',
+              border: '1px solid rgba(255,155,155,.3)',
+              borderRadius: 'var(--r8)',
+              fontFamily: 'var(--fb)',
+              fontSize: 'var(--text-xs)',
+              cursor: 'pointer',
+            }}
+          />
         </div>
       </aside>
 

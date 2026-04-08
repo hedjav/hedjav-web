@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
-import { signOutAction } from '@/lib/auth/actions'
+import { LogoutButton } from './LogoutButton'
 
 type Props = { fullName: string; email: string }
 
@@ -89,9 +89,8 @@ export function UserMenu({ fullName, email }: Props) {
           <MenuLink href="/dashboard/profil" onClick={() => setOpen(false)}>Mon profil</MenuLink>
           <MenuLink href="/dashboard/mes-ebooks" onClick={() => setOpen(false)}>Mes ebooks</MenuLink>
 
-          <form action={signOutAction} style={{ marginTop: 'var(--s2)', borderTop: '1px solid var(--border)', paddingTop: 'var(--s2)' }}>
-            <button
-              type="submit"
+          <div style={{ marginTop: 'var(--s2)', borderTop: '1px solid var(--border)', paddingTop: 'var(--s2)' }}>
+            <LogoutButton
               style={{
                 width: '100%',
                 textAlign: 'left',
@@ -104,10 +103,8 @@ export function UserMenu({ fullName, email }: Props) {
                 color: 'var(--err)',
                 borderRadius: 'var(--r8)',
               }}
-            >
-              Se déconnecter
-            </button>
-          </form>
+            />
+          </div>
         </div>
       )}
     </div>
