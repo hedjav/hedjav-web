@@ -1,28 +1,14 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verifyFedaPaySignature } from '@/lib/fedapay/verify'
-import { sendTransactionalEmail } from '@/lib/brevo/client'
+import { sendEmail } from '@/lib/email/sender'
 
 /**
  * POST /api/webhooks/fedapay
  *
  * Reçoit les notifications de FedaPay (HMAC-SHA256 signé).
  * Met à jour la purchase correspondante et envoie l'email de confirmation
- * + lien de téléchargement ebook (placeholder pour l'instant).
- *
- * Format payload FedaPay (simplifié, à ajuster selon docs réelles) :
- * {
- *   "name": "transaction.approved",
- *   "object": "event",
- *   "entity": {
- *     "id": "txn_xxx",
- *     "reference": "<payment_ref>",
- *     "amount": 4900,
- *     "status": "approved",
- *     "customer": { "email": "..." },
- *     "payment_method": "wave"
- *   }
- * }
+ * + lien de téléchargement ebook.
  */
 export async function POST(request: Request) {
   const rawBody = await request.text()
@@ -68,7 +54,6 @@ export async function POST(request: Request) {
     { auth: { persistSession: false } },
   )
 
-  // Update via service role (bypass RLS)
   const { data: purchase, error } = await supabase
     .from('purchases')
     .update({
@@ -95,10 +80,10 @@ export async function POST(request: Request) {
     const ebookTitle = (purchase.ebook as { title?: string } | null)?.title ?? 'votre ebook'
     const downloadUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'}/dashboard/mes-ebooks`
 
-    await sendTransactionalEmail({
-      to: { email: purchase.email },
+    await sendEmail({
+      to: purchase.email,
       subject: `Votre achat Hedjav est confirmé — ${ebookTitle}`,
-      htmlContent: `
+      html: `
         <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto;">
           <h2 style="color: #1B2A4A;">Merci pour votre achat 🎉</h2>
           <p>Votre paiement pour <strong>${ebookTitle}</strong> a bien été enregistré.</p>
@@ -112,7 +97,7 @@ export async function POST(request: Request) {
             Si le bouton ne fonctionne pas, copiez ce lien : ${downloadUrl}
           </p>
           <hr style="border:none;border-top:1px solid #eee;margin:32px 0;" />
-          <p style="color:#999;font-size:12px;">Hedjav — Gestion de patrimoine en Afrique</p>
+          <p style="color:#999;font-size:12px;">Hedjav — École en ligne de la Gestion de Patrimoine — Zone UEMOA</p>
         </div>
       `,
     })
