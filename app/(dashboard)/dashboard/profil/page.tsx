@@ -19,6 +19,7 @@ export default async function ProfilePage() {
       phone: null,
       newsletter_opt: true,
       role: 'member',
+      last_visit_at: null,
       metadata: {},
       created_at: user!.created_at,
       updated_at: user!.created_at,
