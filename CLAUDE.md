@@ -209,16 +209,38 @@ pm2 reload hedjav
  
 ## Ordre de développement (Phase 1)
  
-1. globals.css + layout.tsx ← EN COURS
-2. Header + Footer
-3. Page d'accueil (Hero, ebooks, blog, newsletter)
-4. Page ebook + page de vente
-5. Blog MDX
-6. Supabase Auth + tables
-7. CinetPay + webhook
-8. Dashboard membre
-9. Admin UI
-10. Déploiement VPS
+1. ✅ globals.css + layout.tsx (couche 1, mergée PR #1)
+2. ✅ Header + Footer (couche 1, mergée PR #1)
+3. 🔄 Page d'accueil (couche 2, branche `feature/page-accueil` — **PR à créer/merger**)
+4. ⏳ Page ebook + page de vente
+5. ⏳ Blog MDX
+6. ⏳ Supabase Auth + tables
+7. ⏳ CinetPay + webhook
+8. ⏳ Dashboard membre
+9. ⏳ Admin UI
+10. ⏳ Déploiement VPS
+
+---
+
+## État de reprise (dernière session)
+
+**Branche active** : `feature/page-accueil` (commit `7909adb` — pushée sur origin)
+
+**Couche 2 livrée — page d'accueil 8 sections** :
+- `app/page.tsx` assemble les 8 sections
+- `components/home/` : `Hero`, `TrustStrip`, `Pillars`, `EbooksTeaser`, `BlogTeaser`, `NewsletterCTA`, `NewsletterForm` (client stub UI), `FounderBlock`, `FinalCTA`
+- Empty states « Bientôt » sur Ebooks/Blog (pas de mocks, vraies données viendront en couche 3)
+- Newsletter form : stub UI uniquement (vraie intégration Brevo en couche 7)
+- Hero : pure typographie, pas d'image
+- Trust strip : 4 mentions sans chiffres (libellés validés)
+- Founder : placeholder « HA » dans cercle navy
+
+**Fix critique appliqué** : `.container` → `.hedjav-container` dans `globals.css` + composants. Tailwind v4 génère sa propre utility `.container` qui entrait en collision et empêchait le padding de s'appliquer. **À ne JAMAIS réintroduire** une classe `.container` custom.
+
+**Reprise prévue** :
+1. Créer/merger la PR couche 2 (`gh pr create --base main --head feature/page-accueil` ou via web)
+2. Valider visuellement sur main mergé
+3. Démarrer **couche 3** : pages réelles `/ebooks` (catalogue + page de vente) et début du système de produits
  
 ---
  

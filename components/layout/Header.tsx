@@ -17,7 +17,7 @@ export function Header() {
       }}
     >
       <div
-        className="container"
+        className="hedjav-container"
         style={{
           height: 72,
           display: 'flex',
