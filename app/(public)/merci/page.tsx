@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createClient } from '@supabase/supabase-js'
+import { MerciAutoRefresh } from './MerciAutoRefresh'
 
 export const metadata: Metadata = {
   title: 'Merci pour votre achat',
@@ -48,13 +49,8 @@ export default async function MerciPage({ searchParams }: PageProps) {
   return (
     <section className="section">
       <div className="hedjav-container" style={{ maxWidth: 640, textAlign: 'center' }}>
-        {/* Auto-refresh for pending */}
-        {isPending && (
-          // eslint-disable-next-line @next/next/no-head-element
-          <head>
-            <meta httpEquiv="refresh" content="5" />
-          </head>
-        )}
+        {/* Auto-refresh côté client pour les paiements en attente */}
+        {isPending && <MerciAutoRefresh />}
 
         <div
           style={{
@@ -108,11 +104,18 @@ export default async function MerciPage({ searchParams }: PageProps) {
           {isPaid
             ? 'Un email de confirmation avec votre ebook vient de vous être envoyé.'
             : isFailed
-            ? 'Le paiement n\'a pas abouti. Vous pouvez réessayer depuis la page de l\'ebook.'
+            ? "Le paiement n'a pas abouti. Vous pouvez réessayer depuis la page de l'ebook."
             : purchaseId
-            ? 'Nous attendons la confirmation de FedaPay. Cette page se rafraîchit automatiquement.'
+            ? 'Nous attendons la confirmation de FedaPay. Cette page se rafraîchit automatiquement toutes les 5 secondes.'
             : 'Merci de votre visite sur Hedjav.'}
         </p>
+
+        {isPending && (
+          <p style={{ marginTop: 'var(--s4)', fontSize: 'var(--text-sm)', color: 'var(--muted)' }}>
+            Si le paiement a été effectué, la confirmation arrivera dans quelques instants.
+            Vous recevrez aussi un email de confirmation.
+          </p>
+        )}
 
         <div style={{ marginTop: 'var(--s10)', display: 'flex', gap: 'var(--s3)', justifyContent: 'center', flexWrap: 'wrap' }}>
           {isPaid && (
@@ -122,7 +125,7 @@ export default async function MerciPage({ searchParams }: PageProps) {
           )}
           {isFailed && ebookSlug && (
             <Link href={`/ebooks/${ebookSlug}`} className="btn btn-gold">
-              Réessayer l'achat
+              Réessayer l&apos;achat
             </Link>
           )}
           {!isPaid && !isFailed && (
