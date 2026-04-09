@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { requireUser, getCurrentProfile } from '@/lib/auth/session'
@@ -28,7 +27,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   await touchLastVisit(user.id)
 
   return (
-    <ThemeProvider>
+    <>
       <Header />
       <main className="flex-1">
         <div style={{ background: 'var(--bg)', minHeight: 'calc(100vh - 72px)' }}>
@@ -82,6 +81,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
         </div>
       </main>
       <Footer />
-    </ThemeProvider>
+    </>
   )
 }

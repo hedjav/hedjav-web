@@ -1,4 +1,3 @@
-import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { JsonLd, organizationJsonLd } from '@/components/features/JsonLd'
@@ -10,14 +9,12 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
   return (
     <>
       <JsonLd data={organizationJsonLd()} />
-      <ThemeProvider>
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
-        <CookieBanner />
-        <TrackingScript />
-        <LeadMagnetPopup />
-      </ThemeProvider>
+      <Header />
+      <main className="flex-1">{children}</main>
+      <Footer />
+      <CookieBanner />
+      <TrackingScript />
+      <LeadMagnetPopup />
     </>
   )
 }
