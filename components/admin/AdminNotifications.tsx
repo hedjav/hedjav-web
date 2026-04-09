@@ -33,10 +33,10 @@ function typeIcon(type: string): string {
 
 function typeColor(type: string): string {
   switch (type) {
-    case 'purchase': return '#5be58a'
-    case 'subscriber': return '#60a5fa'
-    case 'member': return '#C5A028'
-    default: return '#E0E6EF'
+    case 'purchase': return 'var(--admin-success)'
+    case 'subscriber': return 'var(--admin-info)'
+    case 'member': return 'var(--admin-accent)'
+    default: return 'var(--admin-text)'
   }
 }
 
@@ -46,6 +46,10 @@ export function AdminNotifications({ initialCount }: { initialCount: number }) {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [loading, setLoading] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    setCount(initialCount)
+  }, [initialCount])
 
   // Close on click outside
   useEffect(() => {
@@ -98,7 +102,6 @@ export function AdminNotifications({ initialCount }: { initialCount: number }) {
 
   return (
     <div ref={ref} style={{ position: 'relative' }}>
-      {/* Bell icon */}
       <button
         onClick={toggle}
         style={{
@@ -110,7 +113,7 @@ export function AdminNotifications({ initialCount }: { initialCount: number }) {
         }}
         aria-label="Notifications"
       >
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E0E6EF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--admin-text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
           <path d="M13.73 21a2 2 0 0 1-3.46 0" />
         </svg>
@@ -120,7 +123,7 @@ export function AdminNotifications({ initialCount }: { initialCount: number }) {
               position: 'absolute',
               top: 0,
               right: 0,
-              background: '#ef4444',
+              background: 'var(--admin-danger)',
               color: '#fff',
               fontSize: 9,
               fontWeight: 700,
@@ -138,7 +141,6 @@ export function AdminNotifications({ initialCount }: { initialCount: number }) {
         )}
       </button>
 
-      {/* Dropdown */}
       {open && (
         <div
           style={{
@@ -149,25 +151,24 @@ export function AdminNotifications({ initialCount }: { initialCount: number }) {
             width: 360,
             maxHeight: 480,
             overflowY: 'auto',
-            background: '#1B2A4A',
-            border: '1px solid rgba(255,255,255,.12)',
+            background: 'var(--admin-surface)',
+            border: '1px solid var(--admin-border)',
             borderRadius: 12,
             boxShadow: '0 12px 40px rgba(0,0,0,.5)',
             zIndex: 1000,
             fontFamily: 'var(--fb)',
           }}
         >
-          {/* Header */}
           <div
             style={{
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
               padding: '12px 16px',
-              borderBottom: '1px solid rgba(255,255,255,.08)',
+              borderBottom: '1px solid var(--admin-border)',
             }}
           >
-            <span style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--admin-text)' }}>
               Notifications
             </span>
             {count > 0 && (
@@ -176,7 +177,7 @@ export function AdminNotifications({ initialCount }: { initialCount: number }) {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: '#C5A028',
+                  color: 'var(--admin-accent)',
                   fontSize: 11,
                   cursor: 'pointer',
                   fontWeight: 600,
@@ -187,13 +188,12 @@ export function AdminNotifications({ initialCount }: { initialCount: number }) {
             )}
           </div>
 
-          {/* List */}
           {loading ? (
-            <div style={{ padding: 20, textAlign: 'center', color: 'rgba(255,255,255,.4)', fontSize: 12 }}>
+            <div style={{ padding: 20, textAlign: 'center', color: 'var(--admin-text-muted)', fontSize: 12 }}>
               Chargement...
             </div>
           ) : notifications.length === 0 ? (
-            <div style={{ padding: 20, textAlign: 'center', color: 'rgba(255,255,255,.4)', fontSize: 12 }}>
+            <div style={{ padding: 20, textAlign: 'center', color: 'var(--admin-text-muted)', fontSize: 12 }}>
               Aucune notification
             </div>
           ) : (
@@ -216,7 +216,7 @@ export function AdminNotifications({ initialCount }: { initialCount: number }) {
                     width: 28,
                     height: 28,
                     borderRadius: 8,
-                    background: 'rgba(255,255,255,.06)',
+                    background: 'var(--admin-surface-hover)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -229,14 +229,14 @@ export function AdminNotifications({ initialCount }: { initialCount: number }) {
                   {typeIcon(n.type)}
                 </span>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 12, fontWeight: n.is_read ? 400 : 600, color: '#E0E6EF' }}>
+                  <div style={{ fontSize: 12, fontWeight: n.is_read ? 400 : 600, color: 'var(--admin-text)' }}>
                     {n.title}
                   </div>
                   {n.message && (
                     <div
                       style={{
                         fontSize: 11,
-                        color: 'rgba(255,255,255,.5)',
+                        color: 'var(--admin-text-muted)',
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
@@ -245,7 +245,7 @@ export function AdminNotifications({ initialCount }: { initialCount: number }) {
                       {n.message}
                     </div>
                   )}
-                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,.3)', marginTop: 2 }}>
+                  <div style={{ fontSize: 10, color: 'var(--admin-text-muted)', marginTop: 2 }}>
                     {timeAgo(n.created_at)}
                   </div>
                 </div>
@@ -255,7 +255,7 @@ export function AdminNotifications({ initialCount }: { initialCount: number }) {
                       width: 6,
                       height: 6,
                       borderRadius: 9999,
-                      background: '#C5A028',
+                      background: 'var(--admin-accent)',
                       alignSelf: 'center',
                       flexShrink: 0,
                     }}

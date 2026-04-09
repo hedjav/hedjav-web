@@ -805,3 +805,21 @@ a {
 @media (min-width: 700px) {
   .hedjav-dash-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ============================================================
+   ADMIN — Palette dark independante
+   ============================================================ */
+[data-admin] {
+  --admin-bg: #0F1117;
+  --admin-surface: #1A1D27;
+  --admin-surface-hover: #242733;
+  --admin-border: #2A2D3A;
+  --admin-text: #E4E5E9;
+  --admin-text-muted: #8B8D97;
+  --admin-accent: #C5A028;
+  --admin-accent-hover: #D4AF37;
+  --admin-success: #22C55E;
+  --admin-warning: #F59E0B;
+  --admin-danger: #EF4444;
+  --admin-info: #3B82F6;
+}

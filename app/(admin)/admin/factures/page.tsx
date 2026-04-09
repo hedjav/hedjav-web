@@ -32,7 +32,7 @@ export default async function AdminFacturesPage() {
 
   return (
     <>
-      <h1 style={{ fontFamily: 'var(--fd)', fontSize: 'var(--text-4xl)', color: '#fff', marginBottom: 'var(--s8)' }}>
+      <h1 style={{ fontFamily: 'var(--fd)', fontSize: 'var(--text-4xl)', fontWeight: 600, color: 'var(--admin-text)', marginBottom: 'var(--s8)' }}>
         Factures
       </h1>
       <FacturesClient invoices={invoices} />

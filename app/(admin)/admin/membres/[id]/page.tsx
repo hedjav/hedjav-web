@@ -60,7 +60,7 @@ export default async function MemberDetailPage({ params }: PageProps) {
     <>
       <Link
         href="/admin/membres"
-        style={{ color: '#6B82B0', fontSize: 13, marginBottom: 24, display: 'inline-block' }}
+        style={{ color: 'var(--admin-text-muted)', fontSize: 13, marginBottom: 24, display: 'inline-block' }}
       >
         ← Retour aux membres
       </Link>
@@ -80,7 +80,7 @@ export default async function MemberDetailPage({ params }: PageProps) {
             height: 64,
             borderRadius: '50%',
             background: isAdmin ? 'rgba(197,160,40,.2)' : 'rgba(107,130,176,.15)',
-            color: isAdmin ? '#C5A028' : '#6B82B0',
+            color: isAdmin ? 'var(--admin-accent)' : 'var(--admin-text-muted)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -91,10 +91,10 @@ export default async function MemberDetailPage({ params }: PageProps) {
           {initials}
         </div>
         <div>
-          <h1 style={{ fontFamily: 'var(--fd)', fontSize: 28, fontWeight: 600, color: '#fff', margin: 0 }}>
+          <h1 style={{ fontFamily: 'var(--fd)', fontSize: 28, fontWeight: 600, color: 'var(--admin-text)', margin: 0 }}>
             {p.full_name ?? p.email}
           </h1>
-          <div style={{ fontSize: 13, color: '#6B82B0', marginTop: 4 }}>{p.email}</div>
+          <div style={{ fontSize: 13, color: 'var(--admin-text-muted)', marginTop: 4 }}>{p.email}</div>
         </div>
         <div style={{ marginLeft: 'auto' }}>
           {isAdmin ? (
@@ -124,8 +124,8 @@ export default async function MemberDetailPage({ params }: PageProps) {
                 type="submit"
                 style={{
                   padding: '8px 16px',
-                  background: '#C5A028',
-                  color: '#fff',
+                  background: 'var(--admin-accent)',
+                  color: 'var(--admin-text)',
                   border: 'none',
                   borderRadius: 8,
                   fontSize: 12,
@@ -171,20 +171,20 @@ export default async function MemberDetailPage({ params }: PageProps) {
       {/* Purchases */}
       <div
         style={{
-          background: '#1B2A4A',
+          background: 'var(--admin-surface)',
           borderRadius: 16,
           padding: 24,
-          border: '1px solid rgba(255,255,255,.08)',
+          border: '1px solid var(--admin-border)',
           marginBottom: 24,
         }}
       >
-        <h2 style={{ fontFamily: 'var(--fd)', fontSize: 20, color: '#fff', marginBottom: 16 }}>
+        <h2 style={{ fontFamily: 'var(--fd)', fontSize: 20, color: 'var(--admin-text)', marginBottom: 16 }}>
           Achats ({purchases?.length ?? 0})
         </h2>
         {(purchases ?? []).length === 0 ? (
-          <div style={{ color: '#6B82B0', fontSize: 13 }}>Aucun achat</div>
+          <div style={{ color: 'var(--admin-text-muted)', fontSize: 13 }}>Aucun achat</div>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', color: '#E0E6EF' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', color: 'var(--admin-text)' }}>
             <thead>
               <tr>
                 <th style={thStyle}>Ebook</th>
@@ -215,14 +215,14 @@ export default async function MemberDetailPage({ params }: PageProps) {
                           pu.status === 'paid'
                             ? 'rgba(46,179,108,.15)'
                             : 'rgba(255,200,0,.15)',
-                        color: pu.status === 'paid' ? '#5be58a' : '#ffd966',
+                        color: pu.status === 'paid' ? 'var(--admin-success)' : 'var(--admin-warning)',
                       }}
                     >
                       {pu.status}
                     </span>
                   </td>
                   <td style={tdStyle}>
-                    <span style={{ fontSize: 12, color: '#6B82B0' }}>
+                    <span style={{ fontSize: 12, color: 'var(--admin-text-muted)' }}>
                       {new Date(pu.created_at as string).toLocaleDateString('fr-FR')}
                     </span>
                   </td>
@@ -236,19 +236,19 @@ export default async function MemberDetailPage({ params }: PageProps) {
       {/* Campaign sends */}
       <div
         style={{
-          background: '#1B2A4A',
+          background: 'var(--admin-surface)',
           borderRadius: 16,
           padding: 24,
-          border: '1px solid rgba(255,255,255,.08)',
+          border: '1px solid var(--admin-border)',
         }}
       >
-        <h2 style={{ fontFamily: 'var(--fd)', fontSize: 20, color: '#fff', marginBottom: 16 }}>
+        <h2 style={{ fontFamily: 'var(--fd)', fontSize: 20, color: 'var(--admin-text)', marginBottom: 16 }}>
           Emails de campagne ({sends?.length ?? 0})
         </h2>
         {(sends ?? []).length === 0 ? (
-          <div style={{ color: '#6B82B0', fontSize: 13 }}>Aucun email envoyé</div>
+          <div style={{ color: 'var(--admin-text-muted)', fontSize: 13 }}>Aucun email envoyé</div>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', color: '#E0E6EF' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', color: 'var(--admin-text)' }}>
             <thead>
               <tr>
                 <th style={thStyle}>Sujet</th>
@@ -274,20 +274,20 @@ export default async function MemberDetailPage({ params }: PageProps) {
                             ? 'rgba(46,179,108,.15)'
                             : s.status === 'sent'
                               ? 'rgba(59,130,246,.15)'
-                              : 'rgba(255,255,255,.08)',
+                              : 'var(--admin-border)',
                         color:
                           s.status === 'opened' || s.status === 'clicked'
-                            ? '#5be58a'
+                            ? 'var(--admin-success)'
                             : s.status === 'sent'
-                              ? '#60a5fa'
-                              : '#6B82B0',
+                              ? 'var(--admin-info)'
+                              : 'var(--admin-text-muted)',
                       }}
                     >
                       {s.status}
                     </span>
                   </td>
                   <td style={tdStyle}>
-                    <span style={{ fontSize: 12, color: '#6B82B0' }}>
+                    <span style={{ fontSize: 12, color: 'var(--admin-text-muted)' }}>
                       {s.sent_at
                         ? new Date(s.sent_at as string).toLocaleDateString('fr-FR')
                         : '—'}
@@ -307,10 +307,10 @@ function InfoCard({ label, value }: { label: string; value: string }) {
   return (
     <div
       style={{
-        background: '#1B2A4A',
+        background: 'var(--admin-surface)',
         borderRadius: 12,
         padding: '16px 20px',
-        border: '1px solid rgba(255,255,255,.08)',
+        border: '1px solid var(--admin-border)',
       }}
     >
       <div
@@ -318,14 +318,14 @@ function InfoCard({ label, value }: { label: string; value: string }) {
           fontSize: 11,
           textTransform: 'uppercase',
           letterSpacing: '.1em',
-          color: '#6B82B0',
+          color: 'var(--admin-text-muted)',
           fontWeight: 600,
           marginBottom: 4,
         }}
       >
         {label}
       </div>
-      <div style={{ fontSize: 14, fontWeight: 600, color: '#E0E6EF' }}>{value}</div>
+      <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--admin-text)' }}>{value}</div>
     </div>
   )
 }
@@ -336,7 +336,7 @@ const thStyle = {
   fontSize: 11,
   textTransform: 'uppercase' as const,
   letterSpacing: '.1em',
-  color: '#6B82B0',
+  color: 'var(--admin-text-muted)',
   fontWeight: 600,
 }
 

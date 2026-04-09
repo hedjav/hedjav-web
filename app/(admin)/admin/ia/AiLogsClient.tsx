@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { DataTable, type Column } from '@/components/admin/DataTable'
 
 type Log = {
   id: string
@@ -12,6 +13,54 @@ type Log = {
   created_at: string
   error_message: string | null
 }
+
+const logColumns: Column<Log>[] = [
+  {
+    key: 'created_at',
+    label: 'Date',
+    sortable: true,
+    render: (row) => (
+      <span style={{ fontSize: 12, color: 'var(--admin-text-muted)' }}>
+        {new Date(row.created_at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })}
+      </span>
+    ),
+  },
+  { key: 'action', label: 'Action', sortable: true },
+  {
+    key: 'prompt',
+    label: 'Prompt',
+    render: (row) => (
+      <span style={{ maxWidth: 200, display: 'inline-block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        {row.prompt?.substring(0, 50) ?? '\u2014'}
+      </span>
+    ),
+  },
+  {
+    key: 'status',
+    label: 'Statut',
+    render: (row) => (
+      <span style={{
+        padding: '2px 10px', borderRadius: 9999, fontSize: 11, fontWeight: 600,
+        background: row.status === 'success' ? 'rgba(34,197,94,.15)' : 'rgba(239,68,68,.15)',
+        color: row.status === 'success' ? 'var(--admin-success)' : 'var(--admin-danger)',
+      }}>
+        {row.status}
+      </span>
+    ),
+  },
+  {
+    key: 'tokens_used',
+    label: 'Tokens',
+    sortable: true,
+    render: (row) => <span style={{ fontFamily: 'var(--fm)' }}>{row.tokens_used ?? '\u2014'}</span>,
+  },
+  {
+    key: 'duration_ms',
+    label: 'Duree',
+    sortable: true,
+    render: (row) => <span>{row.duration_ms != null ? `${row.duration_ms}ms` : '\u2014'}</span>,
+  },
+]
 
 export function AiLogsClient({ logs }: { logs: Log[] }) {
   const [generating, setGenerating] = useState(false)
@@ -47,19 +96,19 @@ export function AiLogsClient({ logs }: { logs: Log[] }) {
       {/* Generate article form */}
       <div
         style={{
-          background: '#1B2A4A',
-          borderRadius: 16,
-          border: '1px solid rgba(255,255,255,.08)',
+          background: 'var(--admin-surface)',
+          borderRadius: 12,
+          border: '1px solid var(--admin-border)',
           padding: 'var(--s6)',
           marginBottom: 'var(--s8)',
         }}
       >
-        <h2 style={{ fontFamily: 'var(--fd)', fontSize: 'var(--text-xl)', color: '#fff', marginBottom: 'var(--s4)' }}>
+        <h2 style={{ fontFamily: 'var(--fd)', fontSize: 'var(--text-xl)', color: 'var(--admin-text)', marginBottom: 'var(--s4)' }}>
           Generer un article
         </h2>
         <form onSubmit={handleGenerate} style={{ display: 'flex', gap: 'var(--s3)', alignItems: 'end' }}>
           <div style={{ flex: 1 }}>
-            <label style={{ fontSize: 11, color: '#6B82B0', textTransform: 'uppercase', letterSpacing: '.15em', display: 'block', marginBottom: 4 }}>
+            <label style={{ fontSize: 11, color: 'var(--admin-text-muted)', textTransform: 'uppercase', letterSpacing: '.15em', display: 'block', marginBottom: 4 }}>
               Sujet / brief
             </label>
             <input
@@ -69,10 +118,10 @@ export function AiLogsClient({ logs }: { logs: Log[] }) {
               style={{
                 width: '100%',
                 padding: '10px 14px',
-                background: '#1B2A4A',
-                border: '1px solid rgba(255,255,255,.12)',
+                background: 'var(--admin-bg)',
+                border: '1px solid var(--admin-border)',
                 borderRadius: 8,
-                color: '#E0E6EF',
+                color: 'var(--admin-text)',
                 fontSize: 13,
                 fontFamily: 'var(--fb)',
               }}
@@ -83,8 +132,8 @@ export function AiLogsClient({ logs }: { logs: Log[] }) {
             disabled={generating || !topic.trim()}
             style={{
               padding: '10px 20px',
-              background: generating ? 'rgba(197,160,40,.3)' : '#C5A028',
-              color: '#0D1628',
+              background: generating ? 'rgba(197,160,40,.3)' : 'var(--admin-accent)',
+              color: '#0F1117',
               border: 'none',
               borderRadius: 8,
               fontWeight: 600,
@@ -98,81 +147,22 @@ export function AiLogsClient({ logs }: { logs: Log[] }) {
           </button>
         </form>
         {genResult && (
-          <div style={{ marginTop: 'var(--s3)', fontSize: 13, color: genResult.startsWith('Erreur') ? '#ff9b9b' : '#5be58a' }}>
+          <div style={{ marginTop: 'var(--s3)', fontSize: 13, color: genResult.startsWith('Erreur') ? 'var(--admin-danger)' : 'var(--admin-success)' }}>
             {genResult}
           </div>
         )}
       </div>
 
       {/* Logs table */}
-      <h2 style={{ fontFamily: 'var(--fd)', fontSize: 'var(--text-xl)', color: '#fff', marginBottom: 'var(--s4)' }}>
+      <h2 style={{ fontFamily: 'var(--fd)', fontSize: 'var(--text-xl)', color: 'var(--admin-text)', marginBottom: 'var(--s4)' }}>
         Historique des appels IA
       </h2>
-      <div style={{ background: '#1B2A4A', borderRadius: 16, overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', color: '#E0E6EF' }}>
-          <thead>
-            <tr style={{ background: 'rgba(0,0,0,.2)' }}>
-              <Th>Date</Th>
-              <Th>Action</Th>
-              <Th>Prompt</Th>
-              <Th>Statut</Th>
-              <Th>Tokens</Th>
-              <Th>Duree</Th>
-            </tr>
-          </thead>
-          <tbody>
-            {logs.length === 0 ? (
-              <tr>
-                <td colSpan={6} style={{ padding: 'var(--s8)', textAlign: 'center', color: 'rgba(255,255,255,.4)', fontSize: 13 }}>
-                  Aucun appel IA enregistre
-                </td>
-              </tr>
-            ) : (
-              logs.map((l) => (
-                <tr key={l.id} style={{ borderTop: '1px solid rgba(255,255,255,.05)' }}>
-                  <Td>{new Date(l.created_at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })}</Td>
-                  <Td>{l.action}</Td>
-                  <Td>
-                    <span style={{ maxWidth: 200, display: 'inline-block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {l.prompt?.substring(0, 50) ?? '—'}
-                    </span>
-                  </Td>
-                  <Td>
-                    <span style={{
-                      padding: '2px 10px',
-                      borderRadius: 9999,
-                      fontSize: 11,
-                      fontWeight: 600,
-                      background: l.status === 'success' ? 'rgba(46,179,108,.15)' : 'rgba(255,80,80,.15)',
-                      color: l.status === 'success' ? '#5be58a' : '#ff9b9b',
-                    }}>
-                      {l.status}
-                    </span>
-                  </Td>
-                  <Td>{l.tokens_used ?? '—'}</Td>
-                  <Td>{l.duration_ms != null ? `${l.duration_ms}ms` : '—'}</Td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      <DataTable
+        data={logs}
+        columns={logColumns}
+        searchKeys={['action', 'prompt']}
+        emptyMessage="Aucun appel IA enregistre"
+      />
     </>
-  )
-}
-
-function Th({ children }: { children: React.ReactNode }) {
-  return (
-    <th style={{ textAlign: 'left', padding: 'var(--s4) var(--s5)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '.1em', color: 'rgba(255,255,255,.5)', fontWeight: 600 }}>
-      {children}
-    </th>
-  )
-}
-
-function Td({ children }: { children: React.ReactNode }) {
-  return (
-    <td style={{ padding: 'var(--s4) var(--s5)', fontSize: 13 }}>
-      {children}
-    </td>
   )
 }

@@ -37,7 +37,6 @@ export default async function AdminVentesPage() {
   const monthTotal = (monthRes.data ?? []).reduce((sum, p) => sum + (p.amount as number), 0)
   const nbSales = purchases.filter((p) => p.status === 'paid').length
 
-  // Build invoice map
   const invoiceMap: Record<string, { number: string; url: string | null }> = {}
   for (const inv of invoicesRes.data ?? []) {
     if (inv.purchase_id) {
@@ -48,7 +47,6 @@ export default async function AdminVentesPage() {
     }
   }
 
-  // Get user names
   const userIds = [...new Set(purchases.filter((p) => p.user_id).map((p) => p.user_id as string))]
   const nameMap: Record<string, string> = {}
   if (userIds.length > 0) {
@@ -66,37 +64,36 @@ export default async function AdminVentesPage() {
     date: p.created_at as string,
     clientName: nameMap[p.user_id as string] ?? null,
     email: p.email as string,
-    ebook: (p.ebook as { title?: string } | null)?.title ?? '—',
+    ebook: (p.ebook as { title?: string } | null)?.title ?? '\u2014',
     amount: p.amount as number,
     status: p.status as string,
     invoice: invoiceMap[p.id as string] ?? null,
   }))
 
   const stats = [
-    { label: 'CA total', value: formatPriceFcfa(totalPaid), color: '#C5A028' },
-    { label: 'CA ce mois', value: formatPriceFcfa(monthTotal), color: '#60a5fa' },
-    { label: 'Nombre de ventes', value: nbSales.toString(), color: '#5be58a' },
+    { label: 'CA total', value: formatPriceFcfa(totalPaid), color: 'var(--admin-accent)' },
+    { label: 'CA ce mois', value: formatPriceFcfa(monthTotal), color: 'var(--admin-info)' },
+    { label: 'Nombre de ventes', value: nbSales.toString(), color: 'var(--admin-success)' },
   ]
 
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--s8)' }}>
-        <h1 style={{ fontFamily: 'var(--fd)', fontSize: 'var(--text-4xl)', color: '#fff' }}>Ventes</h1>
+        <h1 style={{ fontFamily: 'var(--fd)', fontSize: 'var(--text-4xl)', fontWeight: 600, color: 'var(--admin-text)' }}>Ventes</h1>
       </div>
 
-      {/* Stat cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--s5)', marginBottom: 'var(--s8)' }}>
         {stats.map((c) => (
           <div
             key={c.label}
             style={{
-              background: '#1B2A4A',
-              borderRadius: 16,
-              border: '1px solid rgba(255,255,255,.08)',
+              background: 'var(--admin-surface)',
+              borderRadius: 12,
+              border: '1px solid var(--admin-border)',
               padding: 'var(--s6)',
             }}
           >
-            <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '.15em', color: '#6B82B0', marginBottom: 'var(--s2)' }}>
+            <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '.15em', color: 'var(--admin-text-muted)', marginBottom: 'var(--s2)' }}>
               {c.label}
             </div>
             <div style={{ fontFamily: 'var(--fm)', fontSize: 'var(--text-3xl)', color: c.color, fontWeight: 700 }}>
