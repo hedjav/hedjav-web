@@ -77,8 +77,8 @@ export function MediathequeClient({ initialItems }: { initialItems: MediaItem[] 
           style={{
             display: 'inline-block',
             padding: '10px 20px',
-            background: '#C5A028',
-            color: '#0D1628',
+            background: 'var(--admin-accent)',
+            color: '#0F1117',
             borderRadius: 8,
             fontWeight: 600,
             fontSize: 13,
@@ -99,7 +99,7 @@ export function MediathequeClient({ initialItems }: { initialItems: MediaItem[] 
 
       {/* Grid */}
       {items.length === 0 ? (
-        <div style={{ padding: 'var(--s10)', textAlign: 'center', color: 'rgba(255,255,255,.4)', fontSize: 14 }}>
+        <div style={{ padding: 'var(--s10)', textAlign: 'center', color: 'var(--admin-text-muted)', fontSize: 14 }}>
           Aucun fichier dans la mediatheque
         </div>
       ) : (
@@ -114,8 +114,8 @@ export function MediathequeClient({ initialItems }: { initialItems: MediaItem[] 
             <div
               key={item.name}
               style={{
-                background: '#1B2A4A',
-                border: '1px solid rgba(255,255,255,.08)',
+                background: 'var(--admin-surface)',
+                border: '1px solid var(--admin-border)',
                 borderRadius: 12,
                 overflow: 'hidden',
               }}
@@ -125,7 +125,7 @@ export function MediathequeClient({ initialItems }: { initialItems: MediaItem[] 
                 style={{
                   width: '100%',
                   height: 120,
-                  background: '#0D1628',
+                  background: 'var(--admin-bg)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -139,7 +139,7 @@ export function MediathequeClient({ initialItems }: { initialItems: MediaItem[] 
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                 ) : (
-                  <span style={{ color: 'rgba(255,255,255,.3)', fontSize: 28 }}>
+                  <span style={{ color: 'var(--admin-text-muted)', fontSize: 28 }}>
                     {item.name.split('.').pop()?.toUpperCase() ?? 'FILE'}
                   </span>
                 )}
@@ -151,7 +151,7 @@ export function MediathequeClient({ initialItems }: { initialItems: MediaItem[] 
                   style={{
                     fontSize: 12,
                     fontWeight: 600,
-                    color: '#E0E6EF',
+                    color: 'var(--admin-text)',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
@@ -162,7 +162,7 @@ export function MediathequeClient({ initialItems }: { initialItems: MediaItem[] 
                   {item.name}
                 </div>
                 {item.size > 0 && (
-                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,.4)', marginBottom: 8 }}>
+                  <div style={{ fontSize: 10, color: 'var(--admin-text-muted)', marginBottom: 8 }}>
                     {formatSize(item.size)}
                   </div>
                 )}
@@ -173,7 +173,7 @@ export function MediathequeClient({ initialItems }: { initialItems: MediaItem[] 
                       flex: 1,
                       padding: '4px 8px',
                       background: 'rgba(197,160,40,.15)',
-                      color: '#C5A028',
+                      color: 'var(--admin-accent)',
                       border: 'none',
                       borderRadius: 6,
                       fontSize: 10,

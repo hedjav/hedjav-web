@@ -9,7 +9,7 @@ export default function NewEbookPage() {
     <>
       <Link
         href="/admin/ebooks"
-        style={{ color: '#6B82B0', fontSize: 13, marginBottom: 16, display: 'inline-block' }}
+        style={{ color: 'var(--admin-text-muted)', fontSize: 13, marginBottom: 16, display: 'inline-block' }}
       >
         ← Retour aux ebooks
       </Link>
@@ -18,7 +18,7 @@ export default function NewEbookPage() {
           fontFamily: 'var(--fd)',
           fontSize: 28,
           fontWeight: 600,
-          color: '#fff',
+          color: 'var(--admin-text)',
           marginBottom: 32,
         }}
       >

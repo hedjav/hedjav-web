@@ -5,7 +5,7 @@ import { createClient } from '@supabase/supabase-js'
 import { AdminEbookForm } from '@/components/features/AdminEbookForm'
 import type { Ebook } from '@/lib/supabase/types'
 
-export const metadata: Metadata = { title: 'Admin — Éditer ebook' }
+export const metadata: Metadata = { title: 'Admin — Editer ebook' }
 
 type PageProps = { params: Promise<{ id: string }> }
 
@@ -23,7 +23,7 @@ export default async function EditEbookPage({ params }: PageProps) {
     <>
       <Link
         href="/admin/ebooks"
-        style={{ color: '#6B82B0', fontSize: 13, marginBottom: 16, display: 'inline-block' }}
+        style={{ color: 'var(--admin-text-muted)', fontSize: 13, marginBottom: 16, display: 'inline-block' }}
       >
         ← Retour aux ebooks
       </Link>
@@ -32,11 +32,11 @@ export default async function EditEbookPage({ params }: PageProps) {
           fontFamily: 'var(--fd)',
           fontSize: 28,
           fontWeight: 600,
-          color: '#fff',
+          color: 'var(--admin-text)',
           marginBottom: 32,
         }}
       >
-        Éditer : {(data as Ebook).title}
+        Editer : {(data as Ebook).title}
       </h1>
       <AdminEbookForm ebook={data as Ebook} />
     </>

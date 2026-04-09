@@ -29,41 +29,41 @@ export function AdminSidebar({ adminName, adminEmail, ebookCount, articleCount }
     {
       title: 'Tableau de bord',
       items: [
-        { href: '/admin', label: 'Vue d\'ensemble', icon: '\uD83D\uDCCA' },
+        { href: '/admin', label: 'Vue d\'ensemble', icon: '' },
       ],
     },
     {
       title: 'Contenu',
       items: [
-        { href: '/admin/ebooks', label: 'Ebooks', icon: '\uD83D\uDCDA', badge: ebookCount },
-        { href: '/admin/articles', label: 'Articles', icon: '\uD83D\uDCDD', badge: articleCount },
-        { href: '/admin/pages', label: 'Pages legales', icon: '\uD83D\uDCC4' },
+        { href: '/admin/ebooks', label: 'Ebooks', icon: '', badge: ebookCount },
+        { href: '/admin/articles', label: 'Articles', icon: '', badge: articleCount },
+        { href: '/admin/pages', label: 'Pages legales', icon: '' },
       ],
     },
     {
       title: 'Clients',
       items: [
-        { href: '/admin/clients', label: 'Clients', icon: '\uD83D\uDC65' },
-        { href: '/admin/ventes', label: 'Ventes', icon: '\uD83D\uDCB0' },
-        { href: '/admin/factures', label: 'Factures', icon: '\uD83E\uDDFE' },
+        { href: '/admin/clients', label: 'Clients', icon: '' },
+        { href: '/admin/ventes', label: 'Ventes', icon: '' },
+        { href: '/admin/factures', label: 'Factures', icon: '' },
       ],
     },
     {
       title: 'Marketing',
       items: [
-        { href: '/admin/newsletter', label: 'Abonnes', icon: '\uD83D\uDCE9' },
-        { href: '/admin/campagnes', label: 'Campagnes', icon: '\uD83D\uDCE7' },
-        { href: '/admin/popup', label: 'Pop-up', icon: '\uD83C\uDF81' },
+        { href: '/admin/newsletter', label: 'Abonnes', icon: '' },
+        { href: '/admin/campagnes', label: 'Campagnes', icon: '' },
+        { href: '/admin/popup', label: 'Pop-up', icon: '' },
       ],
     },
     {
       title: 'Systeme',
       items: [
-        { href: '/admin/config', label: 'Configuration', icon: '\u2699\uFE0F' },
-        { href: '/admin/mediatheque', label: 'Mediatheque', icon: '\uD83D\uDDBC\uFE0F' },
-        { href: '/admin/ia', label: 'IA & Logs', icon: '\uD83E\uDD16' },
-        { href: '/admin/membres', label: 'Equipe', icon: '\uD83D\uDC54' },
-        { href: '/admin/notifications', label: 'Notifications', icon: '\uD83D\uDD14' },
+        { href: '/admin/config', label: 'Configuration', icon: '' },
+        { href: '/admin/mediatheque', label: 'Mediatheque', icon: '' },
+        { href: '/admin/ia', label: 'IA & Logs', icon: '' },
+        { href: '/admin/membres', label: 'Equipe', icon: '' },
+        { href: '/admin/notifications', label: 'Notifications', icon: '' },
       ],
     },
   ]
@@ -177,7 +177,6 @@ export function AdminSidebar({ adminName, adminEmail, ebookCount, articleCount }
                       fontFamily: 'var(--fb)',
                     }}
                   >
-                    <span style={{ fontSize: 14, width: 20, textAlign: 'center' }}>{item.icon}</span>
                     <span style={{ flex: 1 }}>{item.label}</span>
                     {item.badge !== undefined && item.badge > 0 && (
                       <span

@@ -3,12 +3,13 @@ import type { Article } from '@/lib/supabase/types'
 
 export async function getPublishedArticles(category?: string): Promise<Article[]> {
   const supabase = await createSupabaseServerClient()
+  const now = new Date().toISOString()
   let q = supabase
     .from('articles')
     .select('*')
     .eq('is_published', true)
-    .lte('published_at', new Date().toISOString())
-    .order('published_at', { ascending: false })
+    .or(`published_at.is.null,published_at.lte.${now}`)
+    .order('published_at', { ascending: false, nullsFirst: false })
 
   if (category) q = q.eq('category', category)
 
@@ -22,13 +23,14 @@ export async function getPublishedArticles(category?: string): Promise<Article[]
 
 export async function getFeaturedArticles(limit = 3): Promise<Article[]> {
   const supabase = await createSupabaseServerClient()
+  const now = new Date().toISOString()
   const { data, error } = await supabase
     .from('articles')
     .select('*')
     .eq('is_published', true)
     .eq('featured', true)
-    .lte('published_at', new Date().toISOString())
-    .order('published_at', { ascending: false })
+    .or(`published_at.is.null,published_at.lte.${now}`)
+    .order('published_at', { ascending: false, nullsFirst: false })
     .limit(limit)
 
   if (error) {
@@ -40,12 +42,13 @@ export async function getFeaturedArticles(limit = 3): Promise<Article[]> {
 
 export async function getArticleBySlug(slug: string): Promise<Article | null> {
   const supabase = await createSupabaseServerClient()
+  const now = new Date().toISOString()
   const { data, error } = await supabase
     .from('articles')
     .select('*')
     .eq('slug', slug)
     .eq('is_published', true)
-    .lte('published_at', new Date().toISOString())
+    .or(`published_at.is.null,published_at.lte.${now}`)
     .maybeSingle()
 
   if (error) {
@@ -67,8 +70,8 @@ export async function getRelatedArticles(
     .eq('is_published', true)
     .eq('category', category)
     .neq('slug', slug)
-    .lte('published_at', new Date().toISOString())
-    .order('published_at', { ascending: false })
+    .or(`published_at.is.null,published_at.lte.${new Date().toISOString()}`)
+    .order('published_at', { ascending: false, nullsFirst: false })
     .limit(limit)
 
   if (error) return []
@@ -81,7 +84,7 @@ export async function getAllCategories(): Promise<string[]> {
     .from('articles')
     .select('category')
     .eq('is_published', true)
-    .lte('published_at', new Date().toISOString())
+    .or(`published_at.is.null,published_at.lte.${new Date().toISOString()}`)
 
   if (error || !data) return []
   return Array.from(new Set(data.map((r) => r.category as string))).sort()

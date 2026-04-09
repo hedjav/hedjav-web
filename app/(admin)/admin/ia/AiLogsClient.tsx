@@ -153,6 +153,53 @@ export function AiLogsClient({ logs }: { logs: Log[] }) {
         )}
       </div>
 
+      {/* Tool cards */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+        gap: 'var(--s4)',
+        marginBottom: 'var(--s8)',
+      }}>
+        {[
+          { title: 'Generation newsletter', desc: 'Generer et envoyer la newsletter hebdo via Claude API + Resend.', status: 'Disponible' },
+          { title: 'Scoring qualite articles', desc: 'Analyser les articles existants et attribuer un score qualite (0-100).', status: 'A venir' },
+          { title: 'Suggestions de sujets', desc: 'Proposer des idees d\'articles bases sur les tendances BRVM et patrimoine.', status: 'A venir' },
+          { title: 'Veille BRVM automatique', desc: 'Resume quotidien des mouvements BRVM genere par IA.', status: 'A venir' },
+          { title: 'Generation de covers', desc: 'Creer des images de couverture SVG/PNG a partir du titre.', status: 'A venir' },
+          { title: 'Chatbot patrimoine', desc: 'Assistant IA specialise patrimoine UEMOA pour les membres.', status: 'Phase 3' },
+        ].map((tool) => (
+          <div
+            key={tool.title}
+            style={{
+              background: 'var(--admin-surface)',
+              borderRadius: 12,
+              border: '1px solid var(--admin-border)',
+              padding: 'var(--s5)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--s2)' }}>
+              <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--admin-text)', fontFamily: 'var(--fb)' }}>
+                {tool.title}
+              </h3>
+              <span style={{
+                fontSize: 10,
+                fontWeight: 600,
+                padding: '2px 8px',
+                borderRadius: 9999,
+                background: tool.status === 'Disponible' ? 'rgba(34,197,94,.15)' : 'rgba(197,160,40,.12)',
+                color: tool.status === 'Disponible' ? 'var(--admin-success)' : 'var(--admin-text-muted)',
+                whiteSpace: 'nowrap',
+              }}>
+                {tool.status}
+              </span>
+            </div>
+            <p style={{ fontSize: 12, color: 'var(--admin-text-muted)', lineHeight: 1.5 }}>
+              {tool.desc}
+            </p>
+          </div>
+        ))}
+      </div>
+
       {/* Logs table */}
       <h2 style={{ fontFamily: 'var(--fd)', fontSize: 'var(--text-xl)', color: 'var(--admin-text)', marginBottom: 'var(--s4)' }}>
         Historique des appels IA
