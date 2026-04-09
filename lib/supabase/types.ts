@@ -119,3 +119,40 @@ export type CampaignSend = {
   metadata: Record<string, unknown>
   created_at: string
 }
+
+export type PageView = {
+  id: string
+  session_id: string
+  user_id: string | null
+  path: string
+  referrer: string | null
+  user_agent: string | null
+  duration_seconds: number | null
+  created_at: string
+}
+
+export type UserEvent = {
+  id: string
+  session_id: string
+  user_id: string | null
+  event_type: string
+  metadata: Record<string, unknown>
+  created_at: string
+}
+
+export type PopupConfig = {
+  id: string
+  ebook_id: string | null
+  is_active: boolean
+  display_delay_seconds: number
+  scroll_threshold_percent: number
+  headline: string
+  subheadline: string | null
+  cta_text: string
+  disclaimer: string
+  stats_shown: number
+  stats_submitted: number
+  metadata: Record<string, unknown>
+  created_at: string
+  updated_at: string
+}

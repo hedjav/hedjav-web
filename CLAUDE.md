@@ -175,6 +175,7 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 - `/admin/campagnes` — liste campagnes + stats (ouverture, clics)
 - `/admin/campagnes/new` — création campagne
 - `/admin/campagnes/[id]` — détail campagne + séquence emails + abonnés scorés + génération IA
+- `/admin/popup` — configuration pop-up lead magnet + stats conversion
 
 ### API
 - `POST /api/articles` (bearer `INTERNAL_API_TOKEN`) — injection IA d'articles
@@ -185,6 +186,9 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 - `POST /api/campaigns/process` (bearer `INTERNAL_API_TOKEN`) — processeur automatique campagnes actives
 - `GET /api/track/open?id=SEND_ID` — pixel tracking ouverture email
 - `GET /api/track/click?id=SEND_ID&url=URL` — redirect tracking clic email
+- `POST /api/track` — tracking comportemental (page views + events), vérifie consent
+- `GET /api/popup/config` — retourne config pop-up active (public)
+- `POST /api/popup/send-lead-magnet` — envoie email lead magnet
 - `POST /api/purchases/init` — pré-paiement FedaPay
 - `POST /api/webhooks/fedapay` (HMAC-SHA256) — confirme paiement + email transactionnel
 - `POST /api/auth/signout` — clear cookies sb-* + retour client
@@ -205,6 +209,9 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 | `campaigns` | name, type (welcome_sequence/promo/weekly/custom), status, target_tags jsonb, metadata |
 | `campaign_emails` | campaign_id, position, subject, body_prompt, body_html, delay_days, metadata |
 | `campaign_sends` | campaign_email_id, subscriber_email, status (pending/sent/opened/clicked/failed), sent_at, opened_at, clicked_at |
+| `page_views` | session_id, user_id, path, referrer, user_agent, duration_seconds |
+| `user_events` | session_id, user_id, event_type, metadata jsonb |
+| `popup_config` | ebook_id, is_active, display_delay_seconds, scroll_threshold_percent, headline, cta_text, stats_shown, stats_submitted |
 
 **Migrations** dans `supabase/migrations/` (à exécuter en ordre dans Supabase Dashboard SQL Editor) :
 1. `001_ebooks.sql`
@@ -217,6 +224,8 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 8. `008_fix_rls_recursion.sql` (drop policy récursive `profiles_admin_read`)
 9. `009_newsletter_subscribers.sql` (table newsletter dédiée — remplace Brevo)
 10. `010_campaigns.sql` (campaigns, campaign_emails, campaign_sends + extensions subscribers/ebooks)
+11. `011_tracking.sql` (page_views, user_events)
+12. `012_popup_config.sql` (popup_config)
 
 ---
 
