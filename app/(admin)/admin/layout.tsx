@@ -33,6 +33,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       items: [
         { href: '/admin/ebooks', label: 'Ebooks', badge: counts.ebooks },
         { href: '/admin/articles', label: 'Articles', badge: counts.articles },
+        { href: '/admin/pages', label: 'Pages' },
       ],
     },
     {

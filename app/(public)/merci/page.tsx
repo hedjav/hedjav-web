@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { createClient } from '@supabase/supabase-js'
 
 export const metadata: Metadata = {
   title: 'Merci pour votre achat',
@@ -9,40 +9,60 @@ export const metadata: Metadata = {
 }
 
 type PageProps = {
-  searchParams: Promise<{ ref?: string; status?: string }>
+  searchParams: Promise<{ purchase_id?: string; ref?: string }>
 }
 
 export default async function MerciPage({ searchParams }: PageProps) {
-  const { ref } = await searchParams
+  const params = await searchParams
+  const purchaseId = params.purchase_id ?? params.ref ?? null
 
   let purchaseStatus: string | null = null
   let ebookTitle: string | null = null
+  let ebookSlug: string | null = null
 
-  if (ref) {
-    const supabase = await createSupabaseServerClient()
-    const { data } = await supabase
+  if (purchaseId) {
+    const db = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { persistSession: false } },
+    )
+
+    const { data } = await db
       .from('purchases')
-      .select('status, ebook:ebooks(title)')
-      .eq('payment_ref', ref)
+      .select('status, ebook:ebooks(title, slug)')
+      .eq('id', purchaseId)
       .maybeSingle()
+
     if (data) {
       purchaseStatus = data.status as string
-      ebookTitle = (data.ebook as { title?: string } | null)?.title ?? null
+      const ebook = data.ebook as { title?: string; slug?: string } | null
+      ebookTitle = ebook?.title ?? null
+      ebookSlug = ebook?.slug ?? null
     }
   }
 
   const isPaid = purchaseStatus === 'paid'
+  const isPending = purchaseStatus === 'pending'
+  const isFailed = purchaseStatus === 'failed'
 
   return (
     <section className="section">
       <div className="hedjav-container" style={{ maxWidth: 640, textAlign: 'center' }}>
+        {/* Auto-refresh for pending */}
+        {isPending && (
+          // eslint-disable-next-line @next/next/no-head-element
+          <head>
+            <meta httpEquiv="refresh" content="5" />
+          </head>
+        )}
+
         <div
           style={{
             width: 96,
             height: 96,
             borderRadius: 'var(--rfull)',
-            background: isPaid ? 'var(--g100)' : 'var(--n100)',
-            color: isPaid ? 'var(--g700)' : 'var(--n700)',
+            background: isPaid ? 'var(--g100)' : isFailed ? 'rgba(220,38,38,.1)' : 'var(--n100)',
+            color: isPaid ? 'var(--g700)' : isFailed ? '#dc2626' : 'var(--n700)',
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -54,6 +74,11 @@ export default async function MerciPage({ searchParams }: PageProps) {
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20 6 9 17l-5-5" />
             </svg>
+          ) : isFailed ? (
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="m15 9-6 6M9 9l6 6" />
+            </svg>
           ) : (
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10" />
@@ -62,9 +87,18 @@ export default async function MerciPage({ searchParams }: PageProps) {
           )}
         </div>
 
-        <span className="eyebrow">{isPaid ? 'Confirmé' : 'En attente'}</span>
+        <span className="eyebrow">
+          {isPaid ? 'Confirmé' : isFailed ? 'Échoué' : 'En attente'}
+        </span>
+
         <h1 className="h1" style={{ marginTop: 'var(--s4)', fontSize: 'clamp(var(--text-3xl), 5vw, var(--text-5xl))' }}>
-          {isPaid ? 'Merci pour votre confiance' : 'Paiement en cours de traitement'}
+          {isPaid
+            ? 'Merci pour votre confiance'
+            : isFailed
+            ? 'Paiement échoué'
+            : purchaseId
+            ? 'Paiement en cours de vérification...'
+            : 'Merci !'}
         </h1>
 
         <p style={{ marginTop: 'var(--s5)', color: 'var(--muted)', fontSize: 'var(--text-lg)' }}>
@@ -73,13 +107,29 @@ export default async function MerciPage({ searchParams }: PageProps) {
           )}
           {isPaid
             ? 'Un email de confirmation avec votre ebook vient de vous être envoyé.'
-            : "Nous attendons la confirmation de FedaPay. Vous recevrez un email dès que le paiement sera validé."}
+            : isFailed
+            ? 'Le paiement n\'a pas abouti. Vous pouvez réessayer depuis la page de l\'ebook.'
+            : purchaseId
+            ? 'Nous attendons la confirmation de FedaPay. Cette page se rafraîchit automatiquement.'
+            : 'Merci de votre visite sur Hedjav.'}
         </p>
 
         <div style={{ marginTop: 'var(--s10)', display: 'flex', gap: 'var(--s3)', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link href="/dashboard/mes-ebooks" className="btn btn-gold">
-            Voir mes ebooks
-          </Link>
+          {isPaid && (
+            <Link href="/dashboard/mes-ebooks" className="btn btn-gold">
+              Voir mes ebooks
+            </Link>
+          )}
+          {isFailed && ebookSlug && (
+            <Link href={`/ebooks/${ebookSlug}`} className="btn btn-gold">
+              Réessayer l'achat
+            </Link>
+          )}
+          {!isPaid && !isFailed && (
+            <Link href="/dashboard/mes-ebooks" className="btn btn-gold">
+              Voir mes ebooks
+            </Link>
+          )}
           <Link href="/ebooks" className="btn btn-outline">
             Continuer le catalogue
           </Link>

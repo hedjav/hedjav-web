@@ -10,20 +10,23 @@ import { createNotification } from '@/lib/notifications/queries'
  *
  * Reçoit les notifications de FedaPay (HMAC-SHA256 signé).
  * Met à jour la purchase correspondante et envoie l'email de confirmation
- * + lien de téléchargement ebook.
+ * + facture + notification admin.
+ *
+ * Retourne toujours 200 pour éviter les retries FedaPay.
  */
 export async function POST(request: Request) {
   const rawBody = await request.text()
   const signature = request.headers.get('x-fedapay-signature')
 
   if (!verifyFedaPaySignature(rawBody, signature)) {
+    console.warn('[fedapay webhook] invalid signature')
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
   }
 
   let payload: {
     name?: string
     entity?: {
-      id?: string
+      id?: number | string
       reference?: string
       amount?: number
       status?: string
@@ -34,21 +37,26 @@ export async function POST(request: Request) {
   try {
     payload = JSON.parse(rawBody)
   } catch {
-    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
+    return NextResponse.json({ ok: true })
   }
 
   const entity = payload.entity
-  if (!entity?.reference || !entity?.id) {
-    return NextResponse.json({ error: 'Missing entity data' }, { status: 400 })
+  if (!entity?.id && !entity?.reference) {
+    return NextResponse.json({ ok: true })
   }
 
+  // Determine new status
   const eventName = payload.name ?? ''
-  const newStatus =
-    eventName.includes('approved') || entity.status === 'approved'
-      ? 'paid'
-      : eventName.includes('declined') || entity.status === 'declined'
-      ? 'failed'
-      : 'pending'
+  const entityStatus = entity.status ?? ''
+  let newStatus: 'paid' | 'failed' | 'pending' = 'pending'
+  if (eventName.includes('approved') || entityStatus === 'approved') {
+    newStatus = 'paid'
+  } else if (
+    eventName.includes('declined') || eventName.includes('canceled') ||
+    entityStatus === 'declined' || entityStatus === 'canceled'
+  ) {
+    newStatus = 'failed'
+  }
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -56,31 +64,52 @@ export async function POST(request: Request) {
     { auth: { persistSession: false } },
   )
 
-  const { data: purchase, error } = await supabase
-    .from('purchases')
-    .update({
-      status: newStatus,
-      payment_method: entity.payment_method ?? null,
-      raw_payload: payload,
-    })
-    .eq('payment_ref', entity.reference)
-    .select('*, ebook:ebooks(title, slug)')
-    .maybeSingle()
+  // Match by payment_ref = entity.id (string) OR entity.reference
+  const refStr = String(entity.id ?? '')
+  const reference = entity.reference ?? ''
 
-  if (error) {
-    console.error('[fedapay webhook] update failed', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  // Try matching by id first, then by reference
+  let purchase: Record<string, unknown> | null = null
+
+  if (refStr) {
+    const { data } = await supabase
+      .from('purchases')
+      .update({
+        status: newStatus,
+        payment_method: entity.payment_method ?? null,
+        raw_payload: payload,
+      })
+      .eq('payment_ref', refStr)
+      .select('*, ebook:ebooks(title, slug)')
+      .maybeSingle()
+    purchase = data
+  }
+
+  if (!purchase && reference) {
+    const { data } = await supabase
+      .from('purchases')
+      .update({
+        status: newStatus,
+        payment_method: entity.payment_method ?? null,
+        raw_payload: payload,
+      })
+      .eq('payment_ref', reference)
+      .select('*, ebook:ebooks(title, slug)')
+      .maybeSingle()
+    purchase = data
   }
 
   if (!purchase) {
-    console.warn('[fedapay webhook] purchase not found for ref', entity.reference)
+    console.warn('[fedapay webhook] purchase not found for ref', refStr, reference)
     return NextResponse.json({ ok: true, ignored: true })
   }
 
-  // Email de confirmation si paiement validé
+  // Post-payment actions if paid
   if (newStatus === 'paid' && purchase.email) {
-    const ebookTitle = (purchase.ebook as { title?: string } | null)?.title ?? 'votre ebook'
-    const amount = purchase.amount as number ?? 0
+    const ebookTitle = (purchase.ebook as { title?: string; slug?: string } | null)?.title ?? 'votre ebook'
+    const amount = (purchase.amount as number) ?? 0
+
+    // Email de confirmation
     const tpl = purchaseConfirmationEmail('', ebookTitle, amount)
     await sendEmail({
       to: purchase.email as string,

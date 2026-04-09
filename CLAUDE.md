@@ -34,7 +34,7 @@ Maître d'œuvre : **KTALYZ SARL**.
 | CDN / DNS | Cloudflare |
 | Email | **SMTP Hostinger** (nodemailer) — `noreply@egp.hedjav.com` — fallback console.log si SMTP_HOST vide |
 | Génération contenu | **Claude API** (claude-sonnet-4-6) — newsletter hebdo, articles auto |
-| Paiement | **FedaPay** (Wave, Orange Money, MTN MoMo, carte) |
+| Paiement | **FedaPay** — flux serveur-side (SDK `fedapay`), pas de liens me.fedapay.com (Wave, Orange Money, MTN MoMo, carte) |
 | Versioning | GitHub — repo `hedjav/hedjav-web` |
 
 ---
@@ -173,6 +173,8 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 - `/admin/membres/[id]` — fiche membre détaillée (profil + achats + emails campagne + promote/demote)
 - `/admin/ventes` — stat cards (CA total, CA mois, nb ventes) + tableau + export CSV
 - `/admin/factures` — tableau factures avec recherche + lien PDF
+- `/admin/pages` — liste pages légales (CGV, mentions, etc.)
+- `/admin/pages/[slug]` — éditeur page (titre, body markdown, meta_description)
 - `/admin/ia` — stats IA (appels, tokens, taux succes) + logs + generateur articles
 - `/admin/mediatheque` — grille medias Supabase Storage + upload + copier URL + supprimer
 - `/admin/campagnes` — liste campagnes + stats (ouverture, clics)
@@ -193,8 +195,9 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 - `POST /api/track` — tracking comportemental (page views + events), vérifie consent
 - `GET /api/popup/config` — retourne config pop-up active (public)
 - `POST /api/popup/send-lead-magnet` — envoie email lead magnet
-- `POST /api/purchases/init` — pré-paiement FedaPay
-- `POST /api/webhooks/fedapay` (HMAC-SHA256) — confirme paiement + email transactionnel
+- `GET /api/purchases/check?ebook_id=XXX` — vérifie si user a déjà acheté (401 si non connecté)
+- `POST /api/purchases/create` — crée purchase pending + transaction FedaPay server-side
+- `POST /api/webhooks/fedapay` (HMAC-SHA256) — confirme paiement + email + facture + notification
 - `POST /api/invoices/generate` (bearer `INTERNAL_API_TOKEN`) — genere facture PDF pour un achat
 - `GET /api/admin/notifications` (session admin) — liste notifications + compteur non-lues
 - `POST /api/admin/notifications/read` (session admin) — marquer lu (id ou all)
@@ -261,7 +264,7 @@ Voir `.env.local.example`. Clés sensibles :
 
 ## Déploiement Hostinger VPS
 
-Voir [`DEPLOY.md`](./DEPLOY.md) pour le guide complet (Nginx, PM2, Cloudflare, migrations, granting admin).
+Voir [`docs/DEPLOY.md`](./docs/DEPLOY.md) pour le guide complet (Hostinger, Supabase, FedaPay, SMTP, cron).
 
 Déploiement courant sur le VPS :
 ```bash

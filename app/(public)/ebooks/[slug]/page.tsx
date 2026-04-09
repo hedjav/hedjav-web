@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { getEbookBySlug } from '@/lib/ebooks/queries'
 import { EbookPriceBlock } from '@/components/features/EbookPriceBlock'
-import { EbookBuyButton } from '@/components/features/EbookBuyButton'
+import { BuyButton } from '@/components/features/BuyButton'
 import { JsonLd, ebookJsonLd } from '@/components/features/JsonLd'
 
 export const revalidate = 60
@@ -104,7 +104,7 @@ export default async function EbookSalesPage({ params }: PageProps) {
 
             <EbookPriceBlock price={ebook.price} originalPrice={ebook.original_price} size="lg" />
 
-            <EbookBuyButton href={ebook.fedapay_link} size="lg" fullWidth />
+            <BuyButton ebookId={ebook.id} ebookTitle={ebook.title} ebookPrice={ebook.price} ebookSlug={ebook.slug} />
 
             <ul
               style={{
@@ -200,8 +200,8 @@ export default async function EbookSalesPage({ params }: PageProps) {
             </>
           )}
 
-          <div style={{ marginTop: 'var(--s10)', textAlign: 'center' }}>
-            <EbookBuyButton href={ebook.fedapay_link} size="lg" />
+          <div style={{ marginTop: 'var(--s10)', textAlign: 'center', maxWidth: 400, marginInline: 'auto' }}>
+            <BuyButton ebookId={ebook.id} ebookTitle={ebook.title} ebookPrice={ebook.price} ebookSlug={ebook.slug} />
           </div>
         </div>
       </div>
