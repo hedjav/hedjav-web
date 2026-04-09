@@ -702,6 +702,52 @@ a {
 }
 
 /* ============================================================
+   FINAL CTA — section pré-footer adaptative
+   ============================================================ */
+.hedjav-final-cta {
+  padding-block: var(--s16);
+  background: linear-gradient(135deg, #FBF6E4 0%, #F8F5EE 100%);
+  border-top: 1px solid #EFD99A;
+  border-bottom: 1px solid #EFD99A;
+  transition: background var(--ts), border-color var(--ts);
+}
+.hedjav-final-cta__title {
+  margin-bottom: var(--s6);
+  color: #1B2A4A;
+}
+.hedjav-final-cta__lead {
+  font-size: var(--text-lg);
+  color: #5C6F8F;
+  max-width: 600px;
+  margin-inline: auto;
+  margin-bottom: var(--s8);
+}
+.hedjav-final-cta__outline {
+  background: transparent;
+  color: #1B2A4A;
+  border: 1.5px solid #1B2A4A;
+}
+.hedjav-final-cta__outline:hover {
+  background: rgba(27,42,74,.06);
+  transform: translateY(-1px);
+}
+
+[data-theme="dark"] .hedjav-final-cta {
+  background: linear-gradient(135deg, #0D1628 0%, #131F36 100%);
+  border-top-color: rgba(212,180,64,.25);
+  border-bottom-color: rgba(212,180,64,.18);
+}
+[data-theme="dark"] .hedjav-final-cta__title { color: #F8F5EE; }
+[data-theme="dark"] .hedjav-final-cta__lead  { color: #A0B3CC; }
+[data-theme="dark"] .hedjav-final-cta__outline {
+  color: #ECCC60;
+  border-color: #ECCC60;
+}
+[data-theme="dark"] .hedjav-final-cta__outline:hover {
+  background: rgba(236,204,96,.10);
+}
+
+/* ============================================================
    DASHBOARD MEMBRE (couche dashboard redesign)
    ============================================================ */
 .hedjav-dash-tab {

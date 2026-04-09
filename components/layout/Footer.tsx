@@ -55,7 +55,6 @@ export function Footer() {
       style={{
         background: 'var(--n950)',
         color: '#E0E6EF',
-        marginTop: 'var(--s20)',
       }}
     >
       <div className="hedjav-container" style={{ paddingBlock: 'var(--s16)' }}>

@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 
-const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://hedjav.com'
+const BASE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://egp.hedjav.com'
 
 export const revalidate = 3600
 
