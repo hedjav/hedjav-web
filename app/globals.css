@@ -114,6 +114,13 @@
   --accent:     var(--g500);        /* accent or stable */
   --accent-soft: var(--g100);
 
+  /* ── FinalCTA ───────────────────── */
+  --cta-bg:     linear-gradient(135deg, #FBF6E4 0%, #F8F5EE 100%);
+  --cta-border: #EFD99A;
+  --cta-title:  #1B2A4A;
+  --cta-lead:   #5C6F8F;
+  --cta-outline:#1B2A4A;
+
   /* ── Container ──────────────────── */
   --container-max: 1200px;
   --container-pad: var(--s6);
@@ -139,6 +146,13 @@
   --border2:     rgba(255,255,255,.18);
   --accent:      #ECCC60;            /* or éclairci en dark pour rester lisible */
   --accent-soft: rgba(212,180,64,.15);
+
+  /* ── FinalCTA dark ────────────────── */
+  --cta-bg:     linear-gradient(135deg, #0D1628 0%, #131F36 100%);
+  --cta-border: rgba(212,180,64,.25);
+  --cta-title:  #F8F5EE;
+  --cta-lead:   #A0B3CC;
+  --cta-outline:#ECCC60;
 
   /* ── Aliases couleur ──────────────── */
   --cream: var(--bg);
@@ -699,52 +713,6 @@ a {
     flex-direction: row;
     align-items: center;
   }
-}
-
-/* ============================================================
-   FINAL CTA — section pré-footer adaptative
-   ============================================================ */
-.hedjav-final-cta {
-  padding-block: var(--s16);
-  background: linear-gradient(135deg, #FBF6E4 0%, #F8F5EE 100%);
-  border-top: 1px solid #EFD99A;
-  border-bottom: 1px solid #EFD99A;
-  transition: background var(--ts), border-color var(--ts);
-}
-.hedjav-final-cta__title {
-  margin-bottom: var(--s6);
-  color: #1B2A4A;
-}
-.hedjav-final-cta__lead {
-  font-size: var(--text-lg);
-  color: #5C6F8F;
-  max-width: 600px;
-  margin-inline: auto;
-  margin-bottom: var(--s8);
-}
-.hedjav-final-cta__outline {
-  background: transparent;
-  color: #1B2A4A;
-  border: 1.5px solid #1B2A4A;
-}
-.hedjav-final-cta__outline:hover {
-  background: rgba(27,42,74,.06);
-  transform: translateY(-1px);
-}
-
-[data-theme="dark"] .hedjav-final-cta {
-  background: linear-gradient(135deg, #0D1628 0%, #131F36 100%);
-  border-top-color: rgba(212,180,64,.25);
-  border-bottom-color: rgba(212,180,64,.18);
-}
-[data-theme="dark"] .hedjav-final-cta__title { color: #F8F5EE; }
-[data-theme="dark"] .hedjav-final-cta__lead  { color: #A0B3CC; }
-[data-theme="dark"] .hedjav-final-cta__outline {
-  color: #ECCC60;
-  border-color: #ECCC60;
-}
-[data-theme="dark"] .hedjav-final-cta__outline:hover {
-  background: rgba(236,204,96,.10);
 }
 
 /* ============================================================

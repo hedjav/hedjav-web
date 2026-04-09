@@ -1,16 +1,32 @@
 import Link from 'next/link'
 
-// La section adopte la palette chaude or/cream en light, et bascule sur une
-// palette navy profonde en dark pour s'enchaîner harmonieusement avec le
-// footer (--n950). Géré via la classe `.hedjav-final-cta` dans globals.css.
 export function FinalCTA() {
   return (
-    <section className="hedjav-final-cta">
+    <section
+      style={{
+        paddingBlock: 'var(--s16)',
+        background: 'var(--cta-bg)',
+        borderTop: '1px solid var(--cta-border)',
+        borderBottom: '1px solid var(--cta-border)',
+        transition: 'background var(--ts), border-color var(--ts)',
+      }}
+    >
       <div className="hedjav-container" style={{ textAlign: 'center' }}>
-        <h2 className="h2 hedjav-final-cta__title">
+        <h2
+          className="h2"
+          style={{ marginBottom: 'var(--s6)', color: 'var(--cta-title)' }}
+        >
           Prêt à bâtir votre patrimoine en UEMOA ?
         </h2>
-        <p className="hedjav-final-cta__lead">
+        <p
+          style={{
+            fontSize: 'var(--text-lg)',
+            color: 'var(--cta-lead)',
+            maxWidth: 600,
+            marginInline: 'auto',
+            marginBottom: 'var(--s8)',
+          }}
+        >
           Découvrez nos ebooks pratiques, nos guides BRVM et nos premières
           formations en ligne — pensés et écrits pour l&apos;Afrique francophone.
         </p>
@@ -25,7 +41,15 @@ export function FinalCTA() {
           <Link href="/ebooks" className="btn btn-lg btn-gold">
             Voir les ebooks
           </Link>
-          <Link href="/blog" className="btn btn-lg hedjav-final-cta__outline">
+          <Link
+            href="/blog"
+            className="btn btn-lg"
+            style={{
+              background: 'transparent',
+              color: 'var(--cta-outline)',
+              border: '1.5px solid var(--cta-outline)',
+            }}
+          >
             Lire le blog
           </Link>
         </div>
