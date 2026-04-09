@@ -16,10 +16,23 @@ import { createNotification } from '@/lib/notifications/queries'
  */
 export async function POST(request: Request) {
   const rawBody = await request.text()
-  const signature = request.headers.get('x-fedapay-signature')
+
+  // FedaPay peut utiliser différents noms de header pour la signature
+  const signature =
+    request.headers.get('x-fedapay-signature') ??
+    request.headers.get('X-FedaPay-Signature') ??
+    request.headers.get('fedapay-signature') ??
+    null
+
+  console.log('[fedapay webhook] received', {
+    hasSignature: !!signature,
+    signatureHeader: signature?.substring(0, 30),
+    bodyLength: rawBody.length,
+    hasSecret: !!process.env.FEDAPAY_WEBHOOK_SECRET,
+  })
 
   if (!verifyFedaPaySignature(rawBody, signature)) {
-    console.warn('[fedapay webhook] invalid signature')
+    console.error('[fedapay webhook] signature verification failed — headers:', Object.fromEntries(request.headers.entries()))
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
   }
 
