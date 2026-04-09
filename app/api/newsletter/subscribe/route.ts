@@ -13,7 +13,7 @@ import { newsletterSubscribedEmail } from '@/lib/email/templates'
  * Si l'utilisateur est connecté → met aussi à jour profile.newsletter_opt = true.
  */
 export async function POST(request: Request) {
-  let payload: { email?: string; source?: string }
+  let payload: { email?: string; source?: string; first_name?: string }
   try {
     payload = await request.json()
   } catch {
@@ -32,14 +32,21 @@ export async function POST(request: Request) {
     { auth: { persistSession: false } },
   )
 
+  // Déterminer le tag depuis la source
+  const source = payload.source ?? 'web'
+  const tagMap: Record<string, string> = { popup_ia: 'ia', popup_brvm: 'brvm', popup_patrimoine: 'patrimoine' }
+  const tag = tagMap[source]
+
   const { error } = await admin
     .from('newsletter_subscribers')
     .upsert(
       {
         email,
-        source: payload.source ?? 'web',
+        source,
+        first_name: payload.first_name ?? null,
         is_active: true,
         unsubscribed_at: null,
+        ...(tag ? { tags: [tag] } : {}),
       },
       { onConflict: 'email' },
     )
@@ -58,8 +65,32 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
+  // Enrôlement automatique dans une campagne welcome active si tags correspondent
+  try {
+    const { data: activeCampaigns } = await admin
+      .from('campaigns')
+      .select('id, target_tags')
+      .eq('type', 'welcome_sequence')
+      .eq('status', 'active')
+      .limit(1)
+
+    if (activeCampaigns && activeCampaigns.length > 0) {
+      const campaign = activeCampaigns[0]
+      const campaignTags = (campaign.target_tags as string[]) ?? []
+      const shouldEnroll = campaignTags.length === 0 || (tag && campaignTags.includes(tag))
+      if (shouldEnroll) {
+        await admin
+          .from('newsletter_subscribers')
+          .update({ enrolled_campaign_id: campaign.id, campaign_step: 0 })
+          .eq('email', email)
+      }
+    }
+  } catch (e) {
+    console.error('[newsletter] campaign enrollment failed', e)
+  }
+
   // Email de bienvenue (no-op si SMTP_HOST non configuré)
-  const tpl = newsletterSubscribedEmail('')
+  const tpl = newsletterSubscribedEmail(payload.first_name ?? '')
   sendEmail({ to: email, subject: tpl.subject, html: tpl.html, text: tpl.text }).catch((e) => {
     console.error('[newsletter] welcome email failed', e)
   })
