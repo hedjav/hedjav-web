@@ -42,13 +42,16 @@ export async function upsertEbookAction(formData: FormData) {
     .split('\n').map((s) => s.trim()).filter(Boolean)
   const target_audience = String(formData.get('target_audience') ?? '')
     .split('\n').map((s) => s.trim()).filter(Boolean)
+  const lead_magnet_url = String(formData.get('lead_magnet_url') ?? '') || null
+  const lead_magnet_description = String(formData.get('lead_magnet_description') ?? '') || null
   const is_published = formData.get('is_published') === 'on'
   const is_featured = formData.get('is_featured') === 'on'
 
   const row = {
     title, slug, short_description, description,
     price, original_price, cover_image_url, fedapay_link,
-    features, target_audience, is_published, is_featured,
+    features, target_audience, lead_magnet_url, lead_magnet_description,
+    is_published, is_featured,
   }
 
   const { error } = id
@@ -69,6 +72,7 @@ export async function deleteEbookAction(formData: FormData) {
   if (error) throw new Error(error.message)
   revalidatePath('/admin/ebooks')
   revalidatePath('/ebooks')
+  redirect('/admin/ebooks')
 }
 
 // =====================================================
@@ -115,4 +119,5 @@ export async function deleteArticleAction(formData: FormData) {
   if (error) throw new Error(error.message)
   revalidatePath('/admin/articles')
   revalidatePath('/blog')
+  redirect('/admin/articles')
 }

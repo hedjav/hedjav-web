@@ -140,6 +140,19 @@ export type UserEvent = {
   created_at: string
 }
 
+export type SiteConfig = {
+  id: string
+  key: string
+  value: string
+  type: 'text' | 'number' | 'boolean' | 'json' | 'url' | 'email'
+  category: string
+  label: string | null
+  description: string | null
+  metadata: Record<string, unknown>
+  updated_at: string
+  updated_by: string | null
+}
+
 export type PopupConfig = {
   id: string
   ebook_id: string | null
