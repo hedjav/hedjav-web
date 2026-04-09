@@ -166,16 +166,18 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 - `/dashboard/mes-commandes` — historique
 
 ### Admin (protégé `role='admin'`)
-- `/admin` — stats live
-- `/admin/ebooks` `/new` `/[id]` — CRUD
-- `/admin/articles` `/new` `/[id]` — CRUD
-- `/admin/membres` — liste profils + nb achats
+- `/admin` — dashboard CRM avec Recharts (revenue, membres, ventes, newsletter, sparklines, graphique revenue 12 mois, activité récente, widget campagnes)
+- `/admin/ebooks` `/new` `/[id]` — CRUD avec cover preview, lead_magnet
+- `/admin/articles` `/new` `/[id]` — CRUD avec badges source (manual/ai) et score coloré
+- `/admin/membres` — liste profils avec avatar initiales + badges rôle/newsletter
+- `/admin/membres/[id]` — fiche membre détaillée (profil + achats + emails campagne + promote/demote)
 - `/admin/ventes` — historique purchases + total encaissé
 - `/admin/ia` — placeholder 7 outils IA à venir
 - `/admin/campagnes` — liste campagnes + stats (ouverture, clics)
 - `/admin/campagnes/new` — création campagne
 - `/admin/campagnes/[id]` — détail campagne + séquence emails + abonnés scorés + génération IA
 - `/admin/popup` — configuration pop-up lead magnet + stats conversion
+- `/admin/config` — configuration site_config (formulaire groupé par catégorie)
 
 ### API
 - `POST /api/articles` (bearer `INTERNAL_API_TOKEN`) — injection IA d'articles
@@ -212,6 +214,7 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 | `page_views` | session_id, user_id, path, referrer, user_agent, duration_seconds |
 | `user_events` | session_id, user_id, event_type, metadata jsonb |
 | `popup_config` | ebook_id, is_active, display_delay_seconds, scroll_threshold_percent, headline, cta_text, stats_shown, stats_submitted |
+| `site_config` | key (unique), value, type (text/number/boolean/json/url/email), category, label, description, metadata, updated_by |
 
 **Migrations** dans `supabase/migrations/` (à exécuter en ordre dans Supabase Dashboard SQL Editor) :
 1. `001_ebooks.sql`
@@ -226,6 +229,7 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 10. `010_campaigns.sql` (campaigns, campaign_emails, campaign_sends + extensions subscribers/ebooks)
 11. `011_tracking.sql` (page_views, user_events)
 12. `012_popup_config.sql` (popup_config)
+13. `013_site_config.sql` (site_config — configuration dynamique du site)
 
 ---
 

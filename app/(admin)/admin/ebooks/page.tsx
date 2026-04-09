@@ -1,43 +1,55 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
-import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { createClient } from '@supabase/supabase-js'
 import { deleteEbookAction } from '@/lib/admin/actions'
 import { formatPriceFcfa } from '@/lib/ebooks/queries'
 
+export const metadata: Metadata = { title: 'Admin — Ebooks' }
+
 export default async function AdminEbooksPage() {
-  const supabase = await createSupabaseServerClient()
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false } },
+  )
   const { data: ebooks } = await supabase
     .from('ebooks')
-    .select('id, title, slug, price, is_published, is_featured, created_at')
+    .select('id, title, slug, price, cover_image_url, is_published, is_featured, created_at')
     .order('created_at', { ascending: false })
 
   return (
     <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--s8)' }}>
-        <h1 style={{ fontFamily: 'var(--fd)', fontSize: 'var(--text-4xl)', color: '#fff' }}>Ebooks</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
+        <h1 style={{ fontFamily: 'var(--fd)', fontSize: 32, fontWeight: 600, color: '#fff' }}>
+          Ebooks
+        </h1>
         <Link
           href="/admin/ebooks/new"
           style={{
             background: '#C5A028',
             color: '#fff',
-            padding: 'var(--s3) var(--s5)',
-            borderRadius: 'var(--r8)',
+            padding: '10px 20px',
+            borderRadius: 8,
             fontFamily: 'var(--fb)',
-            fontSize: 'var(--text-sm)',
+            fontSize: 13,
             fontWeight: 600,
+            textDecoration: 'none',
           }}
         >
           + Nouvel ebook
         </Link>
       </div>
 
-      <div style={{ background: '#1B2A4A', borderRadius: 'var(--r16)', overflow: 'hidden' }}>
+      <div style={{ background: '#1B2A4A', borderRadius: 16, overflow: 'hidden', border: '1px solid rgba(255,255,255,.08)' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', color: '#E0E6EF' }}>
           <thead>
             <tr style={{ background: 'rgba(0,0,0,.2)' }}>
+              <Th>Cover</Th>
               <Th>Titre</Th>
               <Th>Prix</Th>
               <Th>Statut</Th>
               <Th>Featured</Th>
+              <Th>Date</Th>
               <Th>Actions</Th>
             </tr>
           </thead>
@@ -45,20 +57,82 @@ export default async function AdminEbooksPage() {
             {(ebooks ?? []).map((e) => (
               <tr key={e.id} style={{ borderTop: '1px solid rgba(255,255,255,.05)' }}>
                 <Td>
+                  {e.cover_image_url ? (
+                    <img
+                      src={e.cover_image_url}
+                      alt=""
+                      style={{ width: 40, height: 56, objectFit: 'cover', borderRadius: 4 }}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        width: 40,
+                        height: 56,
+                        background: 'rgba(255,255,255,.06)',
+                        borderRadius: 4,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: 16,
+                        color: '#6B82B0',
+                      }}
+                    >
+                      📖
+                    </div>
+                  )}
+                </Td>
+                <Td>
                   <div style={{ fontWeight: 600 }}>{e.title}</div>
-                  <div style={{ fontSize: 'var(--text-xs)', color: 'rgba(255,255,255,.4)' }}>/{e.slug}</div>
+                  <div style={{ fontSize: 11, color: '#6B82B0' }}>/{e.slug}</div>
                 </Td>
-                <Td>{formatPriceFcfa(e.price as number)}</Td>
                 <Td>
-                  <Badge active={e.is_published as boolean} label={e.is_published ? 'Publié' : 'Brouillon'} />
+                  <span style={{ fontFamily: 'var(--fm)', fontSize: 13 }}>
+                    {formatPriceFcfa(e.price as number)}
+                  </span>
                 </Td>
-                <Td>{e.is_featured ? '★' : '—'}</Td>
                 <Td>
-                  <div style={{ display: 'flex', gap: 'var(--s3)' }}>
-                    <Link href={`/admin/ebooks/${e.id}`} style={linkStyle}>Éditer</Link>
+                  <Badge
+                    active={e.is_published as boolean}
+                    label={e.is_published ? 'Publié' : 'Brouillon'}
+                  />
+                </Td>
+                <Td>
+                  {e.is_featured ? (
+                    <span style={{ color: '#C5A028', fontSize: 14 }}>★</span>
+                  ) : (
+                    <span style={{ color: '#6B82B0' }}>—</span>
+                  )}
+                </Td>
+                <Td>
+                  <span style={{ fontSize: 12, color: '#6B82B0' }}>
+                    {new Date(e.created_at as string).toLocaleDateString('fr-FR')}
+                  </span>
+                </Td>
+                <Td>
+                  <div style={{ display: 'flex', gap: 12 }}>
+                    <Link
+                      href={`/admin/ebooks/${e.id}`}
+                      style={{ color: '#C5A028', fontSize: 12, fontWeight: 600 }}
+                    >
+                      Éditer
+                    </Link>
                     <form action={deleteEbookAction} style={{ display: 'inline' }}>
                       <input type="hidden" name="id" value={e.id as string} />
-                      <button type="submit" style={dangerLinkStyle}>Supprimer</button>
+                      <button
+                        type="submit"
+                        style={{
+                          color: '#ff9b9b',
+                          fontSize: 12,
+                          fontWeight: 600,
+                          background: 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                          padding: 0,
+                          fontFamily: 'var(--fb)',
+                        }}
+                      >
+                        Supprimer
+                      </button>
                     </form>
                   </div>
                 </Td>
@@ -71,18 +145,41 @@ export default async function AdminEbooksPage() {
   )
 }
 
-const Th = ({ children }: { children: React.ReactNode }) => (
-  <th style={{ textAlign: 'left', padding: 'var(--s4) var(--s5)', fontSize: 'var(--text-xs)', textTransform: 'uppercase', letterSpacing: '.1em', color: 'rgba(255,255,255,.5)', fontWeight: 600 }}>{children}</th>
-)
-const Td = ({ children }: { children: React.ReactNode }) => (
-  <td style={{ padding: 'var(--s4) var(--s5)', fontSize: 'var(--text-sm)' }}>{children}</td>
-)
-const Badge = ({ active, label }: { active: boolean; label: string }) => (
-  <span style={{
-    padding: '2px 10px', borderRadius: 999, fontSize: 'var(--text-xs)', fontWeight: 600,
-    background: active ? 'rgba(46,179,108,.15)' : 'rgba(255,255,255,.08)',
-    color: active ? '#5be58a' : 'rgba(255,255,255,.5)',
-  }}>{label}</span>
-)
-const linkStyle = { color: '#C5A028', fontSize: 'var(--text-xs)', fontWeight: 600 } as const
-const dangerLinkStyle = { ...linkStyle, color: '#ff9b9b', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'var(--fb)' } as const
+function Th({ children }: { children: React.ReactNode }) {
+  return (
+    <th
+      style={{
+        textAlign: 'left',
+        padding: '14px 16px',
+        fontSize: 11,
+        textTransform: 'uppercase',
+        letterSpacing: '.1em',
+        color: '#6B82B0',
+        fontWeight: 600,
+      }}
+    >
+      {children}
+    </th>
+  )
+}
+
+function Td({ children }: { children: React.ReactNode }) {
+  return <td style={{ padding: '12px 16px', fontSize: 13 }}>{children}</td>
+}
+
+function Badge({ active, label }: { active: boolean; label: string }) {
+  return (
+    <span
+      style={{
+        padding: '2px 10px',
+        borderRadius: 9999,
+        fontSize: 11,
+        fontWeight: 600,
+        background: active ? 'rgba(46,179,108,.15)' : 'rgba(255,255,255,.08)',
+        color: active ? '#5be58a' : 'rgba(255,255,255,.5)',
+      }}
+    >
+      {label}
+    </span>
+  )
+}
