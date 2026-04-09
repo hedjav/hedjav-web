@@ -172,12 +172,19 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 - `/admin/membres` — liste profils + nb achats
 - `/admin/ventes` — historique purchases + total encaissé
 - `/admin/ia` — placeholder 7 outils IA à venir
+- `/admin/campagnes` — liste campagnes + stats (ouverture, clics)
+- `/admin/campagnes/new` — création campagne
+- `/admin/campagnes/[id]` — détail campagne + séquence emails + abonnés scorés + génération IA
 
 ### API
 - `POST /api/articles` (bearer `INTERNAL_API_TOKEN`) — injection IA d'articles
 - `POST /api/newsletter/subscribe` — public, insère dans `newsletter_subscribers`
 - `POST /api/newsletter/send` (bearer `INTERNAL_API_TOKEN`) — génère via Claude + envoie via SMTP
 - `POST /api/newsletter/weekly` (bearer `INTERNAL_API_TOKEN`) — newsletter hebdo template statique via SMTP
+- `POST /api/campaigns/generate-email` (bearer `INTERNAL_API_TOKEN`) — génère contenu email IA via Claude
+- `POST /api/campaigns/process` (bearer `INTERNAL_API_TOKEN`) — processeur automatique campagnes actives
+- `GET /api/track/open?id=SEND_ID` — pixel tracking ouverture email
+- `GET /api/track/click?id=SEND_ID&url=URL` — redirect tracking clic email
 - `POST /api/purchases/init` — pré-paiement FedaPay
 - `POST /api/webhooks/fedapay` (HMAC-SHA256) — confirme paiement + email transactionnel
 - `POST /api/auth/signout` — clear cookies sb-* + retour client
@@ -194,7 +201,10 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 | `articles` | title, slug, body markdown, excerpt, category, source (manual/ai), quality_score, featured, is_published, metadata |
 | `purchases` | user_id (nullable), email, ebook_id, amount, payment_ref, status, payment_method, raw_payload jsonb, metadata |
 | `pages` | slug, title, body markdown, cover, meta_description, metadata |
-| `newsletter_subscribers` | email, source, is_active, unsubscribed_at, metadata, subscribed_at |
+| `newsletter_subscribers` | email, first_name, source, tags jsonb, enrolled_campaign_id, campaign_step, last_email_sent_at, is_active, metadata |
+| `campaigns` | name, type (welcome_sequence/promo/weekly/custom), status, target_tags jsonb, metadata |
+| `campaign_emails` | campaign_id, position, subject, body_prompt, body_html, delay_days, metadata |
+| `campaign_sends` | campaign_email_id, subscriber_email, status (pending/sent/opened/clicked/failed), sent_at, opened_at, clicked_at |
 
 **Migrations** dans `supabase/migrations/` (à exécuter en ordre dans Supabase Dashboard SQL Editor) :
 1. `001_ebooks.sql`
@@ -206,6 +216,7 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 7. `007_last_visit.sql` (profiles.last_visit_at)
 8. `008_fix_rls_recursion.sql` (drop policy récursive `profiles_admin_read`)
 9. `009_newsletter_subscribers.sql` (table newsletter dédiée — remplace Brevo)
+10. `010_campaigns.sql` (campaigns, campaign_emails, campaign_sends + extensions subscribers/ebooks)
 
 ---
 
