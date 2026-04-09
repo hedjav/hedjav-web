@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { verifyFedaPaySignature } from '@/lib/fedapay/verify'
-import { sendEmail } from '@/lib/email/sender'
-import { purchaseConfirmEmail } from '@/lib/email/templates'
+import { sendEmail } from '@/lib/email/smtp'
+import { purchaseConfirmationEmail } from '@/lib/email/templates'
 
 /**
  * POST /api/webhooks/fedapay
@@ -79,7 +79,8 @@ export async function POST(request: Request) {
   // Email de confirmation si paiement validé
   if (newStatus === 'paid' && purchase.email) {
     const ebookTitle = (purchase.ebook as { title?: string } | null)?.title ?? 'votre ebook'
-    const tpl = purchaseConfirmEmail({ ebookTitle, customerEmail: purchase.email as string })
+    const amount = purchase.amount as number ?? 0
+    const tpl = purchaseConfirmationEmail('', ebookTitle, amount)
     await sendEmail({
       to: purchase.email as string,
       subject: tpl.subject,
