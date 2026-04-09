@@ -3,6 +3,8 @@
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { sendEmail } from '@/lib/email/smtp'
+import { welcomeEmail } from '@/lib/email/templates'
 
 type ActionResult = { ok: true } | { ok: false; error: string }
 
@@ -37,6 +39,13 @@ export async function signUpAction(formData: FormData): Promise<ActionResult> {
   })
 
   if (error) return { ok: false, error: error.message }
+
+  // Email de bienvenue (no-op si SMTP_HOST non configuré)
+  const tpl = welcomeEmail(fullName)
+  sendEmail({ to: email, subject: tpl.subject, html: tpl.html, text: tpl.text }).catch((e) => {
+    console.error('[auth] welcome email failed', e)
+  })
+
   return { ok: true }
 }
 

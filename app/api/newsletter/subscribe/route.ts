@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
-import { sendEmail } from '@/lib/email/sender'
-import { welcomeNewsletterEmail } from '@/lib/email/templates'
+import { sendEmail } from '@/lib/email/smtp'
+import { newsletterSubscribedEmail } from '@/lib/email/templates'
 
 /**
  * POST /api/newsletter/subscribe
@@ -58,8 +58,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  // Email de bienvenue (no-op si RESEND_API_KEY non configuré)
-  const tpl = welcomeNewsletterEmail()
+  // Email de bienvenue (no-op si SMTP_HOST non configuré)
+  const tpl = newsletterSubscribedEmail('')
   sendEmail({ to: email, subject: tpl.subject, html: tpl.html, text: tpl.text }).catch((e) => {
     console.error('[newsletter] welcome email failed', e)
   })

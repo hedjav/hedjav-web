@@ -18,7 +18,7 @@ Maître d'œuvre : **KTALYZ SARL**.
 | **Phase 3 — Hub SaaS & Consulting** | M19–M36 | MonPatrimoine SaaS (sous-domaine), booking Calendly, chatbot IA, widget BRVM live | 380k–650k FCFA |
 | **Phase 4 — SGP & Rayonnement** | M37–M48 | Page SGP CREPMF, podcast, annuaire CGP, app mobile React Native | 300k–500k FCFA |
 
-**Stack pérenne 2026–2029** : Next.js 16 + Supabase + TypeScript + Tailwind + Resend (email) + Claude API (génération contenu) + FedaPay + Cloudflare. Architecture pensée pour évoluer **sans refonte** : site vitrine → LMS → SaaS → app mobile (réutilise 80% du code via React Native).
+**Stack pérenne 2026–2029** : Next.js 16 + Supabase + TypeScript + Tailwind + SMTP Hostinger (email) + Claude API (génération contenu) + FedaPay + Cloudflare. Architecture pensée pour évoluer **sans refonte** : site vitrine → LMS → SaaS → app mobile (réutilise 80% du code via React Native).
 
 ---
 
@@ -32,7 +32,7 @@ Maître d'œuvre : **KTALYZ SARL**.
 | Backend / BDD | Supabase (PostgreSQL + Auth + RLS) |
 | Hébergement | **Hostinger VPS** — PM2 + Nginx (PAS Vercel) |
 | CDN / DNS | Cloudflare |
-| Email | **Resend** REST API — fallback console.log si non configuré |
+| Email | **SMTP Hostinger** (nodemailer) — `noreply@egp.hedjav.com` — fallback console.log si SMTP_HOST vide |
 | Génération contenu | **Claude API** (claude-sonnet-4-6) — newsletter hebdo, articles auto |
 | Paiement | **FedaPay** (Wave, Orange Money, MTN MoMo, carte) |
 | Versioning | GitHub — repo `hedjav/hedjav-web` |
@@ -176,7 +176,8 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 ### API
 - `POST /api/articles` (bearer `INTERNAL_API_TOKEN`) — injection IA d'articles
 - `POST /api/newsletter/subscribe` — public, insère dans `newsletter_subscribers`
-- `POST /api/newsletter/send` (bearer `INTERNAL_API_TOKEN`) — génère via Claude + envoie via Resend
+- `POST /api/newsletter/send` (bearer `INTERNAL_API_TOKEN`) — génère via Claude + envoie via SMTP
+- `POST /api/newsletter/weekly` (bearer `INTERNAL_API_TOKEN`) — newsletter hebdo template statique via SMTP
 - `POST /api/purchases/init` — pré-paiement FedaPay
 - `POST /api/webhooks/fedapay` (HMAC-SHA256) — confirme paiement + email transactionnel
 - `POST /api/auth/signout` — clear cookies sb-* + retour client
@@ -213,8 +214,7 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 Voir `.env.local.example`. Clés sensibles :
 - `SUPABASE_SERVICE_ROLE_KEY` (admin)
 - `INTERNAL_API_TOKEN` (bearer pour `/api/articles`)
-- `RESEND_API_KEY` (envoi email — fallback console.log si vide)
-- `HEDJAV_SENDER_EMAIL`, `HEDJAV_SENDER_NAME` (expéditeur par défaut)
+- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` (SMTP Hostinger — fallback console.log si SMTP_HOST vide)
 - `ANTHROPIC_API_KEY` (génération newsletter hebdo — no-op si vide)
 - `FEDAPAY_API_KEY`, `FEDAPAY_WEBHOOK_SECRET`
 - `ADMIN_SETUP_CODE` (bootstrap premier admin via `/admin-setup`)
