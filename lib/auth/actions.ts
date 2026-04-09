@@ -6,6 +6,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { sendEmail } from '@/lib/email/smtp'
 import { welcomeEmail } from '@/lib/email/templates'
 import { createNotification } from '@/lib/notifications/queries'
+import { validatePassword } from '@/lib/utils/validation'
 
 type ActionResult = { ok: true } | { ok: false; error: string }
 
@@ -19,9 +20,8 @@ export async function signUpAction(formData: FormData): Promise<ActionResult> {
   if (!email || !password || !fullName) {
     return { ok: false, error: 'Tous les champs marqués sont obligatoires.' }
   }
-  if (password.length < 8) {
-    return { ok: false, error: 'Le mot de passe doit faire au moins 8 caractères.' }
-  }
+  const pwCheck = validatePassword(password)
+  if (!pwCheck.isValid) return { ok: false, error: pwCheck.errors.join('. ') }
 
   const supabase = await createSupabaseServerClient()
   const origin = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'

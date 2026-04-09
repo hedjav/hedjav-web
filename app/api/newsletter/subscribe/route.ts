@@ -4,27 +4,37 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { sendEmail } from '@/lib/email/smtp'
 import { newsletterSubscribedEmail } from '@/lib/email/templates'
 import { createNotification } from '@/lib/notifications/queries'
+import { normalizeEmail } from '@/lib/utils/validation'
 
 /**
  * POST /api/newsletter/subscribe
- * Body : { email, source?: 'home' | 'article' | 'footer' | 'register' }
+ * Body : { email, source?, first_name?, type?: 'editorial'|'lead_magnet', phone?, ebook_id? }
  *
  * Insère l'email dans la table newsletter_subscribers.
  * Idempotent : upsert sur email (réactive si déjà présent).
- * Si l'utilisateur est connecté → met aussi à jour profile.newsletter_opt = true.
+ * Si l'utilisateur est connecté -> met aussi à jour profile.newsletter_opt = true.
  */
 export async function POST(request: Request) {
-  let payload: { email?: string; source?: string; first_name?: string }
+  let payload: {
+    email?: string
+    source?: string
+    first_name?: string
+    type?: 'editorial' | 'lead_magnet'
+    phone?: string
+    ebook_id?: string
+  }
   try {
     payload = await request.json()
   } catch {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const email = payload.email?.trim().toLowerCase()
-  if (!email || !email.includes('@')) {
+  const rawEmail = payload.email?.trim().toLowerCase()
+  if (!rawEmail || !rawEmail.includes('@')) {
     return NextResponse.json({ error: 'Email invalide' }, { status: 400 })
   }
+
+  const emailNormalized = normalizeEmail(rawEmail)
 
   // Service role pour bypass RLS sur upsert
   const admin = createClient(
@@ -38,16 +48,28 @@ export async function POST(request: Request) {
   const tagMap: Record<string, string> = { popup_ia: 'ia', popup_brvm: 'brvm', popup_patrimoine: 'patrimoine' }
   const tag = tagMap[source]
 
+  // Check if already subscribed and active
+  const { data: existing } = await admin
+    .from('newsletter_subscribers')
+    .select('email, is_active')
+    .eq('email', emailNormalized)
+    .maybeSingle()
+
+  const alreadySubscribed = existing?.is_active === true
+
   const { error } = await admin
     .from('newsletter_subscribers')
     .upsert(
       {
-        email,
+        email: emailNormalized,
         source,
         first_name: payload.first_name ?? null,
         is_active: true,
         unsubscribed_at: null,
         ...(tag ? { tags: [tag] } : {}),
+        ...(payload.type ? { subscriber_type: payload.type } : {}),
+        ...(payload.phone ? { phone: payload.phone } : {}),
+        ...(payload.ebook_id ? { lead_magnet_ebook_id: payload.ebook_id } : {}),
       },
       { onConflict: 'email' },
     )
@@ -64,6 +86,11 @@ export async function POST(request: Request) {
       )
     }
     return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+
+  // Si déjà inscrit et actif, retourner tôt
+  if (alreadySubscribed) {
+    return NextResponse.json({ ok: true, alreadySubscribed: true, message: 'Vous êtes déjà inscrit !' }, { status: 200 })
   }
 
   // Enrôlement automatique dans une campagne welcome active si tags correspondent
@@ -83,7 +110,7 @@ export async function POST(request: Request) {
         await admin
           .from('newsletter_subscribers')
           .update({ enrolled_campaign_id: campaign.id, campaign_step: 0 })
-          .eq('email', email)
+          .eq('email', emailNormalized)
       }
     }
   } catch (e) {
@@ -92,7 +119,7 @@ export async function POST(request: Request) {
 
   // Email de bienvenue (no-op si SMTP_HOST non configuré)
   const tpl = newsletterSubscribedEmail(payload.first_name ?? '')
-  sendEmail({ to: email, subject: tpl.subject, html: tpl.html, text: tpl.text }).catch((e) => {
+  sendEmail({ to: rawEmail, subject: tpl.subject, html: tpl.html, text: tpl.text }).catch((e) => {
     console.error('[newsletter] welcome email failed', e)
   })
 
@@ -111,7 +138,7 @@ export async function POST(request: Request) {
   }
 
   // Notification admin
-  createNotification('subscriber', 'Nouvel abonne newsletter', email).catch((e) => {
+  createNotification('subscriber', 'Nouvel abonne newsletter', rawEmail).catch((e) => {
     console.error('[newsletter] notification failed', e)
   })
 

@@ -1,6 +1,11 @@
 import Link from 'next/link'
 
-export function FinalCTA() {
+type FinalCTAProps = {
+  title?: string
+  subtitle?: string
+}
+
+export function FinalCTA({ title, subtitle }: FinalCTAProps = {}) {
   return (
     <section
       style={{
@@ -16,7 +21,7 @@ export function FinalCTA() {
           className="h2"
           style={{ marginBottom: 'var(--s6)', color: 'var(--cta-title)' }}
         >
-          Prêt à bâtir votre patrimoine en UEMOA ?
+          {title ?? 'Prêt à bâtir votre patrimoine en UEMOA ?'}
         </h2>
         <p
           style={{
@@ -27,8 +32,7 @@ export function FinalCTA() {
             marginBottom: 'var(--s8)',
           }}
         >
-          Découvrez nos ebooks pratiques, nos guides BRVM et nos premières
-          formations en ligne — pensés et écrits pour l&apos;Afrique francophone.
+          {subtitle ?? "Découvrez nos ebooks pratiques, nos guides BRVM et nos premières formations en ligne \u2014 pensés et écrits pour l\u2019Afrique francophone."}
         </p>
         <div
           style={{
