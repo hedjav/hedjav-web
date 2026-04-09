@@ -37,7 +37,7 @@ export async function Header() {
             fontFamily: 'var(--fd)',
             fontWeight: 600,
             fontSize: 'var(--text-3xl)',
-            color: 'var(--n900)',
+            color: 'var(--text)',
             lineHeight: 1,
             letterSpacing: '.01em',
           }}

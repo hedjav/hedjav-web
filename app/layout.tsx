@@ -29,7 +29,7 @@ const dmMono = DM_Mono({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://hedjav.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://egp.hedjav.com'),
   title: {
     default: 'Hedjav — École en ligne de la Gestion de Patrimoine · Zone UEMOA',
     template: '%s · Hedjav',
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'fr_FR',
-    url: 'https://hedjav.com',
+    url: process.env.NEXT_PUBLIC_APP_URL ?? 'https://egp.hedjav.com',
     siteName: 'Hedjav',
     title: 'Hedjav — École en ligne de la Gestion de Patrimoine · Zone UEMOA',
     description:
