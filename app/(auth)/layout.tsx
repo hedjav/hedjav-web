@@ -1,10 +1,9 @@
-import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeProvider>
+    <>
       <Header />
       <main className="flex-1">
         <div
@@ -33,6 +32,6 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         </div>
       </main>
       <Footer />
-    </ThemeProvider>
+    </>
   )
 }
