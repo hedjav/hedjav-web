@@ -5,7 +5,7 @@ import { createClient } from '@supabase/supabase-js'
 import { AdminArticleForm } from '@/components/features/AdminArticleForm'
 import type { Article } from '@/lib/supabase/types'
 
-export const metadata: Metadata = { title: 'Admin — Éditer article' }
+export const metadata: Metadata = { title: 'Admin — Editer article' }
 
 type PageProps = { params: Promise<{ id: string }> }
 
@@ -23,7 +23,7 @@ export default async function EditArticlePage({ params }: PageProps) {
     <>
       <Link
         href="/admin/articles"
-        style={{ color: '#6B82B0', fontSize: 13, marginBottom: 16, display: 'inline-block' }}
+        style={{ color: 'var(--admin-text-muted)', fontSize: 13, marginBottom: 16, display: 'inline-block' }}
       >
         ← Retour aux articles
       </Link>
@@ -32,11 +32,11 @@ export default async function EditArticlePage({ params }: PageProps) {
           fontFamily: 'var(--fd)',
           fontSize: 28,
           fontWeight: 600,
-          color: '#fff',
+          color: 'var(--admin-text)',
           marginBottom: 32,
         }}
       >
-        Éditer : {(data as Article).title}
+        Editer : {(data as Article).title}
       </h1>
       <AdminArticleForm article={data as Article} />
     </>

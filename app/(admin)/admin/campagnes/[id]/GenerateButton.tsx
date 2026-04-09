@@ -20,13 +20,13 @@ export function GenerateButton({ campaignId, position, hasContent }: { campaignI
       })
       const data = await res.json()
       if (data.subject) {
-        setResult(`✓ ${data.subject}`)
+        setResult(`OK: ${data.subject}`)
         window.location.reload()
       } else {
-        setResult(`✗ ${data.error ?? 'Erreur'}`)
+        setResult(`Err: ${data.error ?? 'Erreur'}`)
       }
     } catch {
-      setResult('✗ Erreur réseau')
+      setResult('Err: Erreur reseau')
     } finally {
       setLoading(false)
     }
@@ -44,14 +44,14 @@ export function GenerateButton({ campaignId, position, hasContent }: { campaignI
           borderRadius: '6px',
           border: 'none',
           cursor: 'pointer',
-          background: hasContent ? 'rgba(255,255,255,.08)' : '#C5A028',
-          color: hasContent ? '#E0E6EF' : '#fff',
+          background: hasContent ? 'rgba(255,255,255,.08)' : 'var(--admin-accent)',
+          color: hasContent ? 'var(--admin-text)' : '#0F1117',
           opacity: loading ? 0.5 : 1,
         }}
       >
-        {loading ? 'Génération...' : hasContent ? 'Regénérer IA' : 'Générer IA'}
+        {loading ? 'Generation...' : hasContent ? 'Regenerer IA' : 'Generer IA'}
       </button>
-      {result && <span style={{ fontSize: '11px', color: result.startsWith('✓') ? '#4ade80' : '#ff6b6b' }}>{result}</span>}
+      {result && <span style={{ fontSize: '11px', color: result.startsWith('OK') ? '#4ade80' : '#ff6b6b' }}>{result}</span>}
     </div>
   )
 }

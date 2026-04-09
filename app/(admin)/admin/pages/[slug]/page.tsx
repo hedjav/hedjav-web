@@ -49,6 +49,17 @@ async function updatePageAction(formData: FormData) {
   redirect('/admin/pages')
 }
 
+const labelStyle = { fontSize: 11, textTransform: 'uppercase' as const, letterSpacing: '.1em', color: 'var(--admin-text-muted)', fontWeight: 600 }
+const fieldInputStyle = {
+  padding: '10px 14px',
+  background: 'var(--admin-bg)',
+  border: '1px solid var(--admin-border)',
+  borderRadius: 8,
+  color: 'var(--admin-text)',
+  fontFamily: 'var(--fb)',
+  fontSize: 13,
+}
+
 export default async function AdminPageEditPage({ params }: PageProps) {
   const { slug } = await params
   const page = await getPage(slug)
@@ -58,7 +69,7 @@ export default async function AdminPageEditPage({ params }: PageProps) {
     <div style={{ maxWidth: 760 }}>
       <Link
         href="/admin/pages"
-        style={{ color: '#6B82B0', textDecoration: 'none', fontSize: 13, marginBottom: 24, display: 'inline-block' }}
+        style={{ color: 'var(--admin-text-muted)', textDecoration: 'none', fontSize: 13, marginBottom: 24, display: 'inline-block' }}
       >
         ← Retour aux pages
       </Link>
@@ -68,7 +79,7 @@ export default async function AdminPageEditPage({ params }: PageProps) {
           fontFamily: 'var(--fd)',
           fontSize: 28,
           fontWeight: 600,
-          color: '#fff',
+          color: 'var(--admin-text)',
           marginBottom: 32,
         }}
       >
@@ -81,88 +92,49 @@ export default async function AdminPageEditPage({ params }: PageProps) {
       >
         <input type="hidden" name="slug" value={page.slug} />
 
-        {/* Titre */}
         <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '.1em', color: '#6B82B0', fontWeight: 600 }}>
-            Titre
-          </span>
-          <input
-            name="title"
-            defaultValue={page.title}
-            required
-            style={{
-              padding: '10px 14px',
-              background: '#0D1628',
-              border: '1px solid rgba(255,255,255,.12)',
-              borderRadius: 8,
-              color: '#E0E6EF',
-              fontFamily: 'var(--fb)',
-              fontSize: 13,
-            }}
-          />
+          <span style={labelStyle}>Titre</span>
+          <input name="title" defaultValue={page.title} required style={fieldInputStyle} />
         </label>
 
-        {/* Slug (readonly) */}
         <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '.1em', color: '#6B82B0', fontWeight: 600 }}>
-            Slug
-          </span>
+          <span style={labelStyle}>Slug</span>
           <input
             value={page.slug}
             readOnly
             style={{
-              padding: '10px 14px',
+              ...fieldInputStyle,
               background: 'rgba(13,22,40,.5)',
-              border: '1px solid rgba(255,255,255,.06)',
-              borderRadius: 8,
-              color: '#6B82B0',
+              color: 'var(--admin-text-muted)',
               fontFamily: 'var(--fm)',
-              fontSize: 13,
               cursor: 'not-allowed',
             }}
           />
         </label>
 
-        {/* Body */}
         <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '.1em', color: '#6B82B0', fontWeight: 600 }}>
-            Contenu (Markdown)
-          </span>
+          <span style={labelStyle}>Contenu (Markdown)</span>
           <textarea
             name="body"
             defaultValue={page.body ?? ''}
             rows={20}
             style={{
-              padding: '10px 14px',
-              background: '#0D1628',
-              border: '1px solid rgba(255,255,255,.12)',
-              borderRadius: 8,
-              color: '#E0E6EF',
+              ...fieldInputStyle,
               fontFamily: 'var(--fm)',
-              fontSize: 13,
               resize: 'vertical',
               minHeight: 400,
             }}
           />
         </label>
 
-        {/* Meta description */}
         <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '.1em', color: '#6B82B0', fontWeight: 600 }}>
-            Meta description (SEO)
-          </span>
+          <span style={labelStyle}>Meta description (SEO)</span>
           <textarea
             name="meta_description"
             defaultValue={page.meta_description ?? ''}
             rows={3}
             style={{
-              padding: '10px 14px',
-              background: '#0D1628',
-              border: '1px solid rgba(255,255,255,.12)',
-              borderRadius: 8,
-              color: '#E0E6EF',
-              fontFamily: 'var(--fb)',
-              fontSize: 13,
+              ...fieldInputStyle,
               resize: 'vertical',
             }}
           />
@@ -171,8 +143,8 @@ export default async function AdminPageEditPage({ params }: PageProps) {
         <button
           type="submit"
           style={{
-            background: '#C5A028',
-            color: '#fff',
+            background: 'var(--admin-accent)',
+            color: '#0F1117',
             padding: '10px 24px',
             borderRadius: 8,
             border: 'none',

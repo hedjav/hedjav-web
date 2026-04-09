@@ -38,13 +38,13 @@ export default async function AdminConfigPage() {
           fontFamily: 'var(--fd)',
           fontSize: 32,
           fontWeight: 600,
-          color: '#fff',
+          color: 'var(--admin-text)',
           marginBottom: 8,
         }}
       >
         Configuration
       </h1>
-      <p style={{ color: '#6B82B0', fontSize: 14, marginBottom: 32 }}>
+      <p style={{ color: 'var(--admin-text-muted)', fontSize: 14, marginBottom: 32 }}>
         Paramètres globaux du site. Les modifications sont appliquées immédiatement.
       </p>
 
@@ -53,10 +53,10 @@ export default async function AdminConfigPage() {
           <div
             key={category}
             style={{
-              background: '#1B2A4A',
+              background: 'var(--admin-surface)',
               borderRadius: 16,
               padding: 24,
-              border: '1px solid rgba(255,255,255,.08)',
+              border: '1px solid var(--admin-border)',
               marginBottom: 24,
             }}
           >
@@ -65,7 +65,7 @@ export default async function AdminConfigPage() {
                 fontSize: 11,
                 textTransform: 'uppercase',
                 letterSpacing: '.15em',
-                color: '#C5A028',
+                color: 'var(--admin-accent)',
                 fontWeight: 700,
                 marginBottom: 20,
               }}
@@ -81,7 +81,7 @@ export default async function AdminConfigPage() {
                       display: 'block',
                       fontSize: 13,
                       fontWeight: 600,
-                      color: '#E0E6EF',
+                      color: 'var(--admin-text)',
                       marginBottom: 4,
                     }}
                   >
@@ -91,7 +91,7 @@ export default async function AdminConfigPage() {
                     <div
                       style={{
                         fontSize: 11,
-                        color: '#6B82B0',
+                        color: 'var(--admin-text-muted)',
                         marginBottom: 6,
                       }}
                     >
@@ -114,10 +114,10 @@ export default async function AdminConfigPage() {
                     style={{
                       width: '100%',
                       padding: '10px 14px',
-                      background: '#0D1628',
-                      border: '1px solid rgba(255,255,255,.12)',
+                      background: 'var(--admin-bg)',
+                      border: '1px solid var(--admin-border)',
                       borderRadius: 8,
-                      color: '#E0E6EF',
+                      color: 'var(--admin-text)',
                       fontFamily: 'var(--fb)',
                       fontSize: 13,
                       boxSizing: 'border-box',
@@ -132,8 +132,8 @@ export default async function AdminConfigPage() {
         <button
           type="submit"
           style={{
-            background: '#C5A028',
-            color: '#fff',
+            background: 'var(--admin-accent)',
+            color: '#0F1117',
             padding: '12px 32px',
             borderRadius: 8,
             border: 'none',

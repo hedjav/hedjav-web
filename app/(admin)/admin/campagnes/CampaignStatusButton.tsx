@@ -31,8 +31,8 @@ export function CampaignStatusButton({ id, currentStatus }: { id: string; curren
         borderRadius: '6px',
         border: 'none',
         cursor: 'pointer',
-        background: next === 'active' ? '#C5A028' : 'rgba(255,255,255,.1)',
-        color: next === 'active' ? '#fff' : '#E0E6EF',
+        background: next === 'active' ? 'var(--admin-accent)' : 'rgba(255,255,255,.1)',
+        color: next === 'active' ? '#0F1117' : 'var(--admin-text)',
         opacity: pending ? 0.5 : 1,
       }}
     >

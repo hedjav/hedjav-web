@@ -1,36 +1,94 @@
+'use client'
+
+import { useState } from 'react'
 import { upsertArticleAction, deleteArticleAction } from '@/lib/admin/actions'
+import { MediaPicker } from '@/components/admin/MediaPicker'
 import type { Article } from '@/lib/supabase/types'
+
+const CATEGORIES = [
+  'BRVM',
+  'Patrimoine',
+  'IA & productivite',
+  'Immobilier',
+  'Entrepreneuriat',
+  'Finance personnelle',
+]
 
 type Props = { article?: Article | null }
 
 export function AdminArticleForm({ article }: Props) {
+  const [coverUrl, setCoverUrl] = useState(article?.cover_image_url ?? '')
+  const [categoryMode, setCategoryMode] = useState<'select' | 'custom'>(
+    article?.category && !CATEGORIES.includes(article.category) ? 'custom' : 'select',
+  )
+  const [customCategory, setCustomCategory] = useState(
+    article?.category && !CATEGORIES.includes(article.category) ? article.category : '',
+  )
+  const [selectedCategory, setSelectedCategory] = useState(
+    article?.category && CATEGORIES.includes(article.category) ? article.category : CATEGORIES[0],
+  )
+
+  const categoryValue = categoryMode === 'custom' ? customCategory : selectedCategory
+
   return (
     <form
       action={upsertArticleAction}
       style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 880 }}
     >
       {article?.id && <input type="hidden" name="id" value={article.id} />}
+      <input type="hidden" name="cover_image_url" value={coverUrl} />
+      <input type="hidden" name="category" value={categoryValue} />
 
       <Field label="Titre" name="title" defaultValue={article?.title ?? ''} required />
       <Field label="Slug (auto si vide)" name="slug" defaultValue={article?.slug ?? ''} />
-      <Field label="Catégorie" name="category" defaultValue={article?.category ?? ''} required />
+
+      {/* Category dropdown */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <span style={labelStyle}>Categorie</span>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <select
+            value={categoryMode === 'custom' ? '__other__' : selectedCategory}
+            onChange={(e) => {
+              if (e.target.value === '__other__') {
+                setCategoryMode('custom')
+              } else {
+                setCategoryMode('select')
+                setSelectedCategory(e.target.value)
+              }
+            }}
+            style={{ ...inputStyle, flex: 1 }}
+          >
+            {CATEGORIES.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+            <option value="__other__">Autre (saisir)</option>
+          </select>
+          {categoryMode === 'custom' && (
+            <input
+              value={customCategory}
+              onChange={(e) => setCustomCategory(e.target.value)}
+              placeholder="Categorie personnalisee"
+              style={{ ...inputStyle, flex: 1 }}
+              required
+            />
+          )}
+        </div>
+      </div>
+
       <Textarea
-        label="Excerpt (résumé)"
+        label="Excerpt (resume)"
         name="excerpt"
         rows={2}
         defaultValue={article?.excerpt ?? ''}
         required
       />
-      <Field label="URL cover" name="cover_image_url" defaultValue={article?.cover_image_url ?? ''} />
-      {article?.cover_image_url && (
-        <div style={{ marginTop: -12 }}>
-          <img
-            src={article.cover_image_url}
-            alt="Preview"
-            style={{ height: 80, borderRadius: 6, objectFit: 'cover' }}
-          />
-        </div>
-      )}
+
+      {/* Cover with MediaPicker */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <span style={labelStyle}>Image de couverture</span>
+        <MediaPicker value={coverUrl} onChange={setCoverUrl} />
+      </div>
+
       <Field
         label="Auteur"
         name="author"
@@ -46,7 +104,7 @@ export function AdminArticleForm({ article }: Props) {
 
       <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
         <Checkbox
-          label="Publié"
+          label="Publie"
           name="is_published"
           defaultChecked={article?.is_published ?? false}
         />
@@ -57,8 +115,8 @@ export function AdminArticleForm({ article }: Props) {
         <button
           type="submit"
           style={{
-            background: '#C5A028',
-            color: '#fff',
+            background: 'var(--admin-accent)',
+            color: '#0F1117',
             padding: '10px 24px',
             borderRadius: 8,
             border: 'none',
@@ -94,23 +152,31 @@ export function AdminArticleForm({ article }: Props) {
   )
 }
 
+const labelStyle = {
+  fontSize: 11,
+  textTransform: 'uppercase' as const,
+  letterSpacing: '.1em',
+  color: 'var(--admin-text-muted)',
+  fontWeight: 600,
+}
+
+const inputStyle = {
+  padding: '10px 14px',
+  background: 'var(--admin-bg)',
+  border: '1px solid var(--admin-border)',
+  borderRadius: 8,
+  color: 'var(--admin-text)',
+  fontFamily: 'var(--fb)',
+  fontSize: 13,
+} as const
+
 function Field({
   label,
   ...rest
 }: React.InputHTMLAttributes<HTMLInputElement> & { label: string }) {
   return (
     <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-      <span
-        style={{
-          fontSize: 11,
-          textTransform: 'uppercase',
-          letterSpacing: '.1em',
-          color: '#6B82B0',
-          fontWeight: 600,
-        }}
-      >
-        {label}
-      </span>
+      <span style={labelStyle}>{label}</span>
       <input {...rest} style={inputStyle} />
     </label>
   )
@@ -122,17 +188,7 @@ function Textarea({
 }: React.TextareaHTMLAttributes<HTMLTextAreaElement> & { label: string }) {
   return (
     <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-      <span
-        style={{
-          fontSize: 11,
-          textTransform: 'uppercase',
-          letterSpacing: '.1em',
-          color: '#6B82B0',
-          fontWeight: 600,
-        }}
-      >
-        {label}
-      </span>
+      <span style={labelStyle}>{label}</span>
       <textarea {...rest} style={{ ...inputStyle, resize: 'vertical', fontFamily: 'var(--fm)' }} />
     </label>
   )
@@ -149,7 +205,7 @@ function Checkbox({
         alignItems: 'center',
         gap: 8,
         fontSize: 13,
-        color: '#E0E6EF',
+        color: 'var(--admin-text)',
         cursor: 'pointer',
       }}
     >
@@ -158,13 +214,3 @@ function Checkbox({
     </label>
   )
 }
-
-const inputStyle = {
-  padding: '10px 14px',
-  background: '#0D1628',
-  border: '1px solid rgba(255,255,255,.12)',
-  borderRadius: 8,
-  color: '#E0E6EF',
-  fontFamily: 'var(--fb)',
-  fontSize: 13,
-} as const

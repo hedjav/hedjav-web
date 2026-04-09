@@ -17,7 +17,7 @@ export default async function CampaignDetailPage({ params }: Props) {
     getSubscribersForCampaign(campaign),
   ])
 
-  // Score des abonnés
+  // Score des abonnes
   const scoredSubs = await Promise.all(
     subscribers.slice(0, 50).map(async (s) => ({
       ...s,
@@ -28,17 +28,17 @@ export default async function CampaignDetailPage({ params }: Props) {
   const openRate = stats.sent > 0 ? Math.round((stats.opened / stats.sent) * 100) : 0
   const clickRate = stats.sent > 0 ? Math.round((stats.clicked / stats.sent) * 100) : 0
 
-  const statBoxStyle = { background: '#1B2A4A', borderRadius: 'var(--r12)', padding: 'var(--s4) var(--s5)', textAlign: 'center' as const }
-  const statValueStyle = { fontFamily: 'var(--fd)', fontSize: 'var(--text-3xl)', fontWeight: 700, color: '#fff' }
-  const statLabelStyle = { fontSize: 'var(--text-xs)', color: '#C5A028', textTransform: 'uppercase' as const, letterSpacing: '.1em', marginTop: '4px' }
+  const statBoxStyle = { background: 'var(--admin-surface)', borderRadius: 'var(--r12)', padding: 'var(--s4) var(--s5)', textAlign: 'center' as const, border: '1px solid var(--admin-border)' }
+  const statValueStyle = { fontFamily: 'var(--fd)', fontSize: 'var(--text-3xl)', fontWeight: 700, color: 'var(--admin-text)' }
+  const statLabelStyle = { fontSize: 'var(--text-xs)', color: 'var(--admin-accent)', textTransform: 'uppercase' as const, letterSpacing: '.1em', marginTop: '4px' }
 
   return (
     <>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--s6)' }}>
         <div>
-          <h1 style={{ fontFamily: 'var(--fd)', fontSize: 'var(--text-4xl)', color: '#fff' }}>{campaign.name}</h1>
-          <p style={{ fontSize: 'var(--text-sm)', color: 'rgba(255,255,255,.4)', marginTop: '4px' }}>{campaign.type} · tags: {(campaign.target_tags ?? []).join(', ') || 'tous'}</p>
+          <h1 style={{ fontFamily: 'var(--fd)', fontSize: 'var(--text-4xl)', color: 'var(--admin-text)' }}>{campaign.name}</h1>
+          <p style={{ fontSize: 'var(--text-sm)', color: 'var(--admin-text-muted)', marginTop: '4px' }}>{campaign.type} -- tags: {(campaign.target_tags ?? []).join(', ') || 'tous'}</p>
         </div>
         <CampaignStatusButton id={id} currentStatus={campaign.status} />
       </div>
@@ -46,64 +46,64 @@ export default async function CampaignDetailPage({ params }: Props) {
       {/* Stats */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--s4)', marginBottom: 'var(--s8)' }}>
         <div style={statBoxStyle}><div style={statValueStyle}>{stats.emails}</div><div style={statLabelStyle}>Emails</div></div>
-        <div style={statBoxStyle}><div style={statValueStyle}>{stats.sent}</div><div style={statLabelStyle}>Envoyés</div></div>
+        <div style={statBoxStyle}><div style={statValueStyle}>{stats.sent}</div><div style={statLabelStyle}>Envoyes</div></div>
         <div style={statBoxStyle}><div style={statValueStyle}>{openRate}%</div><div style={statLabelStyle}>Ouverture</div></div>
         <div style={statBoxStyle}><div style={statValueStyle}>{clickRate}%</div><div style={statLabelStyle}>Clics</div></div>
       </div>
 
-      {/* Séquence emails */}
-      <h2 style={{ fontFamily: 'var(--fd)', fontSize: 'var(--text-2xl)', color: '#fff', marginBottom: 'var(--s4)' }}>Séquence d&apos;emails</h2>
+      {/* Sequence emails */}
+      <h2 style={{ fontFamily: 'var(--fd)', fontSize: 'var(--text-2xl)', color: 'var(--admin-text)', marginBottom: 'var(--s4)' }}>Sequence d&apos;emails</h2>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s4)', marginBottom: 'var(--s8)' }}>
         {emails.map((e) => (
-          <div key={e.id} style={{ background: '#1B2A4A', borderRadius: 'var(--r12)', padding: 'var(--s4) var(--s5)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--s4)' }}>
+          <div key={e.id} style={{ background: 'var(--admin-surface)', borderRadius: 'var(--r12)', padding: 'var(--s4) var(--s5)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--s4)', border: '1px solid var(--admin-border)' }}>
             <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--s3)' }}>
-                <span style={{ background: '#C5A028', color: '#fff', borderRadius: '9999px', width: 28, height: 28, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 700, flexShrink: 0 }}>
+                <span style={{ background: 'var(--admin-accent)', color: '#0F1117', borderRadius: '9999px', width: 28, height: 28, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 700, flexShrink: 0 }}>
                   {e.position}
                 </span>
-                <strong style={{ color: '#E0E6EF' }}>{e.subject}</strong>
+                <strong style={{ color: 'var(--admin-text)' }}>{e.subject}</strong>
               </div>
-              <div style={{ fontSize: 'var(--text-xs)', color: 'rgba(255,255,255,.4)', marginTop: '4px' }}>
-                J+{e.delay_days} · {e.body_html ? 'HTML prêt' : 'Pas de contenu'}
+              <div style={{ fontSize: 'var(--text-xs)', color: 'var(--admin-text-muted)', marginTop: '4px' }}>
+                J+{e.delay_days} -- {e.body_html ? 'HTML pret' : 'Pas de contenu'}
               </div>
             </div>
             <GenerateButton campaignId={id} position={e.position} hasContent={Boolean(e.body_html)} />
           </div>
         ))}
         {emails.length === 0 && (
-          <p style={{ color: 'rgba(255,255,255,.4)', fontStyle: 'italic' }}>Aucun email dans la séquence</p>
+          <p style={{ color: 'var(--admin-text-muted)', fontStyle: 'italic' }}>Aucun email dans la sequence</p>
         )}
       </div>
 
       {/* Ajouter un email */}
       <AddEmailForm campaignId={id} nextPosition={emails.length + 1} />
 
-      {/* Abonnés */}
-      <h2 style={{ fontFamily: 'var(--fd)', fontSize: 'var(--text-2xl)', color: '#fff', margin: 'var(--s8) 0 var(--s4)' }}>
-        Abonnés ({subscribers.length})
+      {/* Abonnes */}
+      <h2 style={{ fontFamily: 'var(--fd)', fontSize: 'var(--text-2xl)', color: 'var(--admin-text)', margin: 'var(--s8) 0 var(--s4)' }}>
+        Abonnes ({subscribers.length})
       </h2>
-      <div style={{ background: '#1B2A4A', borderRadius: 'var(--r16)', overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', color: '#E0E6EF' }}>
+      <div style={{ background: 'var(--admin-surface)', borderRadius: 'var(--r16)', overflow: 'hidden', border: '1px solid var(--admin-border)' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', color: 'var(--admin-text)' }}>
           <thead>
             <tr style={{ background: 'rgba(0,0,0,.2)' }}>
               {['Email', 'Step', 'Dernier envoi', 'Score'].map((h) => (
-                <th key={h} style={{ padding: 'var(--s3) var(--s4)', textAlign: 'left', fontSize: 'var(--text-xs)', color: '#C5A028', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.1em' }}>{h}</th>
+                <th key={h} style={{ padding: 'var(--s3) var(--s4)', textAlign: 'left', fontSize: 'var(--text-xs)', color: 'var(--admin-accent)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.1em' }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {scoredSubs.map((s) => (
-              <tr key={s.email} style={{ borderTop: '1px solid rgba(255,255,255,.05)' }}>
+              <tr key={s.email} style={{ borderTop: '1px solid var(--admin-border)' }}>
                 <td style={{ padding: 'var(--s3) var(--s4)', fontSize: 'var(--text-sm)' }}>{s.email}</td>
                 <td style={{ padding: 'var(--s3) var(--s4)', fontFamily: 'var(--fm)' }}>{s.campaign_step}/{emails.length}</td>
-                <td style={{ padding: 'var(--s3) var(--s4)', fontSize: 'var(--text-xs)', color: 'rgba(255,255,255,.4)' }}>
-                  {s.last_email_sent_at ? new Date(s.last_email_sent_at).toLocaleDateString('fr-FR') : '—'}
+                <td style={{ padding: 'var(--s3) var(--s4)', fontSize: 'var(--text-xs)', color: 'var(--admin-text-muted)' }}>
+                  {s.last_email_sent_at ? new Date(s.last_email_sent_at).toLocaleDateString('fr-FR') : '--'}
                 </td>
                 <td style={{ padding: 'var(--s3) var(--s4)' }}>
                   <span style={{
                     padding: '2px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600,
                     background: s.level === 'chaud' ? 'rgba(255,80,80,.2)' : s.level === 'tiede' ? 'rgba(255,190,0,.2)' : 'rgba(255,255,255,.08)',
-                    color: s.level === 'chaud' ? '#ff6b6b' : s.level === 'tiede' ? '#fbbf24' : 'rgba(255,255,255,.5)',
+                    color: s.level === 'chaud' ? '#ff6b6b' : s.level === 'tiede' ? '#fbbf24' : 'var(--admin-text-muted)',
                   }}>
                     {s.level} ({s.score})
                   </span>
@@ -111,7 +111,7 @@ export default async function CampaignDetailPage({ params }: Props) {
               </tr>
             ))}
             {scoredSubs.length === 0 && (
-              <tr><td colSpan={4} style={{ padding: 'var(--s6)', textAlign: 'center', color: 'rgba(255,255,255,.4)' }}>Aucun abonné</td></tr>
+              <tr><td colSpan={4} style={{ padding: 'var(--s6)', textAlign: 'center', color: 'var(--admin-text-muted)' }}>Aucun abonne</td></tr>
             )}
           </tbody>
         </table>

@@ -1,15 +1,22 @@
+'use client'
+
+import { useState } from 'react'
 import { upsertEbookAction, deleteEbookAction } from '@/lib/admin/actions'
+import { MediaPicker } from '@/components/admin/MediaPicker'
 import type { Ebook } from '@/lib/supabase/types'
 
 type Props = { ebook?: Ebook | null }
 
 export function AdminEbookForm({ ebook }: Props) {
+  const [coverUrl, setCoverUrl] = useState(ebook?.cover_image_url ?? '')
+
   return (
     <form
       action={upsertEbookAction}
       style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 760 }}
     >
       {ebook?.id && <input type="hidden" name="id" value={ebook.id} />}
+      <input type="hidden" name="cover_image_url" value={coverUrl} />
 
       <Field label="Titre" name="title" defaultValue={ebook?.title ?? ''} required />
       <Field label="Slug (auto si vide)" name="slug" defaultValue={ebook?.slug ?? ''} />
@@ -38,7 +45,7 @@ export function AdminEbookForm({ ebook }: Props) {
           required
         />
         <Field
-          label="Prix barré (FCFA)"
+          label="Prix barre (FCFA)"
           name="original_price"
           type="number"
           defaultValue={String(ebook?.original_price ?? 15000)}
@@ -46,16 +53,11 @@ export function AdminEbookForm({ ebook }: Props) {
         />
       </div>
 
-      <Field label="URL cover" name="cover_image_url" defaultValue={ebook?.cover_image_url ?? ''} />
-      {ebook?.cover_image_url && (
-        <div style={{ marginTop: -12 }}>
-          <img
-            src={ebook.cover_image_url}
-            alt="Preview"
-            style={{ height: 80, borderRadius: 6, objectFit: 'cover' }}
-          />
-        </div>
-      )}
+      {/* Cover with MediaPicker */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <span style={labelStyle}>Image de couverture</span>
+        <MediaPicker value={coverUrl} onChange={setCoverUrl} />
+      </div>
 
       <Field label="Lien FedaPay" name="fedapay_link" defaultValue={ebook?.fedapay_link ?? ''} required />
 
@@ -85,7 +87,7 @@ export function AdminEbookForm({ ebook }: Props) {
       />
 
       <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
-        <Checkbox label="Publié" name="is_published" defaultChecked={ebook?.is_published ?? false} />
+        <Checkbox label="Publie" name="is_published" defaultChecked={ebook?.is_published ?? false} />
         <Checkbox label="Featured" name="is_featured" defaultChecked={ebook?.is_featured ?? false} />
       </div>
 
@@ -93,8 +95,8 @@ export function AdminEbookForm({ ebook }: Props) {
         <button
           type="submit"
           style={{
-            background: '#C5A028',
-            color: '#fff',
+            background: 'var(--admin-accent)',
+            color: '#0F1117',
             padding: '10px 24px',
             borderRadius: 8,
             border: 'none',
@@ -130,35 +132,32 @@ export function AdminEbookForm({ ebook }: Props) {
   )
 }
 
+const labelStyle = {
+  fontSize: 11,
+  textTransform: 'uppercase' as const,
+  letterSpacing: '.1em',
+  color: 'var(--admin-text-muted)',
+  fontWeight: 600,
+}
+
+const inputStyle = {
+  padding: '10px 14px',
+  background: 'var(--admin-bg)',
+  border: '1px solid var(--admin-border)',
+  borderRadius: 8,
+  color: 'var(--admin-text)',
+  fontFamily: 'var(--fb)',
+  fontSize: 13,
+} as const
+
 function Field({
   label,
   ...rest
 }: React.InputHTMLAttributes<HTMLInputElement> & { label: string }) {
   return (
     <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-      <span
-        style={{
-          fontSize: 11,
-          textTransform: 'uppercase',
-          letterSpacing: '.1em',
-          color: '#6B82B0',
-          fontWeight: 600,
-        }}
-      >
-        {label}
-      </span>
-      <input
-        {...rest}
-        style={{
-          padding: '10px 14px',
-          background: '#0D1628',
-          border: '1px solid rgba(255,255,255,.12)',
-          borderRadius: 8,
-          color: '#E0E6EF',
-          fontFamily: 'var(--fb)',
-          fontSize: 13,
-        }}
-      />
+      <span style={labelStyle}>{label}</span>
+      <input {...rest} style={inputStyle} />
     </label>
   )
 }
@@ -169,27 +168,11 @@ function Textarea({
 }: React.TextareaHTMLAttributes<HTMLTextAreaElement> & { label: string }) {
   return (
     <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-      <span
-        style={{
-          fontSize: 11,
-          textTransform: 'uppercase',
-          letterSpacing: '.1em',
-          color: '#6B82B0',
-          fontWeight: 600,
-        }}
-      >
-        {label}
-      </span>
+      <span style={labelStyle}>{label}</span>
       <textarea
         {...rest}
         style={{
-          padding: '10px 14px',
-          background: '#0D1628',
-          border: '1px solid rgba(255,255,255,.12)',
-          borderRadius: 8,
-          color: '#E0E6EF',
-          fontFamily: 'var(--fb)',
-          fontSize: 13,
+          ...inputStyle,
           resize: 'vertical',
         }}
       />
@@ -208,7 +191,7 @@ function Checkbox({
         alignItems: 'center',
         gap: 8,
         fontSize: 13,
-        color: '#E0E6EF',
+        color: 'var(--admin-text)',
         cursor: 'pointer',
       }}
     >

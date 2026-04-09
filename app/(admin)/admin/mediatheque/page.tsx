@@ -28,7 +28,7 @@ export default async function AdminMediathequePage() {
 
   return (
     <>
-      <h1 style={{ fontFamily: 'var(--fd)', fontSize: 'var(--text-4xl)', color: '#fff', marginBottom: 'var(--s8)' }}>
+      <h1 style={{ fontFamily: 'var(--fd)', fontSize: 'var(--text-4xl)', color: 'var(--admin-text)', marginBottom: 'var(--s8)' }}>
         Mediatheque
       </h1>
       <MediathequeClient initialItems={items} />

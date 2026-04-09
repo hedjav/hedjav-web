@@ -21,6 +21,15 @@ export async function createCampaign(formData: FormData): Promise<Result> {
 
   if (!name) return { ok: false, error: 'Nom requis' }
 
+  // Check uniqueness
+  const { data: existing } = await admin()
+    .from('campaigns')
+    .select('id')
+    .eq('name', name)
+    .maybeSingle()
+
+  if (existing) return { ok: false, error: 'Une campagne avec ce nom existe deja' }
+
   const { data, error } = await admin()
     .from('campaigns')
     .insert({ name, type, target_tags, status: 'draft' })
