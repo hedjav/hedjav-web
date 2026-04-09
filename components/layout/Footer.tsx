@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { ManageCookiesButton } from '@/components/features/CookieBanner'
 
 const socials = [
   {
@@ -176,7 +177,7 @@ export function Footer() {
             textAlign: 'center',
           }}
         >
-          © 2026 Hedjav. Tous droits réservés.
+          © 2026 Hedjav. Tous droits réservés. · <ManageCookiesButton />
         </div>
       </div>
     </footer>
