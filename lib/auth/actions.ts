@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { sendEmail } from '@/lib/email/smtp'
 import { welcomeEmail } from '@/lib/email/templates'
+import { createNotification } from '@/lib/notifications/queries'
 
 type ActionResult = { ok: true } | { ok: false; error: string }
 
@@ -44,6 +45,11 @@ export async function signUpAction(formData: FormData): Promise<ActionResult> {
   const tpl = welcomeEmail(fullName)
   sendEmail({ to: email, subject: tpl.subject, html: tpl.html, text: tpl.text }).catch((e) => {
     console.error('[auth] welcome email failed', e)
+  })
+
+  // Notification admin
+  createNotification('member', 'Nouveau membre', `${fullName} (${email})`).catch((e) => {
+    console.error('[auth] notification failed', e)
   })
 
   return { ok: true }

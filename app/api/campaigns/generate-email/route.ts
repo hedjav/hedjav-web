@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { generateText } from '@/lib/claude/client'
+import { logAiCall } from '@/lib/ai/log'
 
 const SYSTEM = `Tu es le copywriter de Hedjav, école de gestion de patrimoine pour l'Afrique francophone (UEMOA). Style africain direct et chaleureux. Tutoiement. Exemples en FCFA. Références locales (BRVM, Wave, BOA). Pas de jargon marketing occidental. Le HTML doit utiliser la charte Hedjav : header navy #1B2A4A, fond cream #F8F5EE, bouton CTA or #C5A028, texte #1B2A4A. CSS inline uniquement. Retourne UNIQUEMENT le HTML du body (pas de doctype, pas de <html>, pas de <head>). Commence par un <h1>.`
 
@@ -29,9 +30,19 @@ SUJET: [le sujet]
 ---
 [le HTML du body]`
 
+  const startMs = Date.now()
   const result = await generateText({ prompt, system: SYSTEM, maxTokens: 2000 })
+  const durationMs = Date.now() - startMs
 
   if (!result.ok) {
+    logAiCall({
+      action: 'campaign_generate_email',
+      prompt: prompt.substring(0, 500),
+      status: 'error',
+      error_message: result.skipped ? 'API key not set' : (result.error ?? 'unknown'),
+      duration_ms: durationMs,
+      created_by: 'system',
+    }).catch(() => {})
     if (result.skipped) {
       // Pas de clé API → placeholder
       const placeholder = `<h1 style="font-family:Georgia,serif;font-size:24px;color:#1B2A4A;">Email #${position}</h1><p style="color:#1B2A4A;">${context ?? 'Contenu à générer'}</p>`
@@ -53,6 +64,16 @@ SUJET: [le sujet]
 
   const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } })
   await db.from('campaign_emails').update({ subject, body_html: html }).eq('campaign_id', campaign_id).eq('position', position)
+
+  // Log AI call
+  logAiCall({
+    action: 'campaign_generate_email',
+    prompt: prompt.substring(0, 500),
+    result: html.substring(0, 500),
+    status: 'success',
+    duration_ms: durationMs,
+    created_by: 'system',
+  }).catch(() => {})
 
   return NextResponse.json({ subject, preview: html.substring(0, 200) })
 }

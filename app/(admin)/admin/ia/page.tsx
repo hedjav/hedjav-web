@@ -1,85 +1,88 @@
+import { createClient } from '@supabase/supabase-js'
 import type { Metadata } from 'next'
+import { AiLogsClient } from './AiLogsClient'
 
 export const metadata: Metadata = { title: 'Admin — Outils IA' }
 
-const TOOLS = [
-  { name: 'Génération d’articles', desc: 'Générer un nouvel article via Claude API à partir d’un brief.', status: 'planned' },
-  { name: 'Scoring qualité', desc: 'Évaluer automatiquement la qualité des articles (score 0-100).', status: 'planned' },
-  { name: 'Publication automatique', desc: 'Publier automatiquement les articles dont le score dépasse un seuil.', status: 'planned' },
-  { name: 'Génération de covers', desc: 'Créer une image de couverture SVG/PNG à partir du titre.', status: 'planned' },
-  { name: 'Génération d’ebooks', desc: 'Compiler un ebook complet à partir d’une série de prompts.', status: 'planned' },
-  { name: 'Veille BRVM automatique', desc: 'Scraper et résumer chaque jour les actualités BRVM.', status: 'planned' },
-  { name: 'Réponses commentaires', desc: 'Pré-rédiger des réponses aux commentaires des lecteurs.', status: 'planned' },
-] as const
+async function getStats() {
+  const db = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false } },
+  )
 
-export default function AdminIAPage() {
+  const now = new Date()
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
+
+  const [allMonth, successMonth, logsResult] = await Promise.all([
+    db.from('ai_logs').select('tokens_used', { count: 'exact' }).gte('created_at', startOfMonth),
+    db.from('ai_logs').select('id', { count: 'exact', head: true }).gte('created_at', startOfMonth).eq('status', 'success'),
+    db.from('ai_logs').select('*').order('created_at', { ascending: false }).limit(50),
+  ])
+
+  const totalCalls = allMonth.count ?? 0
+  const successCalls = successMonth.count ?? 0
+  const successRate = totalCalls > 0 ? Math.round((successCalls / totalCalls) * 100) : 0
+  const totalTokens = (allMonth.data ?? []).reduce((sum, r) => sum + ((r.tokens_used as number) ?? 0), 0)
+
+  return {
+    totalCalls,
+    totalTokens,
+    successRate,
+    logs: (logsResult.data ?? []) as Array<{
+      id: string
+      action: string
+      prompt: string | null
+      status: string
+      tokens_used: number | null
+      duration_ms: number | null
+      created_at: string
+      error_message: string | null
+    }>,
+  }
+}
+
+export default async function AdminIAPage() {
+  const stats = await getStats()
+
+  const statCards = [
+    { label: 'Appels ce mois', value: stats.totalCalls.toString(), color: '#60a5fa' },
+    { label: 'Tokens consommes', value: stats.totalTokens.toLocaleString('fr-FR'), color: '#C5A028' },
+    { label: 'Taux de succes', value: `${stats.successRate}%`, color: '#5be58a' },
+  ]
+
   return (
     <>
       <h1 style={{ fontFamily: 'var(--fd)', fontSize: 'var(--text-4xl)', color: '#fff', marginBottom: 'var(--s4)' }}>
         Outils IA
       </h1>
-      <p style={{ color: 'rgba(255,255,255,.6)', marginBottom: 'var(--s10)', maxWidth: 720 }}>
-        Architecture déjà prête côté Supabase (champs <code style={{ color: '#C5A028' }}>source</code>,{' '}
-        <code style={{ color: '#C5A028' }}>quality_score</code>, <code style={{ color: '#C5A028' }}>metadata jsonb</code>) et
-        côté API (<code style={{ color: '#C5A028' }}>POST /api/articles</code> avec bearer token).
-        Les outils ci-dessous viendront se brancher sans toucher au schéma.
+      <p style={{ color: 'rgba(255,255,255,.6)', marginBottom: 'var(--s8)', maxWidth: 720 }}>
+        Suivi des appels Claude API, logs et generation de contenu.
       </p>
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: 'var(--s5)',
-        }}
-      >
-        {TOOLS.map((t) => (
+      {/* Stat cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--s5)', marginBottom: 'var(--s10)' }}>
+        {statCards.map((c) => (
           <div
-            key={t.name}
+            key={c.label}
             style={{
               background: '#1B2A4A',
+              borderRadius: 16,
               border: '1px solid rgba(255,255,255,.08)',
-              borderRadius: 'var(--r16)',
               padding: 'var(--s6)',
-              opacity: 0.7,
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--s3)' }}>
-              <h3 style={{ fontFamily: 'var(--fd)', fontSize: 'var(--text-xl)', color: '#fff' }}>{t.name}</h3>
-              <span
-                style={{
-                  fontSize: 'var(--text-xs)',
-                  padding: '2px 8px',
-                  borderRadius: 999,
-                  background: 'rgba(197,160,40,.15)',
-                  color: '#C5A028',
-                  fontWeight: 600,
-                }}
-              >
-                Bientôt
-              </span>
+            <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '.15em', color: '#6B82B0', marginBottom: 'var(--s2)' }}>
+              {c.label}
             </div>
-            <p style={{ color: 'rgba(255,255,255,.6)', fontSize: 'var(--text-sm)' }}>{t.desc}</p>
-            <button
-              type="button"
-              disabled
-              style={{
-                marginTop: 'var(--s5)',
-                padding: 'var(--s2) var(--s4)',
-                background: 'transparent',
-                border: '1px solid rgba(197,160,40,.3)',
-                color: '#C5A028',
-                borderRadius: 'var(--r8)',
-                fontFamily: 'var(--fb)',
-                fontSize: 'var(--text-xs)',
-                fontWeight: 600,
-                cursor: 'not-allowed',
-              }}
-            >
-              Lancer (à venir)
-            </button>
+            <div style={{ fontFamily: 'var(--fm)', fontSize: 'var(--text-3xl)', color: c.color, fontWeight: 700 }}>
+              {c.value}
+            </div>
           </div>
         ))}
       </div>
+
+      <AiLogsClient logs={stats.logs} />
     </>
   )
 }

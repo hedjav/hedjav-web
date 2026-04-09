@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { sendEmail } from '@/lib/email/smtp'
 import { newsletterSubscribedEmail } from '@/lib/email/templates'
+import { createNotification } from '@/lib/notifications/queries'
 
 /**
  * POST /api/newsletter/subscribe
@@ -108,6 +109,11 @@ export async function POST(request: Request) {
   } catch (e) {
     console.error('[newsletter] profile update failed', e)
   }
+
+  // Notification admin
+  createNotification('subscriber', 'Nouvel abonne newsletter', email).catch((e) => {
+    console.error('[newsletter] notification failed', e)
+  })
 
   return NextResponse.json({ ok: true }, { status: 200 })
 }
