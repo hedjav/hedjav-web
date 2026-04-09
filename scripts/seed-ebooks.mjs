@@ -66,7 +66,7 @@ Objectif : faire de l'intelligence artificielle votre avantage compétitif.`,
     price: 4900,
     original_price: 15000,
     cover_image_url: COVER_EBOOK_1,
-    fedapay_link: 'https://me.fedapay.com/propulser-ia',
+    fedapay_link: 'https://egp.hedjav.com/ebooks/propulser-ia',
     features: [
       "300+ prompts professionnels prêts à l'emploi",
       '50 métiers couverts (marketing, tech, RH, business, éducation, santé…)',
@@ -102,7 +102,7 @@ Conçu pour les particuliers de Côte d'Ivoire, du Bénin, du Sénégal, du Togo
     price: 4900,
     original_price: 15000,
     cover_image_url: '/ebooks/maitriser-la-brvm.svg',
-    fedapay_link: 'https://me.fedapay.com/maitriser-la-brvm',
+    fedapay_link: 'https://egp.hedjav.com/ebooks/maitriser-la-brvm',
     features: [
       'Ouvrir son compte titres en 7 jours',
       'Analyser les sociétés cotées BRVM',
@@ -138,7 +138,7 @@ Un guide pensé pour la réalité africaine, loin des recettes occidentales hors
     price: 4900,
     original_price: 15000,
     cover_image_url: '/ebooks/patrimoine-uemoa.svg',
-    fedapay_link: 'https://me.fedapay.com/patrimoine-uemoa',
+    fedapay_link: 'https://egp.hedjav.com/ebooks/patrimoine-uemoa',
     features: [
       'Cartographie complète des classes d\'actifs en UEMOA',
       'Modèle d\'allocation patrimoniale par tranche d\'âge',
@@ -174,7 +174,7 @@ Pour chaque levier : capital nécessaire, temps de mise en place, risques, rende
     price: 4900,
     original_price: 15000,
     cover_image_url: '/ebooks/revenu-passif-afrique.svg',
-    fedapay_link: 'https://me.fedapay.com/revenu-passif-afrique',
+    fedapay_link: 'https://egp.hedjav.com/ebooks/revenu-passif-afrique',
     features: [
       '7 leviers détaillés avec capital et rendement',
       'Études de cas réels en Afrique francophone',
@@ -209,7 +209,7 @@ Ce guide pratique couvre :
     price: 4900,
     original_price: 15000,
     cover_image_url: '/ebooks/immobilier-locatif-uemoa.svg',
-    fedapay_link: 'https://me.fedapay.com/immobilier-locatif-uemoa',
+    fedapay_link: 'https://egp.hedjav.com/ebooks/immobilier-locatif-uemoa',
     features: [
       'Évaluer la rentabilité réelle d\'un bien',
       'Cartographie des quartiers porteurs',
@@ -244,7 +244,7 @@ Cet ebook propose une méthode concrète pour :
     price: 4900,
     original_price: 15000,
     cover_image_url: '/ebooks/finances-personnelles-famille.svg',
-    fedapay_link: 'https://me.fedapay.com/finances-personnelles-famille',
+    fedapay_link: 'https://egp.hedjav.com/ebooks/finances-personnelles-famille',
     features: [
       'Méthode budgétaire 50/30/20 adaptée Afrique',
       'Plan de désendettement boule de neige',
@@ -281,7 +281,7 @@ Du service à domicile au e-commerce micro-niche, en passant par la formation en
     price: 4900,
     original_price: 15000,
     cover_image_url: '/ebooks/entreprendre-sans-capital.svg',
-    fedapay_link: 'https://me.fedapay.com/entreprendre-sans-capital',
+    fedapay_link: 'https://egp.hedjav.com/ebooks/entreprendre-sans-capital',
     features: [
       '12 modèles d\'affaires avec moins de 50 000 FCFA',
       'Plans d\'action 90 jours par modèle',
