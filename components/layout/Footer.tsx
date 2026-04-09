@@ -50,7 +50,11 @@ const navCols = [
   },
 ]
 
-export function Footer() {
+type FooterProps = {
+  description?: string
+}
+
+export function Footer({ description }: FooterProps = {}) {
   return (
     <footer
       style={{
@@ -76,7 +80,7 @@ export function Footer() {
               Hedjav
             </Link>
             <p style={{ fontSize: 'var(--text-sm)', lineHeight: 1.7, color: '#C2CEDE', marginBottom: 'var(--s4)' }}>
-              École en ligne de la gestion de patrimoine pour la zone UEMOA. Ebooks, formations BRVM et analyses patrimoniales.
+              {description ?? 'École en ligne de la gestion de patrimoine pour la zone UEMOA. Ebooks, formations BRVM et analyses patrimoniales.'}
             </p>
             <p style={{ fontSize: 'var(--text-xs)', color: '#7A94B8' }}>
               Édité par KTALYZ SARL · Cotonou, Bénin

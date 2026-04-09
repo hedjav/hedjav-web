@@ -28,16 +28,25 @@ function hasStatisticsConsent(): boolean {
   } catch { return false }
 }
 
+function hasCookie(name: string): boolean {
+  return document.cookie.split('; ').some((c) => c.startsWith(`${name}=`))
+}
+
+function setCookie(name: string, value: string, maxAge: number) {
+  document.cookie = `${name}=${value};path=/;max-age=${maxAge};SameSite=Lax`
+}
+
 export function LeadMagnetPopup() {
   const [config, setConfig] = useState<PopupData | null>(null)
   const [visible, setVisible] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [alreadySubscribed, setAlreadySubscribed] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
   // Load config
   useEffect(() => {
-    if (sessionStorage.getItem('hedjav_popup_dismissed')) return
+    if (hasCookie('hedjav_popup_subscribed') || hasCookie('hedjav_popup_dismissed')) return
     fetch('/api/popup/config').then((r) => r.json()).then((d) => {
       if (d.active) setConfig(d)
     }).catch(() => {})
@@ -45,7 +54,7 @@ export function LeadMagnetPopup() {
 
   // Show after delay or scroll
   useEffect(() => {
-    if (!config || visible || sessionStorage.getItem('hedjav_popup_dismissed')) return
+    if (!config || visible || hasCookie('hedjav_popup_subscribed') || hasCookie('hedjav_popup_dismissed')) return
     const cfg = config
 
     const timer = setTimeout(() => setVisible(true), cfg.display_delay_seconds * 1000)
@@ -79,7 +88,8 @@ export function LeadMagnetPopup() {
 
   const close = useCallback(() => {
     setVisible(false)
-    sessionStorage.setItem('hedjav_popup_dismissed', '1')
+    // Cookie dismissed 30 jours
+    setCookie('hedjav_popup_dismissed', '1', 2592000)
   }, [])
 
   // Close on Escape
@@ -97,16 +107,30 @@ export function LeadMagnetPopup() {
     const fd = new FormData(e.currentTarget)
     const email = String(fd.get('email') ?? '').trim()
     const firstName = String(fd.get('first_name') ?? '').trim()
+    const phone = String(fd.get('phone') ?? '').trim()
 
     if (!email) { setError('Email requis'); setLoading(false); return }
 
     try {
       // Subscribe to newsletter
-      await fetch('/api/newsletter/subscribe', {
+      const res = await fetch('/api/newsletter/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, first_name: firstName, source: 'popup' }),
+        body: JSON.stringify({
+          email,
+          first_name: firstName,
+          source: 'popup',
+          type: 'lead_magnet' as const,
+          ...(phone ? { phone } : {}),
+          ...(config?.ebook ? { ebook_id: config.ebook.id } : {}),
+        }),
       })
+
+      const data = await res.json().catch(() => ({}))
+
+      if (data.alreadySubscribed) {
+        setAlreadySubscribed(true)
+      }
 
       // Send lead magnet if ebook has one
       if (config?.ebook) {
@@ -128,7 +152,8 @@ export function LeadMagnetPopup() {
       }
 
       setSubmitted(true)
-      sessionStorage.setItem('hedjav_popup_dismissed', '1')
+      // Cookie subscribed 365 jours
+      setCookie('hedjav_popup_subscribed', '1', 31536000)
     } catch {
       setError('Erreur, veuillez réessayer.')
     } finally {
@@ -200,6 +225,15 @@ export function LeadMagnetPopup() {
                     fontSize: '14px', fontFamily: 'var(--fb)', color: '#1B2A4A', background: '#fff',
                   }}
                 />
+                <input
+                  name="phone"
+                  type="tel"
+                  placeholder="WhatsApp (optionnel)"
+                  style={{
+                    padding: '12px 16px', border: '1.5px solid #E0E6EF', borderRadius: '8px',
+                    fontSize: '14px', fontFamily: 'var(--fb)', color: '#1B2A4A', background: '#fff',
+                  }}
+                />
                 {error && <p style={{ color: '#B91C1C', fontSize: '13px', margin: 0 }}>{error}</p>}
                 <button
                   type="submit"
@@ -221,10 +255,12 @@ export function LeadMagnetPopup() {
             <div style={{ textAlign: 'center', padding: '20px 0' }}>
               <div style={{ fontSize: '48px', marginBottom: '12px' }}>🎉</div>
               <h2 style={{ fontFamily: 'var(--fd)', fontSize: '24px', color: '#1B2A4A', margin: '0 0 8px' }}>
-                Vérifiez votre email !
+                {alreadySubscribed ? 'Vous êtes déjà inscrit !' : 'Vérifiez votre email !'}
               </h2>
               <p style={{ color: '#5C6F8F', fontSize: '14px' }}>
-                Votre guide vous a été envoyé. Pensez à vérifier vos spams.
+                {alreadySubscribed
+                  ? 'Votre guide vous a quand même été renvoyé. Pensez à vérifier vos spams.'
+                  : 'Votre guide vous a été envoyé. Pensez à vérifier vos spams.'}
               </p>
             </div>
           )}

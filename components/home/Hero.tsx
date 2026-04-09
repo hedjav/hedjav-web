@@ -1,6 +1,11 @@
 import Link from 'next/link'
 
-export function Hero() {
+type HeroProps = {
+  tagline?: string
+  badges?: string[]
+}
+
+export function Hero({ tagline, badges }: HeroProps = {}) {
   return (
     <section
       style={{
@@ -41,8 +46,8 @@ export function Hero() {
             marginBottom: 'var(--s10)',
           }}
         >
-          Hedjav accompagne particuliers et entrepreneurs d&apos;Afrique francophone
-          dans la construction, la protection et la transmission d&apos;un patrimoine durable.
+          {tagline ??
+            "Hedjav accompagne particuliers et entrepreneurs d\u2019Afrique francophone dans la construction, la protection et la transmission d\u2019un patrimoine durable."}
         </p>
 
         <div

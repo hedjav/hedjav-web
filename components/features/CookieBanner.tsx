@@ -18,14 +18,41 @@ function setConsent(consent: Consent) {
   document.cookie = `hedjav_consent=${val};path=/;max-age=${365 * 24 * 3600};SameSite=Lax`
 }
 
+type CookieTexts = {
+  message: string
+  acceptText: string
+  rejectText: string
+  policyUrl: string
+}
+
+const defaultTexts: CookieTexts = {
+  message: 'Nous utilisons des cookies pour améliorer votre expérience, analyser le trafic et personnaliser les contenus.',
+  acceptText: 'Accepter tout',
+  rejectText: 'Refuser tout',
+  policyUrl: '/cookies',
+}
+
 export function CookieBanner() {
   const [visible, setVisible] = useState(false)
   const [showCustomize, setShowCustomize] = useState(false)
   const [statistics, setStatistics] = useState(true)
   const [marketing, setMarketing] = useState(true)
+  const [texts, setTexts] = useState<CookieTexts>(defaultTexts)
 
   useEffect(() => {
     if (getConsent()) return
+    // Fetch dynamic texts
+    fetch('/api/config/public?keys=cookie_message,cookie_accept_text,cookie_reject_text,cookie_policy_url')
+      .then((r) => r.json())
+      .then((data: Record<string, string>) => {
+        setTexts({
+          message: data.cookie_message || defaultTexts.message,
+          acceptText: data.cookie_accept_text || defaultTexts.acceptText,
+          rejectText: data.cookie_reject_text || defaultTexts.rejectText,
+          policyUrl: data.cookie_policy_url || defaultTexts.policyUrl,
+        })
+      })
+      .catch(() => {})
     const t = setTimeout(() => setVisible(true), 3000)
     return () => clearTimeout(t)
   }, [])
@@ -51,15 +78,15 @@ export function CookieBanner() {
         {!showCustomize ? (
           <>
             <p style={{ margin: '0 0 16px', fontSize: '14px', lineHeight: 1.6 }}>
-              Nous utilisons des cookies pour améliorer votre expérience, analyser le trafic et personnaliser les contenus.{' '}
-              <Link href="/cookies" style={{ color: '#C5A028', textDecoration: 'underline' }}>En savoir plus</Link>
+              {texts.message}{' '}
+              <Link href={texts.policyUrl} style={{ color: '#C5A028', textDecoration: 'underline' }}>En savoir plus</Link>
             </p>
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
               <button onClick={() => accept(true, true)} style={{ background: '#C5A028', color: '#fff', border: 'none', padding: '10px 24px', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
-                Accepter tout
+                {texts.acceptText}
               </button>
               <button onClick={() => accept(false, false)} style={{ background: 'transparent', color: '#E0E6EF', border: '1.5px solid #E0E6EF', padding: '10px 24px', borderRadius: '8px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
-                Refuser tout
+                {texts.rejectText}
               </button>
               <button onClick={() => setShowCustomize(true)} style={{ background: 'transparent', color: 'rgba(255,255,255,.5)', border: 'none', fontSize: '13px', cursor: 'pointer', textDecoration: 'underline' }}>
                 Personnaliser

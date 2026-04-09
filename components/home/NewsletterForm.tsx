@@ -20,12 +20,18 @@ export function NewsletterForm({ source = 'home', theme = 'dark' }: Props) {
       const res = await fetch('/api/newsletter/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source }),
+        body: JSON.stringify({ email, source, type: 'editorial' }),
       })
+      const j = await res.json().catch(() => ({}))
       if (!res.ok) {
-        const j = await res.json().catch(() => ({}))
         setErrorMsg(j.error ?? 'Inscription impossible. Réessayez.')
         setStatus('error')
+        return
+      }
+      if (j.alreadySubscribed) {
+        setErrorMsg(null)
+        setStatus('success')
+        setEmail('')
         return
       }
       setStatus('success')

@@ -1,6 +1,11 @@
 import { NewsletterForm } from './NewsletterForm'
 
-export function NewsletterCTA() {
+type NewsletterCTAProps = {
+  title?: string
+  subtitle?: string
+}
+
+export function NewsletterCTA({ title, subtitle }: NewsletterCTAProps = {}) {
   return (
     <section
       id="newsletter"
@@ -18,7 +23,7 @@ export function NewsletterCTA() {
           className="h2"
           style={{ color: '#FFFFFF', marginTop: 'var(--s4)', marginBottom: 'var(--s4)' }}
         >
-          Rejoignez la communauté Hedjav
+          {title ?? 'Rejoignez la communauté Hedjav'}
         </h2>
         <p
           style={{
@@ -30,8 +35,7 @@ export function NewsletterCTA() {
             lineHeight: 1.7,
           }}
         >
-          Chaque semaine : analyses BRVM, guides patrimoniaux UEMOA et accès en
-          avant-première aux nouveaux ebooks et formations de l&apos;école.
+          {subtitle ?? "Chaque semaine : analyses BRVM, guides patrimoniaux UEMOA et accès en avant-première aux nouveaux ebooks et formations de l\u2019école."}
         </p>
         <NewsletterForm />
       </div>

@@ -1,4 +1,4 @@
-const pillars = [
+const defaultPillars = [
   {
     title: 'Apprendre',
     desc: "Ebooks pratiques, formations en ligne et analyses BRVM exclusives. Des contenus pensés pour la zone UEMOA, par des professionnels du marché ouest-africain.",
@@ -16,14 +16,23 @@ const pillars = [
   },
 ]
 
-export function Pillars() {
+type PillarsProps = {
+  title?: string
+  subtitle?: string
+  piliers?: { title: string; desc: string }[]
+}
+
+export function Pillars({ title, subtitle, piliers }: PillarsProps = {}) {
+  const pillars = piliers?.length
+    ? piliers.map((p, i) => ({ ...p, path: defaultPillars[i]?.path ?? defaultPillars[0].path }))
+    : defaultPillars
   return (
     <section className="section" style={{ background: 'var(--bg)' }}>
       <div className="hedjav-container">
         <div style={{ textAlign: 'center', marginBottom: 'var(--s12)' }}>
           <span className="eyebrow">Notre approche</span>
           <h2 className="h2" style={{ marginTop: 'var(--s4)' }}>
-            Une école de la gestion de patrimoine pour l&apos;UEMOA
+            {title ?? "Une école de la gestion de patrimoine pour l\u2019UEMOA"}
           </h2>
           <p
             style={{
@@ -34,9 +43,7 @@ export function Pillars() {
               fontSize: 'var(--text-lg)',
             }}
           >
-            Trois piliers pour bâtir, faire fructifier et transmettre votre
-            patrimoine en zone UEMOA — sans dépendre des recettes occidentales
-            hors-sol.
+            {subtitle ?? "Trois piliers pour bâtir, faire fructifier et transmettre votre patrimoine en zone UEMOA \u2014 sans dépendre des recettes occidentales hors-sol."}
           </p>
         </div>
 
