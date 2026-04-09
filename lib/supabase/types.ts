@@ -197,6 +197,9 @@ export type AdminNotification = {
   title: string
   message: string | null
   is_read: boolean
+  email_sent: boolean
+  email_sent_at: string | null
+  priority: 'low' | 'normal' | 'high' | 'urgent'
   metadata: Record<string, unknown>
   created_at: string
 }

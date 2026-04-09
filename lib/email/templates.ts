@@ -241,7 +241,135 @@ export function leadMagnetEmail(name: string, ebookTitle: string, downloadUrl: s
   }
 }
 
-/* ── e) Newsletter subscribed ────────────────────────────────── */
+/* ── e) Notification admin email ─────────────────────────────── */
+
+type NotificationItem = {
+  id: string
+  type: string
+  title: string
+  message: string | null
+  created_at: string
+  priority?: string
+}
+
+type NotificationEmailProps =
+  | { type: 'single'; notification: NotificationItem }
+  | { type: 'digest'; notifications: NotificationItem[] }
+
+const ADMIN_URL = 'https://egp.hedjav.com/admin'
+
+function notifIcon(type: string): string {
+  const icons: Record<string, string> = {
+    purchase: '&#127881;',    // 🎉
+    registration: '&#128100;', // 👤
+    newsletter: '&#128233;',   // 📩
+    report: '&#128202;',       // 📊
+    alert: '&#9888;&#65039;',  // ⚠️
+    system: '&#9881;&#65039;', // ⚙️
+  }
+  return icons[type] ?? '&#128276;' // 🔔
+}
+
+function priorityColor(priority?: string): string {
+  if (priority === 'urgent') return '#DC2626'
+  if (priority === 'high') return '#EA580C'
+  return C.navy
+}
+
+function formatDate(iso: string): string {
+  try {
+    return new Date(iso).toLocaleDateString('fr-FR', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  } catch {
+    return iso
+  }
+}
+
+export function notificationEmailTemplate(props: NotificationEmailProps) {
+  if (props.type === 'single') {
+    const n = props.notification
+    const icon = notifIcon(n.type)
+    const pColor = priorityColor(n.priority)
+
+    const bodyHtml = `
+      <p style="margin:0 0 8px;font-size:13px;color:${C.muted};text-transform:uppercase;letter-spacing:1.5px;font-weight:600;">
+        Notification admin
+      </p>
+      <h1 style="margin:0 0 20px;font-family:Georgia,serif;font-size:26px;font-weight:600;color:${pColor};line-height:1.3;">
+        ${icon} ${n.title}
+      </h1>
+      ${n.message ? `<p style="margin:0 0 20px;white-space:pre-line;">${n.message}</p>` : ''}
+      <p style="margin:0 0 24px;font-size:13px;color:${C.muted};">
+        ${formatDate(n.created_at)} &middot; Type : ${n.type}${n.priority && n.priority !== 'normal' ? ` &middot; Priorité : ${n.priority}` : ''}
+      </p>
+      ${btn('Ouvrir le tableau de bord', ADMIN_URL)}
+      ${hr()}
+      ${smallNote('Notification automatique — egp.hedjav.com')}
+    `
+
+    return {
+      subject: `[Hedjav Admin] ${n.title}`,
+      html: layout({ preheader: n.title, bodyHtml }),
+      text: `${n.title}\n\n${n.message ?? ''}\n\n${formatDate(n.created_at)}\n\nTableau de bord : ${ADMIN_URL}`,
+    }
+  }
+
+  // Digest
+  const notifs = props.notifications
+  let tableRows = ''
+  for (const n of notifs) {
+    const icon = notifIcon(n.type)
+    const pColor = priorityColor(n.priority)
+    tableRows += `
+      <tr>
+        <td style="padding:10px 8px;border-bottom:1px solid ${C.border};font-size:18px;text-align:center;width:40px;">${icon}</td>
+        <td style="padding:10px 8px;border-bottom:1px solid ${C.border};">
+          <strong style="color:${pColor};font-size:14px;">${n.title}</strong>
+          ${n.message ? `<br /><span style="font-size:13px;color:${C.muted};">${n.message.slice(0, 100)}${n.message.length > 100 ? '...' : ''}</span>` : ''}
+        </td>
+        <td style="padding:10px 8px;border-bottom:1px solid ${C.border};font-size:12px;color:${C.muted};white-space:nowrap;width:120px;">${formatDate(n.created_at)}</td>
+      </tr>`
+  }
+
+  const bodyHtml = `
+    <p style="margin:0 0 8px;font-size:13px;color:${C.muted};text-transform:uppercase;letter-spacing:1.5px;font-weight:600;">
+      Digest notifications admin
+    </p>
+    <h1 style="margin:0 0 20px;font-family:Georgia,serif;font-size:26px;font-weight:600;color:${C.navy};line-height:1.3;">
+      ${notifs.length} notifications en attente
+    </h1>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;">
+      <thead>
+        <tr style="background:${C.navy};">
+          <th style="padding:10px 8px;color:${C.white};font-size:12px;text-align:center;width:40px;border-radius:8px 0 0 0;">&#128276;</th>
+          <th style="padding:10px 8px;color:${C.white};font-size:12px;text-align:left;">Notification</th>
+          <th style="padding:10px 8px;color:${C.white};font-size:12px;text-align:left;width:120px;border-radius:0 8px 0 0;">Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${tableRows}
+      </tbody>
+    </table>
+    ${btn('Ouvrir le tableau de bord', ADMIN_URL)}
+    ${hr()}
+    ${smallNote('Notification automatique — egp.hedjav.com')}
+  `
+
+  const subject = `[Hedjav Admin] ${notifs.length} notifications en attente`
+
+  return {
+    subject,
+    html: layout({ preheader: `${notifs.length} notifications admin en attente`, bodyHtml }),
+    text: notifs.map((n) => `${n.title} — ${formatDate(n.created_at)}`).join('\n') + `\n\nTableau de bord : ${ADMIN_URL}`,
+  }
+}
+
+/* ── f) Newsletter subscribed ────────────────────────────────── */
 
 export function newsletterSubscribedEmail(name: string) {
   const firstName = name.split(' ')[0] || ''

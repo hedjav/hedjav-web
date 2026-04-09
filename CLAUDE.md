@@ -79,7 +79,7 @@ Maître d'œuvre : **KTALYZ SARL**.
 ### Architecture extensible (RÈGLE TRANSVERSALE)
 - **Rien n'est figé.** Tout contenu passe par Supabase, jamais hardcodé.
 - Chaque table a un champ `metadata jsonb default '{}'` pour ajouter des données arbitraires sans migration (scoring IA, tags, A/B test, telemetry).
-- Toutes les routes API (`/api/articles`, `/api/newsletter/subscribe`, `/api/purchases/init`, `/api/webhooks/fedapay`) sont conçues pour être appelables par un agent IA.
+- Toutes les routes API (`/api/articles`, `/api/newsletter/subscribe`, `/api/purchases/create`, `/api/webhooks/fedapay`) sont conçues pour être appelables par un agent IA.
 - L'admin UI a une section `/admin/ia` avec placeholders pour les futurs outils IA.
 
 ### Contacts publics
@@ -115,9 +115,9 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 ---
 
 ## Comptes & rôles
-- Premier admin : créer un compte via `/register`, puis aller sur **`/admin-setup`** et saisir `ADMIN_SETUP_CODE` (`.env.local`).
+- Premier admin : créer un compte via `/register`, puis promouvoir via `node scripts/promote-admin.mjs <email>` ou SQL direct (`update profiles set role='admin' where email='...'`).
 - Promouvoir/rétrograder ensuite depuis `/admin/membres` (impossible de rétrograder le dernier admin).
-- Le proxy `proxy.ts` protège `/admin` (admin role) et `/dashboard` (user connecté). `/admin-setup` n'est pas intercepté.
+- Le proxy `proxy.ts` protège `/admin` (admin role) et `/dashboard` (user connecté).
 
 ## Dashboard membre
 - Header avec avatar 64px + tabs horizontales (Vue d'ensemble / Mes ebooks / Mes commandes / Outils / Alertes / Mon profil).
@@ -135,7 +135,7 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 | — | Photo Hermann FounderBlock | #4 | ✅ |
 | 4 | Blog Supabase + API d'injection IA | #5 | ✅ |
 | 5 | Auth Supabase + dashboard membre | #6 | ✅ |
-| 6 | Newsletter Supabase + Resend + Claude API (Brevo retiré) | #7 | ✅ |
+| 6 | Newsletter Supabase + SMTP Hostinger + Claude API (Brevo retiré) | #7 | ✅ |
 | 7 | Paiement FedaPay + dashboard ebooks achetés | #8 | ✅ |
 | — | Pré-fixes : nav `/#newsletter`, `/a-propos` Supabase, `metadata jsonb` partout | #9 | ✅ |
 | 8 | Admin UI dark + CRUD + section Outils IA | #10 | ✅ |
@@ -204,6 +204,8 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 - `GET /api/admin/ventes/export` (session admin) — export CSV des ventes
 - `POST /api/media/upload` (session admin) — upload fichier dans bucket media
 - `DELETE /api/media/delete` (session admin) — supprime fichier du bucket media
+- `POST /api/notifications/send-email` (bearer `INTERNAL_API_TOKEN`) — envoie par email les admin_notifications non envoyées (individuel ou digest)
+- `POST /api/reports/monthly` (bearer `INTERNAL_API_TOKEN`) — calcule stats mois précédent + crée notification report
 - `POST /api/auth/signout` — clear cookies sb-* + retour client
 
 ---
@@ -247,6 +249,7 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 14. `014_invoices.sql` (invoices + generate_invoice_number function)
 15. `015_notifications.sql` (admin_notifications)
 16. `016_ai_logs.sql` (ai_logs)
+17. `017_megafix.sql` (admin_notifications: email_sent, email_sent_at, priority + fonction notify_admin)
 
 ---
 
@@ -258,7 +261,7 @@ Voir `.env.local.example`. Clés sensibles :
 - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` (SMTP Hostinger — fallback console.log si SMTP_HOST vide)
 - `ANTHROPIC_API_KEY` (génération newsletter hebdo — no-op si vide)
 - `FEDAPAY_API_KEY`, `FEDAPAY_WEBHOOK_SECRET`
-- `ADMIN_SETUP_CODE` (bootstrap premier admin via `/admin-setup`)
+- `ADMIN_SETUP_CODE` (legacy — plus utilisé, le bootstrap admin se fait via script ou SQL)
 
 ---
 

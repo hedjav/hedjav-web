@@ -32,7 +32,6 @@ export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname
 
   // Routes protégées : /dashboard et /admin
-  // /admin-setup est exclu (accessible aux users non-admin pour le bootstrap)
   if (path.startsWith('/dashboard') && !user) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
