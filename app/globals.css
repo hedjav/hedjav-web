@@ -256,6 +256,20 @@
   color: #ECCC60 !important;
 }
 
+/* Scrollbar dark */
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,.14);
+}
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(236,204,96,.45);
+}
+
+/* Sélection texte dark */
+[data-theme="dark"] ::selection {
+  background: rgba(236,204,96,.30);
+  color: #FFFFFF;
+}
+
 /* ============================================================
    RESET & BASE
    ============================================================ */
@@ -364,7 +378,7 @@ a {
 .price {
   font-family: var(--fm);
   font-weight: 500;
-  color: var(--n900);
+  color: var(--text-strong);
 }
 
 /* ============================================================
