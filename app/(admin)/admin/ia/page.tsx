@@ -46,33 +46,32 @@ export default async function AdminIAPage() {
   const stats = await getStats()
 
   const statCards = [
-    { label: 'Appels ce mois', value: stats.totalCalls.toString(), color: '#60a5fa' },
-    { label: 'Tokens consommes', value: stats.totalTokens.toLocaleString('fr-FR'), color: '#C5A028' },
-    { label: 'Taux de succes', value: `${stats.successRate}%`, color: '#5be58a' },
+    { label: 'Appels ce mois', value: stats.totalCalls.toString(), color: 'var(--admin-info)' },
+    { label: 'Tokens consommes', value: stats.totalTokens.toLocaleString('fr-FR'), color: 'var(--admin-accent)' },
+    { label: 'Taux de succes', value: `${stats.successRate}%`, color: 'var(--admin-success)' },
   ]
 
   return (
     <>
-      <h1 style={{ fontFamily: 'var(--fd)', fontSize: 'var(--text-4xl)', color: '#fff', marginBottom: 'var(--s4)' }}>
+      <h1 style={{ fontFamily: 'var(--fd)', fontSize: 'var(--text-4xl)', fontWeight: 600, color: 'var(--admin-text)', marginBottom: 'var(--s4)' }}>
         Outils IA
       </h1>
-      <p style={{ color: 'rgba(255,255,255,.6)', marginBottom: 'var(--s8)', maxWidth: 720 }}>
+      <p style={{ color: 'var(--admin-text-muted)', marginBottom: 'var(--s8)', maxWidth: 720 }}>
         Suivi des appels Claude API, logs et generation de contenu.
       </p>
 
-      {/* Stat cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--s5)', marginBottom: 'var(--s10)' }}>
         {statCards.map((c) => (
           <div
             key={c.label}
             style={{
-              background: '#1B2A4A',
-              borderRadius: 16,
-              border: '1px solid rgba(255,255,255,.08)',
+              background: 'var(--admin-surface)',
+              borderRadius: 12,
+              border: '1px solid var(--admin-border)',
               padding: 'var(--s6)',
             }}
           >
-            <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '.15em', color: '#6B82B0', marginBottom: 'var(--s2)' }}>
+            <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '.15em', color: 'var(--admin-text-muted)', marginBottom: 'var(--s2)' }}>
               {c.label}
             </div>
             <div style={{ fontFamily: 'var(--fm)', fontSize: 'var(--text-3xl)', color: c.color, fontWeight: 700 }}>

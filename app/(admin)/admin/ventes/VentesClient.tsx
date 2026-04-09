@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { DataTable, type Column } from '@/components/admin/DataTable'
 
 type Row = {
   id: string
@@ -16,6 +17,70 @@ type Row = {
 function formatFcfa(n: number) {
   return new Intl.NumberFormat('fr-FR').format(n) + ' FCFA'
 }
+
+const columns: Column<Row>[] = [
+  {
+    key: 'date',
+    label: 'Date',
+    sortable: true,
+    render: (row) => (
+      <span style={{ fontSize: 12, color: 'var(--admin-text-muted)' }}>
+        {new Date(row.date).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })}
+      </span>
+    ),
+  },
+  {
+    key: 'clientName',
+    label: 'Client',
+    sortable: true,
+    render: (row) => (
+      <div>
+        <div style={{ fontSize: 13 }}>{row.clientName ?? '\u2014'}</div>
+        <div style={{ fontSize: 11, color: 'var(--admin-text-muted)' }}>{row.email}</div>
+      </div>
+    ),
+  },
+  { key: 'ebook', label: 'Ebook', sortable: true },
+  {
+    key: 'amount',
+    label: 'Montant',
+    sortable: true,
+    render: (row) => (
+      <span style={{ fontFamily: 'var(--fm)', fontSize: 13 }}>{formatFcfa(row.amount)}</span>
+    ),
+  },
+  {
+    key: 'status',
+    label: 'Statut',
+    render: (row) => (
+      <span style={{
+        padding: '2px 10px', borderRadius: 9999, fontSize: 11, fontWeight: 600,
+        background:
+          row.status === 'paid' ? 'rgba(34,197,94,.15)' :
+          row.status === 'pending' ? 'rgba(245,158,11,.15)' :
+          'rgba(239,68,68,.15)',
+        color:
+          row.status === 'paid' ? 'var(--admin-success)' :
+          row.status === 'pending' ? 'var(--admin-warning)' :
+          'var(--admin-danger)',
+      }}>
+        {row.status}
+      </span>
+    ),
+  },
+  {
+    key: 'invoice',
+    label: 'Facture',
+    render: (row) =>
+      row.invoice?.url ? (
+        <a href={row.invoice.url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--admin-accent)', fontSize: 11, textDecoration: 'underline' }}>
+          {row.invoice.number}
+        </a>
+      ) : (
+        <span style={{ color: 'var(--admin-text-muted)', fontSize: 11 }}>{'\u2014'}</span>
+      ),
+  },
+]
 
 export function VentesClient({ rows }: { rows: Row[] }) {
   const [exporting, setExporting] = useState(false)
@@ -47,8 +112,8 @@ export function VentesClient({ rows }: { rows: Row[] }) {
           disabled={exporting}
           style={{
             padding: '8px 16px',
-            background: '#C5A028',
-            color: '#0D1628',
+            background: 'var(--admin-accent)',
+            color: '#0F1117',
             border: 'none',
             borderRadius: 8,
             fontWeight: 600,
@@ -60,82 +125,12 @@ export function VentesClient({ rows }: { rows: Row[] }) {
           {exporting ? 'Export...' : 'Exporter CSV'}
         </button>
       </div>
-
-      <div style={{ background: '#1B2A4A', borderRadius: 16, overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', color: '#E0E6EF' }}>
-          <thead>
-            <tr style={{ background: 'rgba(0,0,0,.2)' }}>
-              <Th>Date</Th>
-              <Th>Client</Th>
-              <Th>Ebook</Th>
-              <Th>Montant</Th>
-              <Th>Statut</Th>
-              <Th>Facture</Th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((p) => (
-              <tr key={p.id} style={{ borderTop: '1px solid rgba(255,255,255,.05)' }}>
-                <Td>{new Date(p.date).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })}</Td>
-                <Td>
-                  <div style={{ fontSize: 13 }}>{p.clientName ?? '—'}</div>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,.4)' }}>{p.email}</div>
-                </Td>
-                <Td>{p.ebook}</Td>
-                <Td style={{ fontFamily: 'var(--fm)' }}>{formatFcfa(p.amount)}</Td>
-                <Td>
-                  <span style={{
-                    padding: '2px 10px',
-                    borderRadius: 9999,
-                    fontSize: 11,
-                    fontWeight: 600,
-                    background:
-                      p.status === 'paid' ? 'rgba(46,179,108,.15)' :
-                      p.status === 'pending' ? 'rgba(255,200,0,.15)' :
-                      'rgba(255,80,80,.15)',
-                    color:
-                      p.status === 'paid' ? '#5be58a' :
-                      p.status === 'pending' ? '#ffd966' :
-                      '#ff9b9b',
-                  }}>
-                    {p.status}
-                  </span>
-                </Td>
-                <Td>
-                  {p.invoice?.url ? (
-                    <a
-                      href={p.invoice.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ color: '#C5A028', fontSize: 11, textDecoration: 'underline' }}
-                    >
-                      {p.invoice.number}
-                    </a>
-                  ) : (
-                    <span style={{ color: 'rgba(255,255,255,.3)', fontSize: 11 }}>—</span>
-                  )}
-                </Td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <DataTable
+        data={rows}
+        columns={columns}
+        searchKeys={['clientName', 'email', 'ebook']}
+        emptyMessage="Aucune vente"
+      />
     </>
-  )
-}
-
-function Th({ children }: { children: React.ReactNode }) {
-  return (
-    <th style={{ textAlign: 'left', padding: 'var(--s4) var(--s5)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '.1em', color: 'rgba(255,255,255,.5)', fontWeight: 600 }}>
-      {children}
-    </th>
-  )
-}
-
-function Td({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
-  return (
-    <td style={{ padding: 'var(--s4) var(--s5)', fontSize: 13, ...style }}>
-      {children}
-    </td>
   )
 }

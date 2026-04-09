@@ -253,7 +253,7 @@ export default async function AdminDashboard() {
           fontFamily: 'var(--fd)',
           fontSize: 32,
           fontWeight: 600,
-          color: '#fff',
+          color: 'var(--admin-text)',
           marginBottom: 32,
         }}
       >
@@ -273,8 +273,8 @@ export default async function AdminDashboard() {
           <div
             key={card.label}
             style={{
-              background: '#1B2A4A',
-              border: '1px solid rgba(255,255,255,.08)',
+              background: 'var(--admin-surface)',
+              border: '1px solid var(--admin-border)',
               borderRadius: 16,
               padding: '20px 24px',
             }}
@@ -284,7 +284,7 @@ export default async function AdminDashboard() {
                 fontSize: 11,
                 textTransform: 'uppercase',
                 letterSpacing: '.1em',
-                color: '#6B82B0',
+                color: 'var(--admin-text-muted)',
                 fontWeight: 600,
                 marginBottom: 8,
               }}
@@ -297,7 +297,7 @@ export default async function AdminDashboard() {
                   fontFamily: 'var(--fd)',
                   fontSize: 28,
                   fontWeight: 600,
-                  color: '#fff',
+                  color: 'var(--admin-text)',
                 }}
               >
                 {card.value}
@@ -306,7 +306,7 @@ export default async function AdminDashboard() {
                 style={{
                   fontSize: 12,
                   fontWeight: 600,
-                  color: card.change >= 0 ? '#5be58a' : '#ff9b9b',
+                  color: card.change >= 0 ? 'var(--admin-success)' : '#ff9b9b',
                 }}
               >
                 {card.change >= 0 ? '+' : ''}{card.change}%
@@ -322,10 +322,10 @@ export default async function AdminDashboard() {
       {/* Revenue chart */}
       <div
         style={{
-          background: '#1B2A4A',
+          background: 'var(--admin-surface)',
           borderRadius: 16,
           padding: 24,
-          border: '1px solid rgba(255,255,255,.08)',
+          border: '1px solid var(--admin-border)',
           marginBottom: 32,
         }}
       >
@@ -333,7 +333,7 @@ export default async function AdminDashboard() {
           style={{
             fontFamily: 'var(--fd)',
             fontSize: 20,
-            color: '#fff',
+            color: 'var(--admin-text)',
             marginBottom: 20,
           }}
         >
@@ -353,17 +353,17 @@ export default async function AdminDashboard() {
         {/* Recent activity */}
         <div
           style={{
-            background: '#1B2A4A',
+            background: 'var(--admin-surface)',
             borderRadius: 16,
             padding: 24,
-            border: '1px solid rgba(255,255,255,.08)',
+            border: '1px solid var(--admin-border)',
           }}
         >
           <h2
             style={{
               fontFamily: 'var(--fd)',
               fontSize: 20,
-              color: '#fff',
+              color: 'var(--admin-text)',
               marginBottom: 20,
             }}
           >
@@ -378,7 +378,7 @@ export default async function AdminDashboard() {
                   alignItems: 'center',
                   gap: 12,
                   padding: '12px 0',
-                  borderTop: i > 0 ? '1px solid rgba(255,255,255,.05)' : 'none',
+                  borderTop: i > 0 ? '1px solid rgba(255,255,255,.04)' : 'none',
                 }}
               >
                 <span
@@ -389,19 +389,19 @@ export default async function AdminDashboard() {
                     flexShrink: 0,
                     background:
                       item.type === 'purchase'
-                        ? '#C5A028'
+                        ? 'var(--admin-accent)'
                         : item.type === 'member'
-                          ? '#5be58a'
-                          : '#6B82B0',
+                          ? 'var(--admin-success)'
+                          : 'var(--admin-text-muted)',
                   }}
                 />
-                <span style={{ flex: 1, fontSize: 13, color: '#C2CEDE' }}>
+                <span style={{ flex: 1, fontSize: 13, color: 'var(--admin-text-muted)' }}>
                   {item.text}
                 </span>
                 <span
                   style={{
                     fontSize: 11,
-                    color: '#6B82B0',
+                    color: 'var(--admin-text-muted)',
                     whiteSpace: 'nowrap',
                   }}
                 >
@@ -410,7 +410,7 @@ export default async function AdminDashboard() {
               </div>
             ))}
             {data.recentActivity.length === 0 && (
-              <div style={{ color: '#6B82B0', fontSize: 13, padding: '20px 0', textAlign: 'center' }}>
+              <div style={{ color: 'var(--admin-text-muted)', fontSize: 13, padding: '20px 0', textAlign: 'center' }}>
                 Aucune activité récente
               </div>
             )}
@@ -420,10 +420,10 @@ export default async function AdminDashboard() {
         {/* Campaigns widget */}
         <div
           style={{
-            background: '#1B2A4A',
+            background: 'var(--admin-surface)',
             borderRadius: 16,
             padding: 24,
-            border: '1px solid rgba(255,255,255,.08)',
+            border: '1px solid var(--admin-border)',
           }}
         >
           <div
@@ -434,12 +434,12 @@ export default async function AdminDashboard() {
               marginBottom: 20,
             }}
           >
-            <h2 style={{ fontFamily: 'var(--fd)', fontSize: 20, color: '#fff' }}>
+            <h2 style={{ fontFamily: 'var(--fd)', fontSize: 20, color: 'var(--admin-text)' }}>
               Campagnes
             </h2>
             <Link
               href="/admin/campagnes"
-              style={{ fontSize: 13, color: '#C5A028', fontWeight: 600 }}
+              style={{ fontSize: 13, color: 'var(--admin-accent)', fontWeight: 600 }}
             >
               Voir tout →
             </Link>
@@ -457,7 +457,7 @@ export default async function AdminDashboard() {
                   fontFamily: 'var(--fd)',
                   fontSize: 36,
                   fontWeight: 700,
-                  color: '#C5A028',
+                  color: 'var(--admin-accent)',
                 }}
               >
                 {data.campaigns.active}
@@ -465,7 +465,7 @@ export default async function AdminDashboard() {
               <div
                 style={{
                   fontSize: 11,
-                  color: '#6B82B0',
+                  color: 'var(--admin-text-muted)',
                   textTransform: 'uppercase',
                   letterSpacing: '.1em',
                 }}
@@ -479,7 +479,7 @@ export default async function AdminDashboard() {
                   fontFamily: 'var(--fd)',
                   fontSize: 36,
                   fontWeight: 700,
-                  color: '#C5A028',
+                  color: 'var(--admin-accent)',
                 }}
               >
                 {data.campaigns.avgOpen}%
@@ -487,7 +487,7 @@ export default async function AdminDashboard() {
               <div
                 style={{
                   fontSize: 11,
-                  color: '#6B82B0',
+                  color: 'var(--admin-text-muted)',
                   textTransform: 'uppercase',
                   letterSpacing: '.1em',
                 }}

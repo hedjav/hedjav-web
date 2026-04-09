@@ -1,13 +1,6 @@
 import type { Metadata } from 'next'
 import { Cormorant_Garamond, DM_Sans, DM_Mono } from 'next/font/google'
 import './globals.css'
-import { ThemeProvider } from '@/components/providers/ThemeProvider'
-import { Header } from '@/components/layout/Header'
-import { Footer } from '@/components/layout/Footer'
-import { JsonLd, organizationJsonLd } from '@/components/features/JsonLd'
-import { CookieBanner } from '@/components/features/CookieBanner'
-import { TrackingScript } from '@/components/features/TrackingScript'
-import { LeadMagnetPopup } from '@/components/features/LeadMagnetPopup'
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -60,15 +53,7 @@ export default function RootLayout({
       className={`${cormorant.variable} ${dmSans.variable} ${dmMono.variable}`}
     >
       <body className="min-h-screen flex flex-col">
-        <JsonLd data={organizationJsonLd()} />
-        <ThemeProvider>
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
-          <CookieBanner />
-          <TrackingScript />
-          <LeadMagnetPopup />
-        </ThemeProvider>
+        {children}
       </body>
     </html>
   )

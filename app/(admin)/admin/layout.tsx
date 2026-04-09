@@ -1,7 +1,7 @@
 import { requireAdmin } from '@/lib/auth/session'
 import { createClient } from '@supabase/supabase-js'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
-import { AdminNotifications } from '@/components/admin/AdminNotifications'
+import { AdminHeader } from '@/components/admin/AdminHeader'
 import { getUnreadCount } from '@/lib/notifications/queries'
 
 async function getCounts() {
@@ -21,66 +21,34 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const profile = await requireAdmin()
   const [counts, unreadNotifs] = await Promise.all([getCounts(), getUnreadCount()])
 
-  const sections = [
-    {
-      title: 'Overview',
-      items: [
-        { href: '/admin', label: 'Dashboard' },
-      ],
-    },
-    {
-      title: 'Contenu',
-      items: [
-        { href: '/admin/ebooks', label: 'Ebooks', badge: counts.ebooks },
-        { href: '/admin/articles', label: 'Articles', badge: counts.articles },
-        { href: '/admin/pages', label: 'Pages' },
-      ],
-    },
-    {
-      title: 'Commerce',
-      items: [
-        { href: '/admin/ventes', label: 'Ventes' },
-        { href: '/admin/factures', label: 'Factures' },
-        { href: '/admin/membres', label: 'Membres' },
-      ],
-    },
-    {
-      title: 'Marketing',
-      items: [
-        { href: '/admin/campagnes', label: 'Campagnes' },
-        { href: '/admin/popup', label: 'Pop-up' },
-      ],
-    },
-    {
-      title: 'Outils',
-      items: [
-        { href: '/admin/ia', label: 'IA' },
-        { href: '/admin/mediatheque', label: 'Mediatheque' },
-        { href: '/admin/config', label: 'Configuration' },
-      ],
-    },
-  ]
+  const adminName = profile.full_name ?? profile.email
+  const adminEmail = profile.email
 
   return (
     <div
+      data-admin
       style={{
         minHeight: '100vh',
-        background: '#0D1628',
-        color: '#E0E6EF',
+        background: 'var(--admin-bg)',
+        color: 'var(--admin-text)',
         display: 'flex',
       }}
     >
       <AdminSidebar
-        sections={sections}
-        adminName={profile.full_name ?? profile.email}
-        adminEmail={profile.email}
+        adminName={adminName}
+        adminEmail={adminEmail}
+        ebookCount={counts.ebooks}
+        articleCount={counts.articles}
       />
-      <main style={{ flex: 1, minWidth: 0, padding: '32px 40px' }}>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
-          <AdminNotifications initialCount={unreadNotifs} />
-        </div>
-        {children}
-      </main>
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+        <AdminHeader
+          adminName={adminName}
+          initialUnread={unreadNotifs}
+        />
+        <main style={{ flex: 1, padding: '24px 40px 40px' }}>
+          {children}
+        </main>
+      </div>
     </div>
   )
 }
