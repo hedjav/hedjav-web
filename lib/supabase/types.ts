@@ -169,3 +169,49 @@ export type PopupConfig = {
   created_at: string
   updated_at: string
 }
+
+export type Invoice = {
+  id: string
+  invoice_number: string
+  purchase_id: string | null
+  user_id: string | null
+  user_email: string
+  user_name: string | null
+  ebook_title: string
+  amount: number
+  currency: string
+  status: 'paid' | 'refunded' | 'cancelled'
+  company_name: string | null
+  company_address: string | null
+  company_rccm: string | null
+  company_ifu: string | null
+  company_phone: string | null
+  pdf_url: string | null
+  metadata: Record<string, unknown>
+  created_at: string
+}
+
+export type AdminNotification = {
+  id: string
+  type: string
+  title: string
+  message: string | null
+  is_read: boolean
+  metadata: Record<string, unknown>
+  created_at: string
+}
+
+export type AiLog = {
+  id: string
+  action: string
+  prompt: string | null
+  result: string | null
+  model: string
+  tokens_used: number | null
+  duration_ms: number | null
+  status: 'success' | 'error'
+  error_message: string | null
+  created_by: string | null
+  metadata: Record<string, unknown>
+  created_at: string
+}

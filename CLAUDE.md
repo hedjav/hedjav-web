@@ -171,8 +171,10 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 - `/admin/articles` `/new` `/[id]` — CRUD avec badges source (manual/ai) et score coloré
 - `/admin/membres` — liste profils avec avatar initiales + badges rôle/newsletter
 - `/admin/membres/[id]` — fiche membre détaillée (profil + achats + emails campagne + promote/demote)
-- `/admin/ventes` — historique purchases + total encaissé
-- `/admin/ia` — placeholder 7 outils IA à venir
+- `/admin/ventes` — stat cards (CA total, CA mois, nb ventes) + tableau + export CSV
+- `/admin/factures` — tableau factures avec recherche + lien PDF
+- `/admin/ia` — stats IA (appels, tokens, taux succes) + logs + generateur articles
+- `/admin/mediatheque` — grille medias Supabase Storage + upload + copier URL + supprimer
 - `/admin/campagnes` — liste campagnes + stats (ouverture, clics)
 - `/admin/campagnes/new` — création campagne
 - `/admin/campagnes/[id]` — détail campagne + séquence emails + abonnés scorés + génération IA
@@ -193,6 +195,12 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 - `POST /api/popup/send-lead-magnet` — envoie email lead magnet
 - `POST /api/purchases/init` — pré-paiement FedaPay
 - `POST /api/webhooks/fedapay` (HMAC-SHA256) — confirme paiement + email transactionnel
+- `POST /api/invoices/generate` (bearer `INTERNAL_API_TOKEN`) — genere facture PDF pour un achat
+- `GET /api/admin/notifications` (session admin) — liste notifications + compteur non-lues
+- `POST /api/admin/notifications/read` (session admin) — marquer lu (id ou all)
+- `GET /api/admin/ventes/export` (session admin) — export CSV des ventes
+- `POST /api/media/upload` (session admin) — upload fichier dans bucket media
+- `DELETE /api/media/delete` (session admin) — supprime fichier du bucket media
 - `POST /api/auth/signout` — clear cookies sb-* + retour client
 
 ---
@@ -215,6 +223,9 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 | `user_events` | session_id, user_id, event_type, metadata jsonb |
 | `popup_config` | ebook_id, is_active, display_delay_seconds, scroll_threshold_percent, headline, cta_text, stats_shown, stats_submitted |
 | `site_config` | key (unique), value, type (text/number/boolean/json/url/email), category, label, description, metadata, updated_by |
+| `invoices` | invoice_number (unique), purchase_id, user_id, user_email, user_name, ebook_title, amount, currency, status, company_*, pdf_url, metadata |
+| `admin_notifications` | type, title, message, is_read, metadata |
+| `ai_logs` | action, prompt, result, model, tokens_used, duration_ms, status, error_message, created_by, metadata |
 
 **Migrations** dans `supabase/migrations/` (à exécuter en ordre dans Supabase Dashboard SQL Editor) :
 1. `001_ebooks.sql`
@@ -230,6 +241,9 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 11. `011_tracking.sql` (page_views, user_events)
 12. `012_popup_config.sql` (popup_config)
 13. `013_site_config.sql` (site_config — configuration dynamique du site)
+14. `014_invoices.sql` (invoices + generate_invoice_number function)
+15. `015_notifications.sql` (admin_notifications)
+16. `016_ai_logs.sql` (ai_logs)
 
 ---
 

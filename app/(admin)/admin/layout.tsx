@@ -1,6 +1,8 @@
 import { requireAdmin } from '@/lib/auth/session'
 import { createClient } from '@supabase/supabase-js'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
+import { AdminNotifications } from '@/components/admin/AdminNotifications'
+import { getUnreadCount } from '@/lib/notifications/queries'
 
 async function getCounts() {
   const db = createClient(
@@ -17,7 +19,7 @@ async function getCounts() {
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const profile = await requireAdmin()
-  const counts = await getCounts()
+  const [counts, unreadNotifs] = await Promise.all([getCounts(), getUnreadCount()])
 
   const sections = [
     {
@@ -37,6 +39,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       title: 'Commerce',
       items: [
         { href: '/admin/ventes', label: 'Ventes' },
+        { href: '/admin/factures', label: 'Factures' },
         { href: '/admin/membres', label: 'Membres' },
       ],
     },
@@ -51,6 +54,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       title: 'Outils',
       items: [
         { href: '/admin/ia', label: 'IA' },
+        { href: '/admin/mediatheque', label: 'Mediatheque' },
         { href: '/admin/config', label: 'Configuration' },
       ],
     },
@@ -71,6 +75,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         adminEmail={profile.email}
       />
       <main style={{ flex: 1, minWidth: 0, padding: '32px 40px' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+          <AdminNotifications initialCount={unreadNotifs} />
+        </div>
         {children}
       </main>
     </div>

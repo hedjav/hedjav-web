@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { verifyFedaPaySignature } from '@/lib/fedapay/verify'
 import { sendEmail } from '@/lib/email/smtp'
 import { purchaseConfirmationEmail } from '@/lib/email/templates'
+import { createNotification } from '@/lib/notifications/queries'
 
 /**
  * POST /api/webhooks/fedapay
@@ -87,6 +88,20 @@ export async function POST(request: Request) {
       html: tpl.html,
       text: tpl.text,
     })
+
+    // Notification admin
+    createNotification(
+      'purchase',
+      'Nouvel achat',
+      `${ebookTitle} par ${purchase.email} — ${new Intl.NumberFormat('fr-FR').format(amount)} FCFA`,
+    ).catch((e) => console.error('[fedapay] notification failed', e))
+
+    // Générer facture
+    fetch(`${process.env.NEXT_PUBLIC_APP_URL ?? 'https://egp.hedjav.com'}/api/invoices/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.INTERNAL_API_TOKEN}` },
+      body: JSON.stringify({ purchase_id: purchase.id }),
+    }).catch((e) => console.error('[fedapay] invoice generation failed', e))
   }
 
   return NextResponse.json({ ok: true })
