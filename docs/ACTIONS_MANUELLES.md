@@ -2,16 +2,17 @@
 
 ## 1. Configuration des CRON jobs (cron-job.org)
 
-Connectez-vous sur [cron-job.org](https://cron-job.org) et creez les 6 crons suivants :
+Connectez-vous sur [cron-job.org](https://cron-job.org) et creez les 7 crons suivants :
 
 | # | Nom | URL | Methode | Frequence | Header |
 |---|-----|-----|---------|-----------|--------|
-| 1 | BRVM Daily | `https://hedjav.com/api/brvm/daily` | POST | Tous les jours a 18h00 UTC | `Authorization: Bearer <INTERNAL_API_TOKEN>` |
-| 2 | BRVM Weekly Digest | `https://hedjav.com/api/brvm/weekly-digest` | POST | Chaque lundi a 08h00 UTC | `Authorization: Bearer <INTERNAL_API_TOKEN>` |
-| 3 | Newsletter Hebdo | `https://hedjav.com/api/newsletter/send` | POST | Chaque mercredi a 09h00 UTC | `Authorization: Bearer <INTERNAL_API_TOKEN>` |
-| 4 | Campagnes Drip | `https://hedjav.com/api/campaigns/process` | POST | Toutes les 6 heures | `Authorization: Bearer <INTERNAL_API_TOKEN>` |
-| 5 | Scoring Articles | `https://hedjav.com/api/articles/score` | POST | Chaque dimanche a 02h00 UTC | Body: `{"all": true}` + Header `Authorization: Bearer <INTERNAL_API_TOKEN>` |
-| 6 | Sitemap Ping | `https://www.google.com/ping?sitemap=https://hedjav.com/sitemap.xml` | GET | Chaque lundi a 06h00 UTC | Aucun |
+| 1 | BRVM Daily | `https://egp.hedjav.com/api/brvm/daily` | POST | Tous les jours a 18h00 UTC | `Authorization: Bearer <INTERNAL_API_TOKEN>` |
+| 2 | BRVM Weekly Digest | `https://egp.hedjav.com/api/brvm/weekly-digest` | POST | Chaque vendredi a 19h00 UTC | `Authorization: Bearer <INTERNAL_API_TOKEN>` |
+| 2b | BRVM Reports Scan | `https://egp.hedjav.com/api/brvm/reports-scan` | POST | Chaque dimanche a 22h00 UTC | `Authorization: Bearer <INTERNAL_API_TOKEN>` |
+| 3 | Newsletter Hebdo | `https://egp.hedjav.com/api/newsletter/send` | POST | Chaque mercredi a 09h00 UTC | `Authorization: Bearer <INTERNAL_API_TOKEN>` |
+| 4 | Campagnes Drip | `https://egp.hedjav.com/api/campaigns/process` | POST | Toutes les 6 heures | `Authorization: Bearer <INTERNAL_API_TOKEN>` |
+| 5 | Scoring Articles | `https://egp.hedjav.com/api/articles/score` | POST | Chaque dimanche a 02h00 UTC | Body: `{"all": true}` + Header `Authorization: Bearer <INTERNAL_API_TOKEN>` |
+| 6 | Sitemap Ping | `https://www.google.com/ping?sitemap=https://egp.hedjav.com/sitemap.xml` | GET | Chaque lundi a 06h00 UTC | Aucun |
 
 Pour chaque cron :
 1. Cliquez "Create cronjob"
@@ -22,7 +23,7 @@ Pour chaque cron :
 ## 2. Cloudflare WAF
 
 1. Connectez-vous sur [Cloudflare Dashboard](https://dash.cloudflare.com)
-2. Selectionnez le domaine `hedjav.com`
+2. Selectionnez le domaine `egp.hedjav.com`
 3. Allez dans **Security > WAF**
 4. Activez "Managed Rules" (gratuit)
 5. Creez une regle personnalisee :
@@ -35,10 +36,10 @@ Pour chaque cron :
 ## 3. Google Search Console
 
 1. Allez sur [Google Search Console](https://search.google.com/search-console)
-2. Ajoutez la propriete `https://hedjav.com`
+2. Ajoutez la propriete `https://egp.hedjav.com`
 3. Verifiez via DNS (ajoutez le TXT record dans Cloudflare)
 4. Une fois verifie, allez dans **Sitemaps**
-5. Soumettez : `https://hedjav.com/sitemap.xml`
+5. Soumettez : `https://egp.hedjav.com/sitemap.xml`
 6. Verifiez que toutes les pages sont indexees apres quelques jours
 
 ## 4. Configuration SPF/DKIM sur Hostinger
@@ -51,7 +52,7 @@ Pour chaque cron :
 
 ### DKIM (Resend)
 1. Connectez-vous sur [Resend](https://resend.com/domains)
-2. Ajoutez le domaine `hedjav.com`
+2. Ajoutez le domaine `egp.hedjav.com`
 3. Resend vous donnera 3 enregistrements CNAME a ajouter dans Cloudflare
 4. Ajoutez-les dans Cloudflare DNS (desactivez le proxy orange pour ces CNAME)
 5. Retournez sur Resend et cliquez "Verify"
@@ -98,3 +99,22 @@ UPDATE profiles SET role = 'member' WHERE email = 'email@exemple.com';
 ```
 
 **Important** : Ne retrogradez jamais le dernier admin, sinon personne ne pourra acceder a l'interface.
+
+## 7. Bucket Supabase Storage — brvm-documents
+
+Le bucket `brvm-documents` stocke les BOC PDF quotidiens et les rapports de societes cotees.
+
+Il est cree automatiquement par la migration `019_brvm_data.sql`. Si vous devez le creer manuellement :
+
+1. Connectez-vous au [Supabase Dashboard](https://supabase.com/dashboard)
+2. Selectionnez le projet hedjav
+3. Allez dans **Storage**
+4. Cliquez "New bucket"
+5. Nom : `brvm-documents`, Public : **Non**
+
+Ou via SQL Editor :
+```sql
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('brvm-documents', 'brvm-documents', false)
+ON CONFLICT DO NOTHING;
+```

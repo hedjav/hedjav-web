@@ -13,11 +13,16 @@ export function BRVMTriggerButton() {
       const res = await fetch('/api/admin/brvm-trigger', { method: 'POST' })
       const data = await res.json()
       if (data.ok) {
-        if (data.skipped) {
-          setResult(`Ignore : ${data.reason ?? 'Pas de donnees'}`)
-        } else {
-          setResult(`Article cree : ${data.article_title ?? 'OK'}`)
-        }
+        const parts: string[] = []
+        if (data.resume) parts.push('resume')
+        if (data.cours_actions) parts.push(`${data.cours_actions} titres`)
+        if (data.indices) parts.push(`${data.indices} indices`)
+        if (data.boc) parts.push('BOC')
+        if (data.annonces) parts.push(`${data.annonces} annonces`)
+        if (data.ai_summary) parts.push('resume IA')
+        setResult(parts.length > 0 ? `Collecte : ${parts.join(', ')}` : 'Veille terminee')
+      } else if (data.skipped) {
+        setResult(`Ignore : ${data.reason ?? 'Pas de donnees'}`)
       } else {
         setResult(`Erreur : ${data.error ?? 'Inconnue'}`)
       }
@@ -44,10 +49,10 @@ export function BRVMTriggerButton() {
           cursor: loading ? 'wait' : 'pointer',
         }}
       >
-        {loading ? 'Veille en cours...' : 'Lancer une veille maintenant'}
+        {loading ? 'Veille en cours...' : 'Lancer une veille'}
       </button>
       {result && (
-        <span style={{ fontSize: 12, color: result.startsWith('Erreur') ? 'var(--admin-danger)' : 'var(--admin-success)' }}>
+        <span style={{ fontSize: 12, color: result.startsWith('Erreur') ? 'var(--admin-danger)' : 'var(--admin-success)', maxWidth: 300, textAlign: 'right' }}>
           {result}
         </span>
       )}

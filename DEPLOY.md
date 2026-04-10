@@ -1,4 +1,4 @@
-# Déploiement hedjav.com — Hostinger VPS
+# Déploiement egp.hedjav.com — Hostinger VPS
 
 > Stack : Ubuntu 22.04 + Node 20 + PM2 + Nginx + Cloudflare DNS
 > Source : repo GitHub `hedjav/hedjav-web` (branche `main`)
@@ -31,7 +31,7 @@ cd hedjav-web
 nano /var/www/hedjav-web/.env.local
 ```
 
-Contenu : voir `.env.local.example` à la racine du repo. Bien définir `NEXT_PUBLIC_APP_URL=https://hedjav.com`.
+Contenu : voir `.env.local.example` à la racine du repo. Bien définir `NEXT_PUBLIC_APP_URL=https://egp.hedjav.com`.
 
 ### Premier build + démarrage PM2
 ```bash
@@ -47,17 +47,13 @@ pm2 startup   # exécuter la commande retournée pour démarrer PM2 au boot
 
 ## 2. Nginx — reverse proxy
 
-Créer `/etc/nginx/sites-available/hedjav.com` :
+Créer `/etc/nginx/sites-available/egp.hedjav.com` :
 
 ```nginx
 server {
     listen 80;
-    server_name hedjav.com www.hedjav.com;
+    server_name egp.hedjav.com;
 
-    # Rediriger www → apex
-    if ($host = www.hedjav.com) {
-        return 301 https://hedjav.com$request_uri;
-    }
 
     location / {
         proxy_pass http://127.0.0.1:3000;
@@ -84,7 +80,7 @@ server {
 
 Activer + reload :
 ```bash
-ln -s /etc/nginx/sites-available/hedjav.com /etc/nginx/sites-enabled/
+ln -s /etc/nginx/sites-available/egp.hedjav.com /etc/nginx/sites-enabled/
 nginx -t && systemctl reload nginx
 ```
 
@@ -96,8 +92,7 @@ Dans le dashboard Cloudflare → **DNS** :
 
 | Type | Name | Content | Proxy |
 |------|------|---------|-------|
-| A | `hedjav.com` | `<IP_VPS>` | ✅ Proxied (orange) |
-| CNAME | `www` | `hedjav.com` | ✅ Proxied (orange) |
+| CNAME | `egp` | `hedjav.com` | ✅ Proxied (orange) |
 
 Dans **SSL/TLS** :
 - Mode : **Full (strict)** (Cloudflare gère le certif edge)
@@ -128,8 +123,8 @@ Dans **SSL/TLS** :
 ## 5. Configuration Supabase Auth
 
 Dashboard → **Authentication → Settings** :
-- Site URL : `https://hedjav.com`
-- Redirect URLs : `https://hedjav.com/dashboard`, `http://localhost:3000`
+- Site URL : `https://egp.hedjav.com`
+- Redirect URLs : `https://egp.hedjav.com/dashboard`, `http://localhost:3000`
 - Email confirmations : **ON**
 
 ---
@@ -161,7 +156,7 @@ Vérifier :
 ```bash
 pm2 status
 pm2 logs hedjav --lines 50
-curl -I https://hedjav.com
+curl -I https://egp.hedjav.com
 ```
 
 ---

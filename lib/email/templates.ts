@@ -369,7 +369,149 @@ export function notificationEmailTemplate(props: NotificationEmailProps) {
   }
 }
 
-/* ── f) Newsletter subscribed ────────────────────────────────── */
+/* ── f) BRVM Daily email ────────────────────────────────────── */
+
+type BrvmDailyProps = {
+  date: string
+  aiSummary: string
+  topHausses: { ticker: string; nom: string; variation: string }[]
+  topBaisses: { ticker: string; nom: string; variation: string }[]
+  indices: { name: string; value: string; variation: string }[]
+  documents: { name: string; type: string }[]
+}
+
+export function brvmDailyEmail(data: BrvmDailyProps) {
+  const { date, aiSummary, topHausses, topBaisses, indices, documents } = data
+  const formattedDate = new Date(date + 'T12:00:00').toLocaleDateString('fr-FR', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+
+  // Build top/flop tables
+  function buildTickerTable(title: string, items: typeof topHausses, isUp: boolean): string {
+    if (items.length === 0) return ''
+    const color = isUp ? '#22C55E' : '#EF4444'
+    const arrow = isUp ? '&#9650;' : '&#9660;'
+    let rows = ''
+    for (const item of items) {
+      rows += `<tr>
+        <td style="padding:6px 10px;border-bottom:1px solid ${C.border};font-size:13px;font-weight:600;">${item.ticker}</td>
+        <td style="padding:6px 10px;border-bottom:1px solid ${C.border};font-size:13px;">${item.nom}</td>
+        <td style="padding:6px 10px;border-bottom:1px solid ${C.border};font-size:13px;color:${color};font-weight:600;text-align:right;">${arrow} ${item.variation}</td>
+      </tr>`
+    }
+    return `
+      <h3 style="margin:20px 0 8px;font-family:Georgia,serif;font-size:16px;color:${C.navy};">${title}</h3>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 16px;">
+        <thead>
+          <tr style="background:${C.navy};">
+            <th style="padding:8px 10px;color:${C.white};font-size:11px;text-align:left;border-radius:6px 0 0 0;">Ticker</th>
+            <th style="padding:8px 10px;color:${C.white};font-size:11px;text-align:left;">Nom</th>
+            <th style="padding:8px 10px;color:${C.white};font-size:11px;text-align:right;border-radius:0 6px 0 0;">Var.</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>`
+  }
+
+  // Build indices section
+  let indicesHtml = ''
+  if (indices.length > 0) {
+    indicesHtml = `<h3 style="margin:20px 0 8px;font-family:Georgia,serif;font-size:16px;color:${C.navy};">Indices</h3><ul style="margin:0 0 16px;padding-left:20px;">`
+    for (const idx of indices) {
+      const color = idx.variation.startsWith('-') ? '#EF4444' : idx.variation.startsWith('+') ? '#22C55E' : C.text
+      indicesHtml += `<li style="margin-bottom:4px;font-size:13px;"><strong>${idx.name}</strong> : ${idx.value} <span style="color:${color};font-weight:600;">(${idx.variation})</span></li>`
+    }
+    indicesHtml += '</ul>'
+  }
+
+  // Documents
+  let docsHtml = ''
+  if (documents.length > 0) {
+    docsHtml = `<h3 style="margin:20px 0 8px;font-family:Georgia,serif;font-size:16px;color:${C.navy};">Documents</h3><ul style="margin:0 0 16px;padding-left:20px;">`
+    for (const doc of documents) {
+      docsHtml += `<li style="margin-bottom:4px;font-size:13px;">${doc.name} <span style="color:${C.muted};">(${doc.type})</span></li>`
+    }
+    docsHtml += '</ul>'
+  }
+
+  const bodyHtml = `
+    <p style="margin:0 0 8px;font-size:13px;color:${C.muted};text-transform:uppercase;letter-spacing:1.5px;font-weight:600;">
+      EGP &mdash; Veille BRVM
+    </p>
+    <h1 style="margin:0 0 20px;font-family:Georgia,serif;font-size:26px;font-weight:600;color:${C.navy};line-height:1.3;">
+      Veille BRVM du ${formattedDate}
+    </h1>
+    <div style="background:${C.cream};border-left:4px solid ${C.gold};padding:16px 20px;margin:0 0 24px;border-radius:0 8px 8px 0;">
+      <p style="margin:0;font-size:14px;line-height:1.6;white-space:pre-line;">${aiSummary}</p>
+    </div>
+    ${buildTickerTable('Top hausses', topHausses, true)}
+    ${buildTickerTable('Top baisses', topBaisses, false)}
+    ${indicesHtml}
+    ${docsHtml}
+    ${btn('Voir le detail dans l\'admin', `${SITE_URL}/admin/brvm`)}
+    ${hr()}
+    ${smallNote('Veille automatique BRVM — egp.hedjav.com')}
+  `
+
+  return {
+    subject: `[BRVM] Veille du ${formattedDate}`,
+    html: layout({ preheader: `Veille BRVM ${formattedDate} — ${topHausses.length} hausses, ${topBaisses.length} baisses`, bodyHtml }),
+    text: `Veille BRVM du ${formattedDate}\n\n${aiSummary}\n\nTop hausses : ${topHausses.map((t) => `${t.ticker} ${t.variation}`).join(', ')}\nTop baisses : ${topBaisses.map((t) => `${t.ticker} ${t.variation}`).join(', ')}\n\n${SITE_URL}/admin/brvm`,
+  }
+}
+
+/* ── g) BRVM Weekly email ───────────────────────────────────── */
+
+type BrvmWeeklyProps = {
+  weekStart: string
+  weekEnd: string
+  articleTitle: string
+  articleExcerpt: string
+  articleUrl: string
+  documentsCount: number
+}
+
+export function brvmWeeklyEmail(data: BrvmWeeklyProps) {
+  const { weekStart, weekEnd, articleTitle, articleExcerpt, articleUrl, documentsCount } = data
+
+  const formatDate = (d: string) =>
+    new Date(d + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })
+
+  const period = `${formatDate(weekStart)} au ${formatDate(weekEnd)}`
+
+  const bodyHtml = `
+    <p style="margin:0 0 8px;font-size:13px;color:${C.muted};text-transform:uppercase;letter-spacing:1.5px;font-weight:600;">
+      EGP &mdash; Synthese BRVM hebdo
+    </p>
+    <h1 style="margin:0 0 20px;font-family:Georgia,serif;font-size:26px;font-weight:600;color:${C.navy};line-height:1.3;">
+      Synthese BRVM : ${period}
+    </h1>
+    <div style="background:${C.cream};border-radius:12px;padding:24px;margin:0 0 24px;">
+      <h2 style="margin:0 0 8px;font-family:Georgia,serif;font-size:20px;color:${C.navy};">${articleTitle}</h2>
+      <p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:${C.muted};">${articleExcerpt}</p>
+      <p style="margin:0;font-size:13px;">
+        <strong style="color:${C.navy};">${documentsCount}</strong> <span style="color:${C.muted};">documents collectes cette semaine</span>
+      </p>
+    </div>
+    <p style="margin:0 0 16px;font-size:14px;">
+      L'article est en brouillon. Relisez-le et publiez-le depuis l'admin :
+    </p>
+    ${btn('Relire et publier', articleUrl)}
+    ${hr()}
+    ${smallNote('Synthese automatique BRVM — egp.hedjav.com')}
+  `
+
+  return {
+    subject: `[BRVM Hebdo] Synthese ${period}`,
+    html: layout({ preheader: `Synthese BRVM ${period} — article brouillon pret`, bodyHtml }),
+    text: `Synthese BRVM ${period}\n\n${articleTitle}\n\n${articleExcerpt}\n\n${documentsCount} documents.\n\nRelire : ${articleUrl}`,
+  }
+}
+
+/* ── h) Newsletter subscribed ────────────────────────────────── */
 
 export function newsletterSubscribedEmail(name: string) {
   const firstName = name.split(' ')[0] || ''

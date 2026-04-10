@@ -12,3 +12,4 @@ Chaque job doit inclure le header : `Authorization: Bearer [INTERNAL_API_TOKEN]`
 | Rapport mensuel | `https://egp.hedjav.com/api/reports/monthly` | POST | 1er du mois, 7h |
 | BRVM quotidien | `https://egp.hedjav.com/api/brvm/daily` | POST | Tous les jours, 18h |
 | BRVM digest hebdo | `https://egp.hedjav.com/api/brvm/weekly-digest` | POST | Vendredi, 19h |
+| BRVM scan rapports | `https://egp.hedjav.com/api/brvm/reports-scan` | POST | Dimanche, 22h |
