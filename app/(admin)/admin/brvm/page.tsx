@@ -122,7 +122,7 @@ export default async function AdminBRVMPage() {
       {/* Export section */}
       <div style={{ background: 'var(--admin-surface)', borderRadius: 12, padding: 'var(--s5)', border: '1px solid var(--admin-border)', marginBottom: 'var(--s8)' }}>
         <h2 style={{ fontFamily: 'var(--fd)', fontSize: 'var(--text-xl)', fontWeight: 600, color: 'var(--admin-text)', marginBottom: 'var(--s4)' }}>
-          Export Excel
+          Documents BRVM — Recherche et téléchargement
         </h2>
         <BRVMExportForm />
       </div>
