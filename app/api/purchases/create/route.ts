@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import * as FedaPaySDK from 'fedapay'
+import { checkRateLimit, getClientIp } from '@/lib/utils/rate-limit'
 
 /**
  * POST /api/purchases/create
@@ -11,6 +12,10 @@ import * as FedaPaySDK from 'fedapay'
  * Retourne { payment_url, purchase_id }.
  */
 export async function POST(request: Request) {
+  // Rate limit : 3 requêtes par minute par IP
+  const rl = checkRateLimit(`purchases:${getClientIp(request)}`, 3, 60_000)
+  if (!rl.ok) return NextResponse.json({ error: rl.error }, { status: 429 })
+
   // --- Auth ---
   const supabase = await createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()

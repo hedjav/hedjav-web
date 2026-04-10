@@ -29,6 +29,34 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'No file provided' }, { status: 400 })
   }
 
+  // Limite de taille : 10 Mo
+  const MAX_SIZE = 10 * 1024 * 1024
+  if (file.size > MAX_SIZE) {
+    return NextResponse.json(
+      { error: `Fichier trop volumineux (max ${MAX_SIZE / 1024 / 1024} Mo)` },
+      { status: 413 },
+    )
+  }
+
+  // Types autorisés : images et PDF uniquement
+  const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'application/pdf']
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    return NextResponse.json(
+      { error: `Type de fichier non autorisé : ${file.type}. Types acceptés : images, PDF.` },
+      { status: 415 },
+    )
+  }
+
+  // Bloquer les extensions dangereuses même si le MIME est truqué
+  const BLOCKED_EXTENSIONS = ['.exe', '.php', '.sh', '.bat', '.cmd', '.ps1', '.msi', '.dll', '.js', '.vbs']
+  const ext = file.name.includes('.') ? `.${file.name.split('.').pop()?.toLowerCase()}` : ''
+  if (BLOCKED_EXTENSIONS.includes(ext)) {
+    return NextResponse.json(
+      { error: `Extension de fichier interdite : ${ext}` },
+      { status: 415 },
+    )
+  }
+
   // Sanitize filename
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
   const timestamp = Date.now()

@@ -5,6 +5,7 @@ import { sendEmail } from '@/lib/email/smtp'
 import { newsletterSubscribedEmail } from '@/lib/email/templates'
 import { createNotification } from '@/lib/notifications/queries'
 import { normalizeEmail } from '@/lib/utils/validation'
+import { checkRateLimit, getClientIp } from '@/lib/utils/rate-limit'
 
 /**
  * POST /api/newsletter/subscribe
@@ -15,6 +16,10 @@ import { normalizeEmail } from '@/lib/utils/validation'
  * Si l'utilisateur est connecté -> met aussi à jour profile.newsletter_opt = true.
  */
 export async function POST(request: Request) {
+  // Rate limit : 5 requêtes par minute par IP
+  const rl = checkRateLimit(`newsletter:${getClientIp(request)}`, 5, 60_000)
+  if (!rl.ok) return NextResponse.json({ error: rl.error }, { status: 429 })
+
   let payload: {
     email?: string
     source?: string
