@@ -25,11 +25,17 @@ export async function proxy(request: NextRequest) {
     },
   )
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
   const path = request.nextUrl.pathname
+
+  // Récupérer l'utilisateur — ne JAMAIS rediriger vers /login si erreur réseau
+  let user = null
+  try {
+    const { data } = await supabase.auth.getUser()
+    user = data.user
+  } catch {
+    // Erreur réseau/timeout Supabase → laisser passer sans rediriger
+    return response
+  }
 
   // Routes protégées : /dashboard et /admin
   if (path.startsWith('/dashboard') && !user) {
@@ -47,15 +53,20 @@ export async function proxy(request: NextRequest) {
       url.searchParams.set('next', path)
       return NextResponse.redirect(url)
     }
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
-    if (profile?.role !== 'admin') {
-      const url = request.nextUrl.clone()
-      url.pathname = '/'
-      return NextResponse.redirect(url)
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+      if (profile?.role !== 'admin') {
+        const url = request.nextUrl.clone()
+        url.pathname = '/'
+        return NextResponse.redirect(url)
+      }
+    } catch {
+      // Erreur réseau sur la vérif profil → laisser passer
+      return response
     }
   }
 
