@@ -1,0 +1,168 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "Hedjav — accueil" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - text: Hedjav
+      - navigation "Navigation principale" [ref=e5]:
+        - link "Accueil" [ref=e6] [cursor=pointer]:
+          - /url: /
+        - link "Ebooks" [ref=e7] [cursor=pointer]:
+          - /url: /ebooks
+        - link "Blog" [ref=e8] [cursor=pointer]:
+          - /url: /blog
+        - link "Newsletter" [ref=e9] [cursor=pointer]:
+          - /url: /#newsletter
+        - link "À propos" [ref=e10] [cursor=pointer]:
+          - /url: /a-propos
+      - generic [ref=e11]:
+        - button "Activer le mode sombre" [ref=e12] [cursor=pointer]:
+          - img [ref=e13]
+        - link "Espace membre" [ref=e15] [cursor=pointer]:
+          - /url: /login
+  - main [ref=e16]:
+    - generic [ref=e18]:
+      - text: Catalogue
+      - heading "Les ebooks Hedjav" [level=1] [ref=e19]
+      - paragraph [ref=e20]: Des guides pratiques, conçus pour passer à l’action immédiatement et bâtir un patrimoine solide en Afrique francophone.
+    - generic [ref=e23]:
+      - 'link "Propulsez votre carrière et votre business grâce à l''IA : 50 prompts professionnels prêts à l''emploi pour travailler 10X plus vite avec l''intelligence artificielle Propulsez votre carrière et votre business grâce à l''IA : 50 prompts professionnels prêts à l''emploi pour travailler 10X plus vite avec l''intelligence artificielle Plus de 300 prompts professionnels prêts à l''emploi, structurés avec le framework C-A-F-É, pour faire de l''IA votre avantage compétitif au quotidien. 4 900 FCFA −67 % 15 000 FCFA" [ref=e24] [cursor=pointer]':
+        - /url: /ebooks/propulser-ia
+        - 'img "Propulsez votre carrière et votre business grâce à l''IA : 50 prompts professionnels prêts à l''emploi pour travailler 10X plus vite avec l''intelligence artificielle" [ref=e26]'
+        - generic [ref=e27]:
+          - 'heading "Propulsez votre carrière et votre business grâce à l''IA : 50 prompts professionnels prêts à l''emploi pour travailler 10X plus vite avec l''intelligence artificielle" [level=3] [ref=e28]'
+          - paragraph [ref=e29]: Plus de 300 prompts professionnels prêts à l'emploi, structurés avec le framework C-A-F-É, pour faire de l'IA votre avantage compétitif au quotidien.
+          - generic [ref=e31]:
+            - generic [ref=e32]:
+              - generic [ref=e33]: 4 900 FCFA
+              - generic [ref=e34]: −67 %
+            - generic [ref=e35]: 15 000 FCFA
+      - 'link "Maîtriser la BRVM : investir en bourse régionale pas à pas Maîtriser la BRVM : investir en bourse régionale pas à pas Le guide complet pour ouvrir votre compte titres, comprendre les indices BRVM 10 et BRVM Composite et bâtir un portefeuille rentable d''actions UEMOA. 4 900 FCFA −67 % 15 000 FCFA" [ref=e36] [cursor=pointer]':
+        - /url: /ebooks/maitriser-la-brvm
+        - 'img "Maîtriser la BRVM : investir en bourse régionale pas à pas" [ref=e38]'
+        - generic [ref=e39]:
+          - 'heading "Maîtriser la BRVM : investir en bourse régionale pas à pas" [level=3] [ref=e40]'
+          - paragraph [ref=e41]: Le guide complet pour ouvrir votre compte titres, comprendre les indices BRVM 10 et BRVM Composite et bâtir un portefeuille rentable d'actions UEMOA.
+          - generic [ref=e43]:
+            - generic [ref=e44]:
+              - generic [ref=e45]: 4 900 FCFA
+              - generic [ref=e46]: −67 %
+            - generic [ref=e47]: 15 000 FCFA
+      - link "Construire son patrimoine en UEMOA Construire son patrimoine en UEMOA Une feuille de route claire pour bâtir, structurer et transmettre votre patrimoine dans les huit pays de l'UEMOA. 4 900 FCFA −67 % 15 000 FCFA" [ref=e48] [cursor=pointer]:
+        - /url: /ebooks/patrimoine-uemoa
+        - img "Construire son patrimoine en UEMOA" [ref=e50]
+        - generic [ref=e51]:
+          - heading "Construire son patrimoine en UEMOA" [level=3] [ref=e52]
+          - paragraph [ref=e53]: Une feuille de route claire pour bâtir, structurer et transmettre votre patrimoine dans les huit pays de l'UEMOA.
+          - generic [ref=e55]:
+            - generic [ref=e56]:
+              - generic [ref=e57]: 4 900 FCFA
+              - generic [ref=e58]: −67 %
+            - generic [ref=e59]: 15 000 FCFA
+      - 'link "Du salaire au revenu passif : 7 leviers en Afrique Du salaire au revenu passif : 7 leviers en Afrique Sept stratégies concrètes et adaptées au contexte africain pour générer des revenus qui tombent même quand vous dormez. 4 900 FCFA −67 % 15 000 FCFA" [ref=e60] [cursor=pointer]':
+        - /url: /ebooks/revenu-passif-afrique
+        - 'img "Du salaire au revenu passif : 7 leviers en Afrique" [ref=e62]'
+        - generic [ref=e63]:
+          - 'heading "Du salaire au revenu passif : 7 leviers en Afrique" [level=3] [ref=e64]'
+          - paragraph [ref=e65]: Sept stratégies concrètes et adaptées au contexte africain pour générer des revenus qui tombent même quand vous dormez.
+          - generic [ref=e67]:
+            - generic [ref=e68]:
+              - generic [ref=e69]: 4 900 FCFA
+              - generic [ref=e70]: −67 %
+            - generic [ref=e71]: 15 000 FCFA
+      - 'link "Immobilier locatif en UEMOA : Bénin & Côte d''Ivoire Immobilier locatif en UEMOA : Bénin & Côte d''Ivoire Tout ce qu''il faut savoir pour investir dans l''immobilier locatif rentable à Cotonou, Abidjan et les villes secondaires de la zone UEMOA. 4 900 FCFA −67 % 15 000 FCFA" [ref=e72] [cursor=pointer]':
+        - /url: /ebooks/immobilier-locatif-uemoa
+        - 'img "Immobilier locatif en UEMOA : Bénin & Côte d''Ivoire" [ref=e74]'
+        - generic [ref=e75]:
+          - 'heading "Immobilier locatif en UEMOA : Bénin & Côte d''Ivoire" [level=3] [ref=e76]'
+          - paragraph [ref=e77]: Tout ce qu'il faut savoir pour investir dans l'immobilier locatif rentable à Cotonou, Abidjan et les villes secondaires de la zone UEMOA.
+          - generic [ref=e79]:
+            - generic [ref=e80]:
+              - generic [ref=e81]: 4 900 FCFA
+              - generic [ref=e82]: −67 %
+            - generic [ref=e83]: 15 000 FCFA
+      - link "Finances personnelles de la famille africaine Finances personnelles de la famille africaine Un guide pratique pour reprendre le contrôle du budget familial, sortir des dettes et bâtir un avenir serein, adapté à la réalité africaine. 4 900 FCFA −67 % 15 000 FCFA" [ref=e84] [cursor=pointer]:
+        - /url: /ebooks/finances-personnelles-famille
+        - img "Finances personnelles de la famille africaine" [ref=e86]
+        - generic [ref=e87]:
+          - heading "Finances personnelles de la famille africaine" [level=3] [ref=e88]
+          - paragraph [ref=e89]: Un guide pratique pour reprendre le contrôle du budget familial, sortir des dettes et bâtir un avenir serein, adapté à la réalité africaine.
+          - generic [ref=e91]:
+            - generic [ref=e92]:
+              - generic [ref=e93]: 4 900 FCFA
+              - generic [ref=e94]: −67 %
+            - generic [ref=e95]: 15 000 FCFA
+      - 'link "Entreprendre sans capital en Afrique francophone Entreprendre sans capital en Afrique francophone Lancer votre activité avec moins de 50 000 FCFA : 12 modèles d''affaires testés et validés en Afrique francophone. 4 900 FCFA −67 % 15 000 FCFA" [ref=e96] [cursor=pointer]':
+        - /url: /ebooks/entreprendre-sans-capital
+        - img "Entreprendre sans capital en Afrique francophone" [ref=e98]
+        - generic [ref=e99]:
+          - heading "Entreprendre sans capital en Afrique francophone" [level=3] [ref=e100]
+          - paragraph [ref=e101]: "Lancer votre activité avec moins de 50 000 FCFA : 12 modèles d'affaires testés et validés en Afrique francophone."
+          - generic [ref=e103]:
+            - generic [ref=e104]:
+              - generic [ref=e105]: 4 900 FCFA
+              - generic [ref=e106]: −67 %
+            - generic [ref=e107]: 15 000 FCFA
+  - contentinfo [ref=e108]:
+    - generic [ref=e109]:
+      - generic [ref=e110]:
+        - generic [ref=e111]:
+          - link "Hedjav" [ref=e112] [cursor=pointer]:
+            - /url: /
+          - paragraph [ref=e113]: École en ligne de la gestion de patrimoine pour la zone UEMOA. Ebooks, formations BRVM et analyses patrimoniales.
+          - paragraph [ref=e114]: Édité par KTALYZ SARL · Cotonou, Bénin
+        - generic [ref=e115]:
+          - heading "Navigation" [level=3] [ref=e116]
+          - list [ref=e117]:
+            - listitem [ref=e118]:
+              - link "Ebooks" [ref=e119] [cursor=pointer]:
+                - /url: /ebooks
+            - listitem [ref=e120]:
+              - link "Blog" [ref=e121] [cursor=pointer]:
+                - /url: /blog
+            - listitem [ref=e122]:
+              - link "Newsletter" [ref=e123] [cursor=pointer]:
+                - /url: /#newsletter
+            - listitem [ref=e124]:
+              - link "À propos" [ref=e125] [cursor=pointer]:
+                - /url: /a-propos
+        - generic [ref=e126]:
+          - heading "Légal" [level=3] [ref=e127]
+          - list [ref=e128]:
+            - listitem [ref=e129]:
+              - link "CGV" [ref=e130] [cursor=pointer]:
+                - /url: /cgv
+            - listitem [ref=e131]:
+              - link "Mentions légales" [ref=e132] [cursor=pointer]:
+                - /url: /mentions-legales
+            - listitem [ref=e133]:
+              - link "Confidentialité" [ref=e134] [cursor=pointer]:
+                - /url: /confidentialite
+            - listitem [ref=e135]:
+              - link "Cookies" [ref=e136] [cursor=pointer]:
+                - /url: /cookies
+        - generic [ref=e137]:
+          - heading "Contact" [level=3] [ref=e138]
+          - link "hedjav@gmail.com" [ref=e139] [cursor=pointer]:
+            - /url: mailto:hedjav@gmail.com
+          - paragraph [ref=e140]: Bénin
+          - generic [ref=e141]:
+            - link "Facebook" [ref=e142] [cursor=pointer]:
+              - /url: https://www.facebook.com/hedjav
+              - img [ref=e143]
+            - link "Instagram" [ref=e145] [cursor=pointer]:
+              - /url: https://www.instagram.com/hedjav
+              - img [ref=e146]
+            - link "X" [ref=e148] [cursor=pointer]:
+              - /url: https://x.com/hedjav
+              - img [ref=e149]
+            - link "TikTok" [ref=e151] [cursor=pointer]:
+              - /url: https://www.tiktok.com/@hedjav
+              - img [ref=e152]
+            - link "WhatsApp" [ref=e154] [cursor=pointer]:
+              - /url: https://wa.me/22901978903630
+              - img [ref=e155]
+      - generic [ref=e157]: © 2026 Hedjav. Tous droits réservés.
+  - button "Open Next.js Dev Tools" [ref=e163] [cursor=pointer]:
+    - img [ref=e164]
+  - alert [ref=e167]

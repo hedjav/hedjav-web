@@ -1,0 +1,126 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "Hedjav — accueil" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - text: Hedjav
+      - navigation "Navigation principale" [ref=e5]:
+        - link "Accueil" [ref=e6] [cursor=pointer]:
+          - /url: /
+        - link "Ebooks" [ref=e7] [cursor=pointer]:
+          - /url: /ebooks
+        - link "Blog" [ref=e8] [cursor=pointer]:
+          - /url: /blog
+        - link "Newsletter" [ref=e9] [cursor=pointer]:
+          - /url: /#newsletter
+        - link "À propos" [ref=e10] [cursor=pointer]:
+          - /url: /a-propos
+      - generic [ref=e11]:
+        - button "Activer le mode sombre" [ref=e12] [cursor=pointer]:
+          - img [ref=e13]
+        - link "Espace membre" [ref=e15] [cursor=pointer]:
+          - /url: /login
+  - main [ref=e16]:
+    - article [ref=e17]:
+      - generic [ref=e18]:
+        - generic [ref=e19]:
+          - heading "Conditions Générales de Vente" [level=1] [ref=e20]
+          - paragraph [ref=e21]: Conditions générales de vente des produits numériques Hedjav — ebooks et formations en ligne.
+        - generic [ref=e22]:
+          - heading "1. Objet" [level=2] [ref=e23]
+          - paragraph [ref=e24]:
+            - text: Les présentes Conditions Générales de Vente (CGV) régissent les ventes de produits numériques (ebooks, formations en ligne) proposés par
+            - strong [ref=e25]: KTALYZ SARL
+            - text: ", société de droit béninois, éditrice du site hedjav.com."
+          - heading "2. Produits" [level=2] [ref=e26]
+          - paragraph [ref=e27]:
+            - text: Les produits vendus sont des contenus numériques téléchargeables (ebooks au format PDF) et/ou des accès à des formations en ligne. Chaque produit est décrit sur sa page de vente avec son prix en
+            - strong [ref=e28]: FCFA
+            - text: .
+          - heading "3. Prix et paiement" [level=2] [ref=e29]
+          - paragraph [ref=e30]:
+            - text: Les prix sont affichés en FCFA (Franc CFA — XOF). Le paiement s'effectue via
+            - strong [ref=e31]: FedaPay
+            - text: (Wave, Orange Money, MTN MoMo, carte bancaire). La commande est confirmée après réception du paiement.
+          - heading "4. Livraison" [level=2] [ref=e32]
+          - paragraph [ref=e33]: Après confirmation du paiement, le produit numérique est immédiatement accessible depuis l'espace membre du client sur hedjav.com. Un email de confirmation est envoyé à l'adresse fournie.
+          - heading "5. Droit de rétractation" [level=2] [ref=e34]
+          - paragraph [ref=e35]:
+            - text: Conformément à la nature numérique des produits,
+            - strong [ref=e36]: aucun remboursement
+            - text: n'est possible après téléchargement ou accès au contenu. En cas de problème technique, contactez-nous à
+            - link "hedjav@gmail.com" [ref=e37] [cursor=pointer]:
+              - /url: mailto:hedjav@gmail.com
+            - text: .
+          - heading "6. Propriété intellectuelle" [level=2] [ref=e38]
+          - paragraph [ref=e39]: Tous les contenus sont protégés par le droit d'auteur. L'achat confère un droit d'usage personnel et non cessible. Toute reproduction ou redistribution est interdite.
+          - heading "7. Contact" [level=2] [ref=e40]
+          - paragraph [ref=e41]:
+            - strong [ref=e42]: KTALYZ SARL
+            - text: "Email :"
+            - link "hedjav@gmail.com" [ref=e43] [cursor=pointer]:
+              - /url: mailto:hedjav@gmail.com
+            - text: "WhatsApp : +229 01 97 89 03 63"
+  - contentinfo [ref=e44]:
+    - generic [ref=e45]:
+      - generic [ref=e46]:
+        - generic [ref=e47]:
+          - link "Hedjav" [ref=e48] [cursor=pointer]:
+            - /url: /
+          - paragraph [ref=e49]: École en ligne de la gestion de patrimoine pour la zone UEMOA. Ebooks, formations BRVM et analyses patrimoniales.
+          - paragraph [ref=e50]: Édité par KTALYZ SARL · Cotonou, Bénin
+        - generic [ref=e51]:
+          - heading "Navigation" [level=3] [ref=e52]
+          - list [ref=e53]:
+            - listitem [ref=e54]:
+              - link "Ebooks" [ref=e55] [cursor=pointer]:
+                - /url: /ebooks
+            - listitem [ref=e56]:
+              - link "Blog" [ref=e57] [cursor=pointer]:
+                - /url: /blog
+            - listitem [ref=e58]:
+              - link "Newsletter" [ref=e59] [cursor=pointer]:
+                - /url: /#newsletter
+            - listitem [ref=e60]:
+              - link "À propos" [ref=e61] [cursor=pointer]:
+                - /url: /a-propos
+        - generic [ref=e62]:
+          - heading "Légal" [level=3] [ref=e63]
+          - list [ref=e64]:
+            - listitem [ref=e65]:
+              - link "CGV" [ref=e66] [cursor=pointer]:
+                - /url: /cgv
+            - listitem [ref=e67]:
+              - link "Mentions légales" [ref=e68] [cursor=pointer]:
+                - /url: /mentions-legales
+            - listitem [ref=e69]:
+              - link "Confidentialité" [ref=e70] [cursor=pointer]:
+                - /url: /confidentialite
+            - listitem [ref=e71]:
+              - link "Cookies" [ref=e72] [cursor=pointer]:
+                - /url: /cookies
+        - generic [ref=e73]:
+          - heading "Contact" [level=3] [ref=e74]
+          - link "hedjav@gmail.com" [ref=e75] [cursor=pointer]:
+            - /url: mailto:hedjav@gmail.com
+          - paragraph [ref=e76]: Bénin
+          - generic [ref=e77]:
+            - link "Facebook" [ref=e78] [cursor=pointer]:
+              - /url: https://www.facebook.com/hedjav
+              - img [ref=e79]
+            - link "Instagram" [ref=e81] [cursor=pointer]:
+              - /url: https://www.instagram.com/hedjav
+              - img [ref=e82]
+            - link "X" [ref=e84] [cursor=pointer]:
+              - /url: https://x.com/hedjav
+              - img [ref=e85]
+            - link "TikTok" [ref=e87] [cursor=pointer]:
+              - /url: https://www.tiktok.com/@hedjav
+              - img [ref=e88]
+            - link "WhatsApp" [ref=e90] [cursor=pointer]:
+              - /url: https://wa.me/22901978903630
+              - img [ref=e91]
+      - generic [ref=e93]: © 2026 Hedjav. Tous droits réservés.
+  - button "Open Next.js Dev Tools" [ref=e99] [cursor=pointer]:
+    - img [ref=e100]
+  - alert [ref=e103]

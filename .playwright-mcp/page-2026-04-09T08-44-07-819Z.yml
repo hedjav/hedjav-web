@@ -1,0 +1,238 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "Hedjav — accueil" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - text: Hedjav
+      - generic [ref=e5]:
+        - button "Activer le mode sombre" [ref=e6] [cursor=pointer]
+        - button "Ouvrir le menu" [ref=e9] [cursor=pointer]:
+          - img [ref=e10]
+  - main [ref=e11]:
+    - generic [ref=e13]:
+      - text: Gestion de patrimoine · Afrique francophone
+      - heading "Bâtissez. Protégez. Transmettez." [level=1] [ref=e14]:
+        - text: Bâtissez. Protégez.
+        - emphasis [ref=e15]: Transmettez.
+      - paragraph [ref=e16]: Hedjav accompagne particuliers et entrepreneurs d'Afrique francophone dans la construction, la protection et la transmission d'un patrimoine durable.
+      - generic [ref=e17]:
+        - link "Voir les ebooks" [ref=e18] [cursor=pointer]:
+          - /url: /ebooks
+        - link "Lire le blog" [ref=e19] [cursor=pointer]:
+          - /url: /blog
+    - list [ref=e22]:
+      - listitem [ref=e23]:
+        - img [ref=e24]
+        - generic [ref=e26]: École en ligne
+      - listitem [ref=e27]:
+        - img [ref=e28]
+        - generic [ref=e30]: Expertise BRVM
+      - listitem [ref=e31]:
+        - img [ref=e32]
+        - generic [ref=e34]: Patrimoine UEMOA
+      - listitem [ref=e35]:
+        - img [ref=e36]
+        - generic [ref=e38]: Approche OHADA
+    - generic [ref=e40]:
+      - generic [ref=e41]:
+        - text: Notre approche
+        - heading "Une école de la gestion de patrimoine pour l'UEMOA" [level=2] [ref=e42]
+        - paragraph [ref=e43]: Trois piliers pour bâtir, faire fructifier et transmettre votre patrimoine en zone UEMOA — sans dépendre des recettes occidentales hors-sol.
+      - generic [ref=e44]:
+        - article [ref=e45]:
+          - img [ref=e47]
+          - heading "Apprendre" [level=3] [ref=e49]
+          - paragraph [ref=e50]: Ebooks pratiques, formations en ligne et analyses BRVM exclusives. Des contenus pensés pour la zone UEMOA, par des professionnels du marché ouest-africain.
+        - article [ref=e51]:
+          - img [ref=e53]
+          - heading "Investir" [level=3] [ref=e55]
+          - paragraph [ref=e56]: Ouvrir son compte titres, comprendre les indices BRVM 10 et BRVM Composite, sélectionner les bonnes valeurs. Notre méthode étape par étape pour faire travailler votre épargne dans l'UEMOA.
+        - article [ref=e57]:
+          - img [ref=e59]
+          - heading "Transmettre" [level=3] [ref=e61]
+          - paragraph [ref=e62]: Préparer la succession, structurer le patrimoine familial, former la génération suivante. Anticiper la transmission dans le cadre OHADA et au-delà des frontières.
+    - generic [ref=e64]:
+      - generic [ref=e65]:
+        - text: Ebooks
+        - heading "Les guides essentiels" [level=2] [ref=e66]
+      - generic [ref=e67]:
+        - 'link "Propulsez votre carrière et votre business grâce à l''IA : 50 prompts professionnels prêts à l''emploi pour travailler 10X plus vite avec l''intelligence artificielle Propulsez votre carrière et votre business grâce à l''IA : 50 prompts professionnels prêts à l''emploi pour travailler 10X plus vite avec l''intelligence artificielle Plus de 300 prompts professionnels prêts à l''emploi, structurés avec le framework C-A-F-É, pour faire de l''IA votre avantage compétitif au quotidien. 4 900 FCFA −67 % 15 000 FCFA" [ref=e68] [cursor=pointer]':
+          - /url: /ebooks/propulser-ia
+          - 'img "Propulsez votre carrière et votre business grâce à l''IA : 50 prompts professionnels prêts à l''emploi pour travailler 10X plus vite avec l''intelligence artificielle" [ref=e70]'
+          - generic [ref=e71]:
+            - 'heading "Propulsez votre carrière et votre business grâce à l''IA : 50 prompts professionnels prêts à l''emploi pour travailler 10X plus vite avec l''intelligence artificielle" [level=3] [ref=e72]'
+            - paragraph [ref=e73]: Plus de 300 prompts professionnels prêts à l'emploi, structurés avec le framework C-A-F-É, pour faire de l'IA votre avantage compétitif au quotidien.
+            - generic [ref=e75]:
+              - generic [ref=e76]:
+                - generic [ref=e77]: 4 900 FCFA
+                - generic [ref=e78]: −67 %
+              - generic [ref=e79]: 15 000 FCFA
+        - 'link "Maîtriser la BRVM : investir en bourse régionale pas à pas Maîtriser la BRVM : investir en bourse régionale pas à pas Le guide complet pour ouvrir votre compte titres, comprendre les indices BRVM 10 et BRVM Composite et bâtir un portefeuille rentable d''actions UEMOA. 4 900 FCFA −67 % 15 000 FCFA" [ref=e80] [cursor=pointer]':
+          - /url: /ebooks/maitriser-la-brvm
+          - 'img "Maîtriser la BRVM : investir en bourse régionale pas à pas" [ref=e82]'
+          - generic [ref=e83]:
+            - 'heading "Maîtriser la BRVM : investir en bourse régionale pas à pas" [level=3] [ref=e84]'
+            - paragraph [ref=e85]: Le guide complet pour ouvrir votre compte titres, comprendre les indices BRVM 10 et BRVM Composite et bâtir un portefeuille rentable d'actions UEMOA.
+            - generic [ref=e87]:
+              - generic [ref=e88]:
+                - generic [ref=e89]: 4 900 FCFA
+                - generic [ref=e90]: −67 %
+              - generic [ref=e91]: 15 000 FCFA
+        - link "Construire son patrimoine en UEMOA Construire son patrimoine en UEMOA Une feuille de route claire pour bâtir, structurer et transmettre votre patrimoine dans les huit pays de l'UEMOA. 4 900 FCFA −67 % 15 000 FCFA" [ref=e92] [cursor=pointer]:
+          - /url: /ebooks/patrimoine-uemoa
+          - img "Construire son patrimoine en UEMOA" [ref=e94]
+          - generic [ref=e95]:
+            - heading "Construire son patrimoine en UEMOA" [level=3] [ref=e96]
+            - paragraph [ref=e97]: Une feuille de route claire pour bâtir, structurer et transmettre votre patrimoine dans les huit pays de l'UEMOA.
+            - generic [ref=e99]:
+              - generic [ref=e100]:
+                - generic [ref=e101]: 4 900 FCFA
+                - generic [ref=e102]: −67 %
+              - generic [ref=e103]: 15 000 FCFA
+      - link "Voir tout le catalogue" [ref=e105] [cursor=pointer]:
+        - /url: /ebooks
+    - generic [ref=e107]:
+      - generic [ref=e108]:
+        - text: Le blog
+        - heading "Analyses & guides récents" [level=2] [ref=e109]
+      - generic [ref=e110]:
+        - link "Comment ouvrir son compte titres BRVM en 2026 BRVM Comment ouvrir son compte titres BRVM en 2026 Le guide pratique étape par étape pour ouvrir son compte titres auprès d'une SGI agréée et commencer à investir sur la BRVM en moins de 7 jours. 8 avril 2026 2 min" [ref=e111] [cursor=pointer]:
+          - /url: /blog/ouvrir-compte-titres-brvm-2026
+          - img "Comment ouvrir son compte titres BRVM en 2026" [ref=e113]
+          - generic [ref=e114]:
+            - generic [ref=e115]: BRVM
+            - heading "Comment ouvrir son compte titres BRVM en 2026" [level=3] [ref=e116]
+            - paragraph [ref=e117]: Le guide pratique étape par étape pour ouvrir son compte titres auprès d'une SGI agréée et commencer à investir sur la BRVM en moins de 7 jours.
+            - generic [ref=e118]:
+              - generic [ref=e119]: 8 avril 2026
+              - generic [ref=e120]: 2 min
+        - link "Les 5 erreurs patrimoniales des cadres ouest-africains Patrimoine Les 5 erreurs patrimoniales des cadres ouest-africains Mélange perso/pro, absence de testament, sur-investissement immobilier… Voici les cinq pièges qui détruisent silencieusement le patrimoine des cadres en zone UEMOA. 8 avril 2026 2 min" [ref=e121] [cursor=pointer]:
+          - /url: /blog/erreurs-patrimoniales-cadres-ouest-africains
+          - img "Les 5 erreurs patrimoniales des cadres ouest-africains" [ref=e123]
+          - generic [ref=e124]:
+            - generic [ref=e125]: Patrimoine
+            - heading "Les 5 erreurs patrimoniales des cadres ouest-africains" [level=3] [ref=e126]
+            - paragraph [ref=e127]: Mélange perso/pro, absence de testament, sur-investissement immobilier… Voici les cinq pièges qui détruisent silencieusement le patrimoine des cadres en zone UEMOA.
+            - generic [ref=e128]:
+              - generic [ref=e129]: 8 avril 2026
+              - generic [ref=e130]: 2 min
+        - 'link "5 prompts ChatGPT pour analyser vos finances personnelles IA & productivité 5 prompts ChatGPT pour analyser vos finances personnelles Cinq prompts éprouvés pour faire de ChatGPT votre conseiller financier personnel : analyse de relevés, simulation d''épargne, négociation et plus encore. 8 avril 2026 2 min" [ref=e131] [cursor=pointer]':
+          - /url: /blog/5-prompts-chatgpt-finances-personnelles
+          - img "5 prompts ChatGPT pour analyser vos finances personnelles" [ref=e133]
+          - generic [ref=e134]:
+            - generic [ref=e135]: IA & productivité
+            - heading "5 prompts ChatGPT pour analyser vos finances personnelles" [level=3] [ref=e136]
+            - paragraph [ref=e137]: "Cinq prompts éprouvés pour faire de ChatGPT votre conseiller financier personnel : analyse de relevés, simulation d'épargne, négociation et plus encore."
+            - generic [ref=e138]:
+              - generic [ref=e139]: 8 avril 2026
+              - generic [ref=e140]: 2 min
+      - link "Voir tout le blog" [ref=e142] [cursor=pointer]:
+        - /url: /blog
+    - generic [ref=e144]:
+      - text: Newsletter Hedjav
+      - heading "Rejoignez la communauté Hedjav" [level=2] [ref=e145]
+      - paragraph [ref=e146]: "Chaque semaine : analyses BRVM, guides patrimoniaux UEMOA et accès en avant-première aux nouveaux ebooks et formations de l'école."
+      - generic [ref=e147]:
+        - generic [ref=e148]:
+          - textbox "Adresse email" [ref=e149]:
+            - /placeholder: votre@email.com
+          - button "S'abonner" [ref=e150] [cursor=pointer]
+        - paragraph [ref=e151]: Pas de spam. Désinscription en un clic. Vos données restent confidentielles.
+    - generic [ref=e154]:
+      - img "Hermann D. AVAHOUIN, fondateur de Hedjav" [ref=e157]
+      - generic [ref=e158]:
+        - text: Le fondateur
+        - heading "Hermann D. AVAHOUIN" [level=2] [ref=e159]
+        - paragraph [ref=e160]:
+          - strong [ref=e161]: Analyste financier — 17 ans d'expérience à Bank of Africa Bénin (BOA).
+          - text: Hermann a accompagné des centaines de cadres, entrepreneurs et familles ouest-africaines sur des sujets de financement, d'investissement et de gestion de patrimoine.
+        - paragraph [ref=e162]:
+          - text: Aujourd'hui à la tête de
+          - strong [ref=e163]: KTALYZ Conseils
+          - text: ", il dirige Hedjav — l'école en ligne de la gestion de patrimoine pour la zone UEMOA. Ebooks, formations BRVM, analyses exclusives et outils patrimoniaux pour démocratiser une expertise jusqu'ici réservée à une élite."
+        - paragraph [ref=e164]: "Sa mission : ancrer la culture patrimoniale dans les réalités fiscales (OHADA), économiques (BRVM, FCFA, UEMOA) et culturelles du continent — par et pour les Africains francophones."
+        - list [ref=e165]:
+          - listitem [ref=e166]:
+            - generic [ref=e167]: ✓
+            - generic [ref=e168]: 17 ans Bank of Africa Bénin (BOA)
+          - listitem [ref=e169]:
+            - generic [ref=e170]: ✓
+            - generic [ref=e171]: Fondateur KTALYZ Conseils — Cotonou
+          - listitem [ref=e172]:
+            - generic [ref=e173]: ✓
+            - generic [ref=e174]: Expert BRVM, fiscalité OHADA, structuration patrimoniale
+          - listitem [ref=e175]:
+            - generic [ref=e176]: ✓
+            - generic [ref=e177]: Auteur d'ebooks et de formations sur la finance UEMOA
+        - link "En savoir plus →" [ref=e178] [cursor=pointer]:
+          - /url: /a-propos
+    - generic [ref=e180]:
+      - heading "Prêt à bâtir votre patrimoine en UEMOA ?" [level=2] [ref=e181]
+      - paragraph [ref=e182]: Découvrez nos ebooks pratiques, nos guides BRVM et nos premières formations en ligne — pensés et écrits pour l'Afrique francophone.
+      - generic [ref=e183]:
+        - link "Voir les ebooks" [ref=e184] [cursor=pointer]:
+          - /url: /ebooks
+        - link "Lire le blog" [ref=e185] [cursor=pointer]:
+          - /url: /blog
+  - contentinfo [ref=e186]:
+    - generic [ref=e187]:
+      - generic [ref=e188]:
+        - generic [ref=e189]:
+          - link "Hedjav" [ref=e190] [cursor=pointer]:
+            - /url: /
+          - paragraph [ref=e191]: École en ligne de la gestion de patrimoine pour la zone UEMOA. Ebooks, formations BRVM et analyses patrimoniales.
+          - paragraph [ref=e192]: Édité par KTALYZ SARL · Cotonou, Bénin
+        - generic [ref=e193]:
+          - heading "Navigation" [level=3] [ref=e194]
+          - list [ref=e195]:
+            - listitem [ref=e196]:
+              - link "Ebooks" [ref=e197] [cursor=pointer]:
+                - /url: /ebooks
+            - listitem [ref=e198]:
+              - link "Blog" [ref=e199] [cursor=pointer]:
+                - /url: /blog
+            - listitem [ref=e200]:
+              - link "Newsletter" [ref=e201] [cursor=pointer]:
+                - /url: /#newsletter
+            - listitem [ref=e202]:
+              - link "À propos" [ref=e203] [cursor=pointer]:
+                - /url: /a-propos
+        - generic [ref=e204]:
+          - heading "Légal" [level=3] [ref=e205]
+          - list [ref=e206]:
+            - listitem [ref=e207]:
+              - link "CGV" [ref=e208] [cursor=pointer]:
+                - /url: /cgv
+            - listitem [ref=e209]:
+              - link "Mentions légales" [ref=e210] [cursor=pointer]:
+                - /url: /mentions-legales
+            - listitem [ref=e211]:
+              - link "Confidentialité" [ref=e212] [cursor=pointer]:
+                - /url: /confidentialite
+            - listitem [ref=e213]:
+              - link "Cookies" [ref=e214] [cursor=pointer]:
+                - /url: /cookies
+        - generic [ref=e215]:
+          - heading "Contact" [level=3] [ref=e216]
+          - link "hedjav@gmail.com" [ref=e217] [cursor=pointer]:
+            - /url: mailto:hedjav@gmail.com
+          - paragraph [ref=e218]: Bénin
+          - generic [ref=e219]:
+            - link "Facebook" [ref=e220] [cursor=pointer]:
+              - /url: https://www.facebook.com/hedjav
+              - img [ref=e221]
+            - link "Instagram" [ref=e223] [cursor=pointer]:
+              - /url: https://www.instagram.com/hedjav
+              - img [ref=e224]
+            - link "X" [ref=e226] [cursor=pointer]:
+              - /url: https://x.com/hedjav
+              - img [ref=e227]
+            - link "TikTok" [ref=e229] [cursor=pointer]:
+              - /url: https://www.tiktok.com/@hedjav
+              - img [ref=e230]
+            - link "WhatsApp" [ref=e232] [cursor=pointer]:
+              - /url: https://wa.me/22901978903630
+              - img [ref=e233]
+      - generic [ref=e235]: © 2026 Hedjav. Tous droits réservés.
+  - button "Open Next.js Dev Tools" [ref=e241] [cursor=pointer]:
+    - img [ref=e242]

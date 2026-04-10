@@ -1,0 +1,2678 @@
+[   11642ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   11962ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   12090ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   12315ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   12350ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   12353ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   12382ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   12557ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   12564ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   12616ms] [ERROR] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+%s%s https://react.dev/link/hydration-mismatch 
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/admin/ebooks" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html lang="fr" suppressHydrationWarning={true} className="cormorant_...">
+                          <body
+                            className="min-h-screen flex flex-col"
+-                           style={{padding-right:"6px",overflow-x:"hidden",overflow-y:"hidden"}}
+                          >
+                  ...
+ @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   12707ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   12717ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   12813ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   12820ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   12908ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   12987ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   13072ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3000/api/popup/config:0
+[   13123ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   13133ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3000/api/track:0
+[   13162ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   13213ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   13328ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   13724ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   13823ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   13941ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   13961ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   14059ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   14100ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   14212ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   14222ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   14325ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   14376ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   14486ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   14491ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   14602ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   14711ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   14720ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   14820ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   14874ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   14989ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   15047ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   15050ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   15157ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   15370ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   15373ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   15376ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   15482ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   15573ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   15681ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   15722ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   15725ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   15773ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   15838ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   15881ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   15965ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   15990ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   16088ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   16100ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   16199ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   16316ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   16331ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   16433ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   16471ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   16566ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   16594ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   16681ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   16715ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   16817ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   16842ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   16964ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   16995ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   17082ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   17153ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   17188ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   17294ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   17297ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   17417ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   17441ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   17557ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   17632ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   17711ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   17745ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   17835ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   17849ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   17970ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   18111ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   18130ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   18276ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   18298ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   18434ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   18448ms] [ERROR] ./app/(admin)/admin/ia/page.tsx:3:1
+Module not found: Can't resolve './AiLogsClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import type { Metadata } from 'next'
+> 3 | import { AiLogsClient } from './AiLogsClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | export const metadata: Metadata = { title: 'Admin — Outils IA' }
+  6 |
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   18562ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   22195ms] [LOG] [Fast Refresh] done in 3733ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   23704ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   24947ms] [LOG] [Fast Refresh] done in 1360ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   25185ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   26896ms] [LOG] [Fast Refresh] done in 1820ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   27235ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   28303ms] [LOG] [Fast Refresh] done in 1169ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   30029ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   30109ms] [LOG] [Fast Refresh] done in 200ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   30340ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   30406ms] [LOG] [Fast Refresh] done in 168ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   30683ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   31722ms] [LOG] [Fast Refresh] done in 1146ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   31844ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   31906ms] [LOG] [Fast Refresh] done in 173ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   32032ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   32050ms] [LOG] [Fast Refresh] done in 119ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   33090ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   33473ms] [LOG] [Fast Refresh] done in 492ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   34470ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   34871ms] [LOG] [Fast Refresh] done in 502ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   37099ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   37643ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   38381ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   38481ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   38845ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   38850ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   38962ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   39315ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   39320ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   39431ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   39484ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   39565ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   39601ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   39709ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   39736ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   39821ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   39846ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   39945ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   39971ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   40051ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   40080ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   40178ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   40206ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   40301ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   40327ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   40406ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   40434ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   40514ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   40552ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   40623ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   40665ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   40746ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   40778ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   40857ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   40883ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   40948ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   41040ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   41120ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   41195ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   41275ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   41304ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   41388ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   41414ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   41493ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   41536ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   41616ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   41646ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   41730ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   41757ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   41837ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   41876ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   41979ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   41980ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   42070ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   42149ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   42258ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   42365ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   42431ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   42514ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   42559ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   42728ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   42736ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   42844ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   42847ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   42957ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   42983ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   43064ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   43093ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   43172ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   43201ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   43267ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3000/api/track:0
+[   43270ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   43308ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   43377ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   43455ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   43607ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   43616ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   43738ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   43782ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   43870ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   43885ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   43979ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   44059ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   44112ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   44153ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   44242ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   44287ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   44383ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   44410ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   44514ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   44535ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   44628ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   44658ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   44759ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   44808ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   44887ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   44920ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   44997ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   45032ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   45111ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   45205ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   45248ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   45318ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   45384ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   45491ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   45492ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   45607ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   45632ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   45636ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   45747ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   45795ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   45903ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   45980ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   45985ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   45990ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   46020ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   46122ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   46124ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   46215ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   46325ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   46407ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   46480ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   46589ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   46630ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   46693ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   46763ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   46864ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   46869ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   46971ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   47229ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   47332ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   47375ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   47469ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   47483ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   47828ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   47919ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   48012ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   48089ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   48214ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   48224ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   48300ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   48399ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   48456ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   48532ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   48562ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   48658ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   48668ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   48778ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   48806ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   48901ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   48928ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   49006ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   49049ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   49159ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   49212ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   49283ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   49389ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   49464ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   49523ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   50018ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   50080ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   50655ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   50763ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   50793ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   50873ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   50900ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   50948ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   50996ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   51100ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   51102ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   51210ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   51252ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   51333ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   51361ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   51409ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   51528ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   51532ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   51638ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   51757ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   51774ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   51900ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   51964ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   52067ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   52069ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   52208ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   52290ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   52333ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   52429ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   52442ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   52566ms] [ERROR] ./app/(admin)/admin/ventes/page.tsx:3:1
+Module not found: Can't resolve './VentesClient'
+  1 | import { createClient } from '@supabase/supabase-js'
+  2 | import { formatPriceFcfa } from '@/lib/ebooks/queries'
+> 3 | import { VentesClient } from './VentesClient'
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 |
+  5 | function getDb() {
+  6 |   return createClient(
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[   52567ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   52670ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   57053ms] [LOG] [Fast Refresh] done in 4428ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   59222ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   59494ms] [LOG] [Fast Refresh] done in 379ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   59671ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   59981ms] [LOG] [Fast Refresh] done in 410ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   60521ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   60615ms] [LOG] [Fast Refresh] done in 202ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   61765ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   62445ms] [LOG] [Fast Refresh] done in 788ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   63368ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   63574ms] [LOG] [Fast Refresh] done in 319ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   73226ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   78949ms] [LOG] [Fast Refresh] done in 5821ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   81989ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   88865ms] [LOG] [Fast Refresh] done in 6969ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   92328ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   95051ms] [LOG] [Fast Refresh] done in 2837ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   96300ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   96566ms] [LOG] [Fast Refresh] done in 369ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   97242ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   97941ms] [LOG] [Fast Refresh] done in 813ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  104598ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  105857ms] [LOG] [Fast Refresh] done in 1363ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  106365ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  111115ms] [LOG] [Fast Refresh] done in 2752ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  113166ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  114480ms] [LOG] [Fast Refresh] done in 1415ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  115540ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  116202ms] [LOG] [Fast Refresh] done in 773ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  116583ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  116685ms] [LOG] [Fast Refresh] done in 203ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  116788ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  116908ms] [LOG] [Fast Refresh] done in 223ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  118038ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  119426ms] [LOG] [Fast Refresh] done in 1496ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  119802ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  120306ms] [LOG] [Fast Refresh] done in 608ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  120674ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  120758ms] [LOG] [Fast Refresh] done in 191ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  120917ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  121044ms] [LOG] [Fast Refresh] done in 232ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  121423ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  121894ms] [LOG] [Fast Refresh] done in 573ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  122154ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  122592ms] [LOG] [Fast Refresh] done in 547ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  122701ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  122958ms] [LOG] [Fast Refresh] done in 364ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  123337ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  123854ms] [LOG] [Fast Refresh] done in 628ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  124035ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  124291ms] [LOG] [Fast Refresh] done in 358ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  124471ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  125009ms] [LOG] [Fast Refresh] done in 642ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  125112ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  125205ms] [LOG] [Fast Refresh] done in 195ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  125385ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  125403ms] [LOG] [Fast Refresh] done in 119ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  125601ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  125804ms] [LOG] [Fast Refresh] done in 312ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  126176ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  126590ms] [LOG] [Fast Refresh] done in 515ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  127065ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  127274ms] [LOG] [Fast Refresh] done in 314ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  127833ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  127939ms] [LOG] [Fast Refresh] done in 215ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  128262ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  128573ms] [LOG] [Fast Refresh] done in 414ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  129272ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  129757ms] [LOG] [Fast Refresh] done in 586ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  130184ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  130355ms] [LOG] [Fast Refresh] done in 285ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  131429ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  132154ms] [LOG] [Fast Refresh] done in 827ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  134635ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  135053ms] [LOG] [Fast Refresh] done in 520ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  138909ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  139141ms] [LOG] [Fast Refresh] done in 332ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  140427ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  144201ms] [LOG] [Fast Refresh] done in 2423ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  148878ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  151122ms] [LOG] [Fast Refresh] done in 2280ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  154712ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  155132ms] [LOG] [Fast Refresh] done in 526ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  155768ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  155797ms] [LOG] [Fast Refresh] done in 141ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  156034ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  156478ms] [LOG] [Fast Refresh] done in 559ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  159901ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  161607ms] [LOG] [Fast Refresh] done in 1816ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  162481ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  163056ms] [LOG] [Fast Refresh] done in 684ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  166312ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  167016ms] [LOG] [Fast Refresh] done in 814ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  167389ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  167427ms] [LOG] [Fast Refresh] done in 144ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  167650ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  167782ms] [LOG] [Fast Refresh] done in 233ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  168114ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  168551ms] [LOG] [Fast Refresh] done in 547ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  169229ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  169747ms] [LOG] [Fast Refresh] done in 628ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  170498ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  170617ms] [LOG] [Fast Refresh] done in 221ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  170910ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  170989ms] [LOG] [Fast Refresh] done in 186ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  171156ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  171429ms] [LOG] [Fast Refresh] done in 379ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  171674ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  171753ms] [LOG] [Fast Refresh] done in 186ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  172142ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  172796ms] [LOG] [Fast Refresh] done in 760ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  177726ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  177892ms] [LOG] [Fast Refresh] done in 266ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  178220ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  178244ms] [LOG] [Fast Refresh] done in 131ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  178469ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  179012ms] [LOG] [Fast Refresh] done in 650ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  179550ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  179607ms] [LOG] [Fast Refresh] done in 166ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  179891ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  179936ms] [LOG] [Fast Refresh] done in 150ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  180147ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  180871ms] [LOG] [Fast Refresh] done in 826ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  184216ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  184488ms] [LOG] [Fast Refresh] done in 379ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  184965ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  184988ms] [LOG] [Fast Refresh] done in 133ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  185338ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  185519ms] [LOG] [Fast Refresh] done in 296ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  188607ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  188784ms] [LOG] [Fast Refresh] done in 284ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  189128ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  190678ms] [LOG] [Fast Refresh] done in 1661ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  192138ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  195145ms] [LOG] [Fast Refresh] done in 3115ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  197552ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  197728ms] [LOG] [Fast Refresh] done in 276ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  197971ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  197973ms] [LOG] [Fast Refresh] done in 110ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  198379ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  199078ms] [LOG] [Fast Refresh] done in 807ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  199326ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  200146ms] [LOG] [Fast Refresh] done in 920ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  200252ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  200971ms] [LOG] [Fast Refresh] done in 822ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  201484ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  201554ms] [LOG] [Fast Refresh] done in 183ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  201917ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  201971ms] [LOG] [Fast Refresh] done in 167ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  202206ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  202288ms] [LOG] [Fast Refresh] done in 184ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  202428ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  202626ms] [LOG] [Fast Refresh] done in 300ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  202823ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  202970ms] [LOG] [Fast Refresh] done in 251ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  203080ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  203784ms] [LOG] [Fast Refresh] done in 811ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  208246ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  208353ms] [LOG] [Fast Refresh] done in 208ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  208606ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  208746ms] [LOG] [Fast Refresh] done in 246ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  208945ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  209271ms] [LOG] [Fast Refresh] done in 426ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  209760ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  209846ms] [LOG] [Fast Refresh] done in 195ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  210375ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  210459ms] [LOG] [Fast Refresh] done in 189ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  210815ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  211090ms] [LOG] [Fast Refresh] done in 377ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  211293ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  212062ms] [LOG] [Fast Refresh] done in 869ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  212338ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  212559ms] [LOG] [Fast Refresh] done in 324ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  216186ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  217805ms] [LOG] [Fast Refresh] done in 1724ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  222607ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  222864ms] [LOG] [Fast Refresh] done in 360ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  223256ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  224336ms] [LOG] [Fast Refresh] done in 1180ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  234403ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  236246ms] [LOG] [Fast Refresh] done in 1953ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  242013ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  242206ms] [LOG] [Fast Refresh] done in 299ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  242411ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  242718ms] [LOG] [Fast Refresh] done in 411ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  401409ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  404289ms] [LOG] [Fast Refresh] done in 2989ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  406674ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  410939ms] [LOG] [Fast Refresh] done in 4371ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  444579ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  452315ms] [LOG] [Fast Refresh] done in 7837ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  542078ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  542478ms] [LOG] [Fast Refresh] done in 738ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  555584ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  556240ms] [LOG] [Fast Refresh] done in 760ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  556596ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  565720ms] [LOG] [Fast Refresh] done in 9305ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  566867ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  582203ms] [LOG] [Fast Refresh] done in 15786ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  595649ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  596088ms] [LOG] [Fast Refresh] done in 543ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  598353ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  598655ms] [LOG] [Fast Refresh] done in 419ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  600287ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  600320ms] [LOG] [Fast Refresh] done in 159ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  600561ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  602874ms] [LOG] [Fast Refresh] done in 2439ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  607414ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  609517ms] [LOG] [Fast Refresh] done in 2218ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  623684ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  624162ms] [LOG] [Fast Refresh] done in 598ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  624661ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  626451ms] [LOG] [Fast Refresh] done in 1901ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  627283ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  627612ms] [LOG] [Fast Refresh] done in 433ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  627783ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  629472ms] [LOG] [Fast Refresh] done in 1798ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  631094ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  631418ms] [LOG] [Fast Refresh] done in 425ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  631715ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  634410ms] [LOG] [Fast Refresh] done in 2815ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  637392ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  679458ms] [WARNING] [HMR] Invalid message: {"isTrusted":true}
+TypeError: Cannot convert undefined or null to object
+    at Object.keys (<anonymous>)
+    at extractModulesFromTurbopackMessage (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js:13631:39)
+    at TurbopackHmr.onTurbopackMessage (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js:13578:32)
+    at processMessage (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js:13936:30)
+    at WebSocket.handleMessage (http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js:13335:52) @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  679460ms] [LOG] [Fast Refresh] done in 45028ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  692645ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  696555ms] [LOG] [Fast Refresh] done in 3891ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  697126ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  698383ms] [LOG] [Fast Refresh] done in 1355ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  699847ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  701098ms] [LOG] [Fast Refresh] done in 1361ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  701262ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  702905ms] [LOG] [Fast Refresh] done in 1746ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  704088ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  704398ms] [LOG] [Fast Refresh] done in 410ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  704552ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  706310ms] [LOG] [Fast Refresh] done in 1860ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  707244ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  707510ms] [LOG] [Fast Refresh] done in 368ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  707674ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  709395ms] [LOG] [Fast Refresh] done in 1829ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  719779ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  720007ms] [LOG] [Fast Refresh] done in 343ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  722688ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  723194ms] [LOG] [Fast Refresh] done in 605ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  723360ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  725429ms] [LOG] [Fast Refresh] done in 2177ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  726492ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  726843ms] [LOG] [Fast Refresh] done in 458ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  727051ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  728577ms] [LOG] [Fast Refresh] done in 1631ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  729648ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  729890ms] [LOG] [Fast Refresh] done in 348ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  730037ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  731807ms] [LOG] [Fast Refresh] done in 1875ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  732720ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  732996ms] [LOG] [Fast Refresh] done in 385ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  733151ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  734158ms] [LOG] [Fast Refresh] done in 1111ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  735590ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  735924ms] [LOG] [Fast Refresh] done in 435ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  736086ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  737336ms] [LOG] [Fast Refresh] done in 1352ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  738504ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  738767ms] [LOG] [Fast Refresh] done in 379ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  738940ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  740634ms] [LOG] [Fast Refresh] done in 1802ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  744556ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  744928ms] [LOG] [Fast Refresh] done in 476ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  745289ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  746009ms] [LOG] [Fast Refresh] done in 827ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  751433ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  751747ms] [LOG] [Fast Refresh] done in 416ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  751900ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  753876ms] [LOG] [Fast Refresh] done in 2079ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  755082ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  756319ms] [LOG] [Fast Refresh] done in 1347ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  757970ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  759392ms] [LOG] [Fast Refresh] done in 1532ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  759895ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  759997ms] [LOG] [Fast Refresh] done in 216ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  760997ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  761499ms] [LOG] [Fast Refresh] done in 607ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  761848ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  763302ms] [LOG] [Fast Refresh] done in 1559ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  764175ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  764429ms] [LOG] [Fast Refresh] done in 359ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  764602ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  766047ms] [LOG] [Fast Refresh] done in 1553ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  767105ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  767363ms] [LOG] [Fast Refresh] done in 359ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  767469ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  767579ms] [LOG] [Fast Refresh] done in 214ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  767866ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  769146ms] [LOG] [Fast Refresh] done in 1382ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  770048ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  770419ms] [LOG] [Fast Refresh] done in 472ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  770718ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  772760ms] [LOG] [Fast Refresh] done in 2151ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  784029ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  784986ms] [LOG] [Fast Refresh] done in 1068ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  786975ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  787311ms] [LOG] [Fast Refresh] done in 452ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  787504ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  789174ms] [LOG] [Fast Refresh] done in 1775ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  790105ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  790419ms] [LOG] [Fast Refresh] done in 429ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  790605ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  792355ms] [LOG] [Fast Refresh] done in 1852ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  793269ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  793759ms] [LOG] [Fast Refresh] done in 601ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  793954ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  795418ms] [LOG] [Fast Refresh] done in 1567ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  796712ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  797078ms] [LOG] [Fast Refresh] done in 477ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  797282ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  799168ms] [LOG] [Fast Refresh] done in 1986ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  800094ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  800416ms] [LOG] [Fast Refresh] done in 429ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  800685ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  801556ms] [LOG] [Fast Refresh] done in 973ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  807965ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  808257ms] [LOG] [Fast Refresh] done in 395ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  808401ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  809720ms] [LOG] [Fast Refresh] done in 1423ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  813138ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  813376ms] [LOG] [Fast Refresh] done in 353ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  813905ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  814234ms] [LOG] [Fast Refresh] done in 434ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  814387ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  814718ms] [LOG] [Fast Refresh] done in 434ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  814825ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  815009ms] [LOG] [Fast Refresh] done in 285ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  815342ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  816418ms] [LOG] [Fast Refresh] done in 1186ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  816683ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  816887ms] [LOG] [Fast Refresh] done in 305ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  817270ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  817281ms] [LOG] [Fast Refresh] done in 318ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  817777ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  818048ms] [LOG] [Fast Refresh] done in 383ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  820899ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  821657ms] [LOG] [Fast Refresh] done in 858ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  821778ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  821910ms] [LOG] [Fast Refresh] done in 247ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  822023ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  822318ms] [LOG] [Fast Refresh] done in 402ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  822442ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  822894ms] [LOG] [Fast Refresh] done in 565ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  824222ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  824963ms] [LOG] [Fast Refresh] done in 855ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  827865ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  828585ms] [LOG] [Fast Refresh] done in 823ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  828700ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  829525ms] [LOG] [Fast Refresh] done in 933ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  830389ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  830636ms] [LOG] [Fast Refresh] done in 347ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  845231ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  845578ms] [LOG] [Fast Refresh] done in 451ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  845771ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  848040ms] [LOG] [Fast Refresh] done in 2381ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  854397ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  855484ms] [LOG] [Fast Refresh] done in 1203ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  858009ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  858532ms] [LOG] [Fast Refresh] done in 640ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  858775ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  861649ms] [LOG] [Fast Refresh] done in 2990ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  862811ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  863727ms] [LOG] [Fast Refresh] done in 1019ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  875630ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  876493ms] [LOG] [Fast Refresh] done in 964ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  885272ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  887410ms] [LOG] [Fast Refresh] done in 2245ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  888003ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  888105ms] [LOG] [Fast Refresh] done in 212ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  889160ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  889470ms] [LOG] [Fast Refresh] done in 412ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  889655ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  891571ms] [LOG] [Fast Refresh] done in 2021ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  893336ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  893655ms] [LOG] [Fast Refresh] done in 433ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  893909ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  894294ms] [LOG] [Fast Refresh] done in 502ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  894993ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  896426ms] [LOG] [Fast Refresh] done in 1542ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  898887ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  899259ms] [LOG] [Fast Refresh] done in 473ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  899517ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  899949ms] [LOG] [Fast Refresh] done in 532ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  910324ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  911685ms] [LOG] [Fast Refresh] done in 1463ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  912091ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  913587ms] [LOG] [Fast Refresh] done in 1603ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  914519ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  915130ms] [LOG] [Fast Refresh] done in 725ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  916498ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  917358ms] [LOG] [Fast Refresh] done in 1075ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  919448ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  920129ms] [LOG] [Fast Refresh] done in 784ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  920864ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  922213ms] [LOG] [Fast Refresh] done in 1455ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  945084ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  945173ms] [LOG] [Fast Refresh] done in 203ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  950483ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  950828ms] [LOG] [Fast Refresh] done in 455ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  950995ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  953794ms] [LOG] [Fast Refresh] done in 2914ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  956716ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  957109ms] [LOG] [Fast Refresh] done in 505ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  957317ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  958769ms] [LOG] [Fast Refresh] done in 1553ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  971595ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  972201ms] [LOG] [Fast Refresh] done in 713ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  972622ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  973786ms] [LOG] [Fast Refresh] done in 1271ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  976701ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  977559ms] [LOG] [Fast Refresh] done in 959ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  981414ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  981926ms] [LOG] [Fast Refresh] done in 617ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  982187ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  983560ms] [LOG] [Fast Refresh] done in 1480ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  988901ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  989572ms] [LOG] [Fast Refresh] done in 776ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  991346ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  991816ms] [LOG] [Fast Refresh] done in 578ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  992113ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  993189ms] [LOG] [Fast Refresh] done in 1186ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1003793ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1004211ms] [LOG] [Fast Refresh] done in 520ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1004918ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1006978ms] [LOG] [Fast Refresh] done in 2169ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1007095ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1007400ms] [LOG] [Fast Refresh] done in 416ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1008346ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1008880ms] [LOG] [Fast Refresh] done in 644ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1016075ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1016596ms] [LOG] [Fast Refresh] done in 621ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1017077ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1017674ms] [LOG] [Fast Refresh] done in 715ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1017943ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1017945ms] [LOG] [Fast Refresh] done in 201ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1019867ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1020707ms] [LOG] [Fast Refresh] done in 948ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1022318ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1022524ms] [LOG] [Fast Refresh] done in 322ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1026240ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1027363ms] [LOG] [Fast Refresh] done in 1230ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1027473ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1029103ms] [LOG] [Fast Refresh] done in 1735ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1040091ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1041935ms] [LOG] [Fast Refresh] done in 1947ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1043765ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1045424ms] [LOG] [Fast Refresh] done in 1770ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1048205ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1049008ms] [LOG] [Fast Refresh] done in 911ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1049201ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1050387ms] [LOG] [Fast Refresh] done in 1290ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1053091ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1054473ms] [LOG] [Fast Refresh] done in 1485ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1056747ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1059262ms] [LOG] [Fast Refresh] done in 2617ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1067384ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1068487ms] [LOG] [Fast Refresh] done in 1213ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1068631ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1149310ms] [LOG] [Fast Refresh] done in 80808ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1165256ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1165800ms] [LOG] [Fast Refresh] done in 647ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1168838ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1169032ms] [LOG] [Fast Refresh] done in 296ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1169454ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1169714ms] [LOG] [Fast Refresh] done in 366ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1169818ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1170031ms] [LOG] [Fast Refresh] done in 316ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1170215ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1170952ms] [LOG] [Fast Refresh] done in 838ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1171177ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1171349ms] [LOG] [Fast Refresh] done in 273ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1172144ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1172391ms] [LOG] [Fast Refresh] done in 353ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1172545ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1173721ms] [LOG] [Fast Refresh] done in 1284ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1174683ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1175154ms] [LOG] [Fast Refresh] done in 571ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1175257ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1175340ms] [LOG] [Fast Refresh] done in 185ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1177614ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1177998ms] [LOG] [Fast Refresh] done in 493ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1178296ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1179264ms] [LOG] [Fast Refresh] done in 1083ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1179658ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1179668ms] [LOG] [Fast Refresh] done in 306ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1180486ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1182071ms] [LOG] [Fast Refresh] done in 1685ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1184142ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1184478ms] [LOG] [Fast Refresh] done in 437ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1184758ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1185168ms] [LOG] [Fast Refresh] done in 524ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1187937ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1188223ms] [LOG] [Fast Refresh] done in 393ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1188537ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1190921ms] [LOG] [Fast Refresh] done in 2484ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1199644ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1199926ms] [LOG] [Fast Refresh] done in 388ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1200098ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1200699ms] [LOG] [Fast Refresh] done in 720ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1201846ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1201969ms] [LOG] [Fast Refresh] done in 233ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1206724ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1207008ms] [LOG] [Fast Refresh] done in 460ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1207166ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1207275ms] [LOG] [Fast Refresh] done in 217ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1210232ms] [WARNING] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1210925ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1214093ms] [LOG] [Fast Refresh] done in 3268ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1215015ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1217601ms] [LOG] [Fast Refresh] done in 2701ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1222280ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1222581ms] [LOG] [Fast Refresh] done in 408ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1231536ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1231596ms] [LOG] [Fast Refresh] done in 163ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1242828ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1243031ms] [LOG] [Fast Refresh] done in 321ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1275457ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1279732ms] [LOG] [Fast Refresh] done in 4376ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1283585ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1284431ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1295682ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1296204ms] [LOG] [Fast Refresh] done in 631ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1300983ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1301499ms] [LOG] [Fast Refresh] done in 637ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1927972ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1928096ms] [LOG] [Fast Refresh] done in 241ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2172467ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2172486ms] [LOG] [Fast Refresh] done in 126ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2686360ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2686372ms] [LOG] [Fast Refresh] done in 125ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 3501891ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr?id=2k0uxVZShLUcrx_3aB1lV' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_0fhqo1d._.js:13299
+[ 3512028ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 3522426ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 3522700ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 3523982ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 3524254ms] [LOG] [Fast Refresh] done in 391ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431

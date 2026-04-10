@@ -24,7 +24,16 @@
       "Bash(curl -s -o /dev/null -w \"blog=%{http_code} apropos=\" http://localhost:3000/blog)",
       "Bash(curl -s -o /dev/null -w \"%{http_code} login=\" http://localhost:3000/a-propos)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/login)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(git reset:*)",
+      "Bash(npm audit:*)",
+      "Bash(ssh:*)",
+      "Bash(sshpass:*)",
+      "Bash(git:*)",
+      "mcp__plugin_supabase_supabase__execute_sql",
+      "Bash(npx next:*)",
+      "Bash(npm ci:*)",
+      "Bash(taskkill //F //IM node.exe)"
     ]
   }
 }
