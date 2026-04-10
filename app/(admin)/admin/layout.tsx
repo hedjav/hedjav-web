@@ -39,6 +39,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         adminEmail={adminEmail}
         ebookCount={counts.ebooks}
         articleCount={counts.articles}
+        notificationCount={unreadNotifs}
       />
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
         <AdminHeader

@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
-import { promoteUserAction, demoteUserAction } from '@/lib/admin/setup'
 import type { Profile } from '@/lib/supabase/types'
+import { MemberRoleButtons } from './MemberRoleButtons'
 
 export const metadata: Metadata = { title: 'Admin — Fiche membre' }
 
@@ -97,47 +97,7 @@ export default async function MemberDetailPage({ params }: PageProps) {
           <div style={{ fontSize: 13, color: 'var(--admin-text-muted)', marginTop: 4 }}>{p.email}</div>
         </div>
         <div style={{ marginLeft: 'auto' }}>
-          {isAdmin ? (
-            <form action={demoteUserAction}>
-              <input type="hidden" name="user_id" value={p.id} />
-              <button
-                type="submit"
-                style={{
-                  padding: '8px 16px',
-                  background: 'transparent',
-                  color: '#ff9b9b',
-                  border: '1px solid rgba(255,155,155,.3)',
-                  borderRadius: 8,
-                  fontSize: 12,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  fontFamily: 'var(--fb)',
-                }}
-              >
-                Rétrograder
-              </button>
-            </form>
-          ) : (
-            <form action={promoteUserAction}>
-              <input type="hidden" name="user_id" value={p.id} />
-              <button
-                type="submit"
-                style={{
-                  padding: '8px 16px',
-                  background: 'var(--admin-accent)',
-                  color: 'var(--admin-text)',
-                  border: 'none',
-                  borderRadius: 8,
-                  fontSize: 12,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  fontFamily: 'var(--fb)',
-                }}
-              >
-                Promouvoir admin
-              </button>
-            </form>
-          )}
+          <MemberRoleButtons userId={p.id} isAdmin={isAdmin} userName={p.full_name ?? p.email} />
         </div>
       </div>
 
@@ -150,11 +110,11 @@ export default async function MemberDetailPage({ params }: PageProps) {
           marginBottom: 32,
         }}
       >
-        <InfoCard label="Pays" value={p.country ?? '—'} />
-        <InfoCard label="Rôle" value={p.role} />
-        <InfoCard label="Newsletter" value={p.newsletter_opt ? 'Abonné' : 'Non abonné'} />
+        <InfoCard label="Pays" value={p.country ?? '\u2014'} />
+        <InfoCard label="Role" value={p.role} />
+        <InfoCard label="Newsletter" value={p.newsletter_opt ? 'Abonne' : 'Non abonne'} />
         <InfoCard
-          label="Dernière visite"
+          label="Derniere visite"
           value={
             p.last_visit_at
               ? new Date(p.last_visit_at).toLocaleDateString('fr-FR')
@@ -165,7 +125,7 @@ export default async function MemberDetailPage({ params }: PageProps) {
           label="Inscrit le"
           value={new Date(p.created_at).toLocaleDateString('fr-FR')}
         />
-        <InfoCard label="Téléphone" value={p.phone ?? '—'} />
+        <InfoCard label="Telephone" value={p.phone ?? '\u2014'} />
       </div>
 
       {/* Purchases */}
@@ -197,7 +157,7 @@ export default async function MemberDetailPage({ params }: PageProps) {
               {(purchases ?? []).map((pu) => (
                 <tr key={pu.id} style={{ borderTop: '1px solid rgba(255,255,255,.05)' }}>
                   <td style={tdStyle}>
-                    {(pu.ebook as { title?: string } | null)?.title ?? '—'}
+                    {(pu.ebook as { title?: string } | null)?.title ?? '\u2014'}
                   </td>
                   <td style={tdStyle}>
                     <span style={{ fontFamily: 'var(--fm)' }}>
@@ -246,21 +206,21 @@ export default async function MemberDetailPage({ params }: PageProps) {
           Emails de campagne ({sends?.length ?? 0})
         </h2>
         {(sends ?? []).length === 0 ? (
-          <div style={{ color: 'var(--admin-text-muted)', fontSize: 13 }}>Aucun email envoyé</div>
+          <div style={{ color: 'var(--admin-text-muted)', fontSize: 13 }}>Aucun email envoye</div>
         ) : (
           <table style={{ width: '100%', borderCollapse: 'collapse', color: 'var(--admin-text)' }}>
             <thead>
               <tr>
                 <th style={thStyle}>Sujet</th>
                 <th style={thStyle}>Statut</th>
-                <th style={thStyle}>Envoyé le</th>
+                <th style={thStyle}>Envoye le</th>
               </tr>
             </thead>
             <tbody>
               {(sends ?? []).map((s) => (
                 <tr key={s.id} style={{ borderTop: '1px solid rgba(255,255,255,.05)' }}>
                   <td style={tdStyle}>
-                    {(s.campaign_email as { subject?: string } | null)?.subject ?? '—'}
+                    {(s.campaign_email as { subject?: string } | null)?.subject ?? '\u2014'}
                   </td>
                   <td style={tdStyle}>
                     <span
@@ -290,7 +250,7 @@ export default async function MemberDetailPage({ params }: PageProps) {
                     <span style={{ fontSize: 12, color: 'var(--admin-text-muted)' }}>
                       {s.sent_at
                         ? new Date(s.sent_at as string).toLocaleDateString('fr-FR')
-                        : '—'}
+                        : '\u2014'}
                     </span>
                   </td>
                 </tr>
