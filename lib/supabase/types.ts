@@ -79,6 +79,10 @@ export type Ebook = {
   is_featured: boolean
   lead_magnet_url: string | null
   lead_magnet_description: string | null
+  /** Chemin du fichier livrable dans le bucket privé 'ebook-files' (migration 021). */
+  file_path: string | null
+  file_size_bytes: number | null
+  file_uploaded_at: string | null
   metadata: Record<string, unknown>
   created_at: string
   updated_at: string

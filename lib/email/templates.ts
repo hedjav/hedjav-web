@@ -127,10 +127,30 @@ export function welcomeEmail(name: string) {
 
 /* ── b) Purchase confirmation ────────────────────────────────── */
 
-export function purchaseConfirmationEmail(name: string, ebookTitle: string, amount: number) {
+/**
+ * Email de confirmation d'achat.
+ * Contient DEUX liens de téléchargement :
+ *   1. Lien direct /api/ebooks/download?ebook_id=XXX (1 clic, déclenche
+ *      signed URL 5 min après vérification session + purchase paid)
+ *   2. Lien bibliothèque /dashboard/mes-ebooks (fallback toujours valide)
+ *
+ * Le paramètre ebookId est optionnel pour garder la compat avec les appels legacy.
+ */
+export function purchaseConfirmationEmail(
+  name: string,
+  ebookTitle: string,
+  amount: number,
+  ebookId?: string | null
+) {
   const firstName = name.split(' ')[0] || 'cher client'
-  const downloadUrl = `${SITE_URL}/dashboard/mes-ebooks`
+  const directDownloadUrl = ebookId
+    ? `${SITE_URL}/api/ebooks/download?ebook_id=${ebookId}`
+    : null
+  const libraryUrl = `${SITE_URL}/dashboard/mes-ebooks`
   const formattedAmount = new Intl.NumberFormat('fr-FR').format(amount)
+
+  const primaryButtonUrl = directDownloadUrl ?? libraryUrl
+  const primaryButtonLabel = directDownloadUrl ? 'Télécharger mon ebook' : 'Accéder à mon ebook'
 
   const bodyHtml = `
     <h1 style="margin:0 0 16px;font-family:Georgia,serif;font-size:28px;font-weight:600;color:${C.navy};line-height:1.3;">
@@ -141,21 +161,31 @@ export function purchaseConfirmationEmail(name: string, ebookTitle: string, amou
       pour <strong style="color:${C.navy};">${ebookTitle}</strong> a bien été enregistré.
     </p>
     <p style="margin:0 0 8px;">
-      Vous pouvez accéder à votre ebook depuis votre espace membre :
+      Cliquez sur le bouton ci-dessous pour télécharger votre ebook :
     </p>
-    ${btn('Accéder à mon ebook', downloadUrl)}
-    <p style="margin:24px 0 0;font-size:13px;color:${C.muted};">
-      Si le bouton ne fonctionne pas, copiez ce lien :<br />
-      <a href="${downloadUrl}" style="color:${C.goldDark};word-break:break-all;">${downloadUrl}</a>
+    ${btn(primaryButtonLabel, primaryButtonUrl)}
+    <p style="margin:24px 0 8px;font-size:13px;color:${C.muted};">
+      Vous pouvez aussi retrouver tous vos ebooks dans votre espace membre :
+    </p>
+    <p style="margin:0 0 8px;font-size:13px;">
+      <a href="${libraryUrl}" style="color:${C.goldDark};word-break:break-all;">${libraryUrl}</a>
+    </p>
+    <p style="margin:24px 0 0;font-size:12px;color:${C.muted};">
+      Astuce : si le bouton ne fonctionne pas, vous pouvez vous connecter sur votre espace membre avec l'email utilisé lors de l'achat.
     </p>
     ${hr()}
-    ${smallNote('Une question ? Répondez simplement à cet email.')}
+    ${smallNote('Une question ? Répondez simplement à cet email — nous répondons sous 24h.')}
   `
 
   return {
     subject: `Votre achat Hedjav est confirmé — ${ebookTitle}`,
-    html: layout({ preheader: `Votre ebook "${ebookTitle}" est prêt.`, bodyHtml }),
-    text: `Votre achat est confirmé !\n\n${firstName}, votre paiement de ${formattedAmount} FCFA pour "${ebookTitle}" est enregistré.\n\nAccédez à votre ebook : ${downloadUrl}\n\n— L'équipe Hedjav`,
+    html: layout({ preheader: `Votre ebook "${ebookTitle}" est prêt à télécharger.`, bodyHtml }),
+    text:
+      `Votre achat est confirmé !\n\n` +
+      `${firstName}, votre paiement de ${formattedAmount} FCFA pour "${ebookTitle}" est enregistré.\n\n` +
+      `Téléchargement direct : ${primaryButtonUrl}\n` +
+      `Votre bibliothèque : ${libraryUrl}\n\n` +
+      `— L'équipe Hedjav`,
   }
 }
 

@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
-import { getCurrentUserPaidEbooks } from '@/lib/purchases/queries'
-import { EbookCard } from '@/components/features/EbookCard'
+import { getCurrentUserPaidEbooksWithInvoices } from '@/lib/purchases/queries'
+import { PurchasedEbookCard } from '@/components/features/PurchasedEbookCard'
 
 export const metadata: Metadata = { title: 'Mes ebooks' }
 
 export default async function MesEbooksPage() {
-  const ebooks = await getCurrentUserPaidEbooks()
+  const items = await getCurrentUserPaidEbooksWithInvoices()
 
   return (
     <>
@@ -14,7 +14,7 @@ export default async function MesEbooksPage() {
         Mes ebooks
       </h1>
 
-      {ebooks.length === 0 ? (
+      {items.length === 0 ? (
         <div className="hedjav-empty-state">
           <p style={{ color: 'var(--muted)' }}>Vous n&apos;avez pas encore acheté d&apos;ebook.</p>
           <a href="/ebooks" className="btn btn-gold" style={{ marginTop: 'var(--s5)' }}>
@@ -23,8 +23,8 @@ export default async function MesEbooksPage() {
         </div>
       ) : (
         <div className="hedjav-grid-3">
-          {ebooks.map((e) => (
-            <EbookCard key={e.id} ebook={e} />
+          {items.map(({ ebook, invoiceUrl, purchaseId }) => (
+            <PurchasedEbookCard key={purchaseId} ebook={ebook} invoiceUrl={invoiceUrl} />
           ))}
         </div>
       )}
