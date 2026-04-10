@@ -58,7 +58,9 @@ export async function signUpAction(formData: FormData): Promise<ActionResult> {
 export async function signInAction(formData: FormData): Promise<ActionResult> {
   const email = String(formData.get('email') ?? '').trim().toLowerCase()
   const password = String(formData.get('password') ?? '')
-  const next = String(formData.get('next') ?? '/dashboard')
+  const rawNext = String(formData.get('next') ?? '/dashboard')
+  // Sécurité : empêcher les redirections vers des URLs externes
+  const next = rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/dashboard'
 
   if (!email || !password) {
     return { ok: false, error: 'Email et mot de passe requis.' }
@@ -66,7 +68,7 @@ export async function signInAction(formData: FormData): Promise<ActionResult> {
 
   const supabase = await createSupabaseServerClient()
   const { error } = await supabase.auth.signInWithPassword({ email, password })
-  if (error) return { ok: false, error: error.message }
+  if (error) return { ok: false, error: 'Identifiants incorrects.' }
 
   revalidatePath('/', 'layout')
   redirect(next)
@@ -98,9 +100,8 @@ export async function updatePasswordAction(
   formData: FormData,
 ): Promise<ActionResult> {
   const password = String(formData.get('password') ?? '')
-  if (password.length < 8) {
-    return { ok: false, error: 'Le mot de passe doit faire au moins 8 caractères.' }
-  }
+  const pwCheck = validatePassword(password)
+  if (!pwCheck.isValid) return { ok: false, error: pwCheck.errors.join('. ') }
   const supabase = await createSupabaseServerClient()
   const { error } = await supabase.auth.updateUser({ password })
   if (error) return { ok: false, error: error.message }

@@ -9,8 +9,23 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
   return (
     <>
       <JsonLd data={organizationJsonLd()} />
+      <a
+        href="#main-content"
+        className="skip-nav"
+        style={{
+          position: 'absolute',
+          left: '-9999px',
+          top: 'auto',
+          width: '1px',
+          height: '1px',
+          overflow: 'hidden',
+          zIndex: 9999,
+        }}
+      >
+        Aller au contenu principal
+      </a>
       <Header />
-      <main className="flex-1">{children}</main>
+      <main id="main-content" className="flex-1">{children}</main>
       <Footer />
       <CookieBanner />
       <TrackingScript />

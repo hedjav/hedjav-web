@@ -3,11 +3,28 @@ import { createClient } from '@supabase/supabase-js'
 import { sendEmail } from '@/lib/email/smtp'
 import { leadMagnetEmail } from '@/lib/email/templates'
 import { incrementPopupSubmitted } from '@/lib/popup/queries'
+import { checkRateLimit, getClientIp } from '@/lib/utils/rate-limit'
 
 export async function POST(request: Request) {
-  const { email, first_name, ebook_id, popup_config_id } = await request.json()
+  // Rate limit : 3 requêtes par minute par IP
+  const rl = checkRateLimit(`popup:${getClientIp(request)}`, 3, 60_000)
+  if (!rl.ok) return NextResponse.json({ error: rl.error }, { status: 429 })
+
+  let body: { email?: string; first_name?: string; ebook_id?: string; popup_config_id?: string }
+  try {
+    body = await request.json()
+  } catch {
+    return NextResponse.json({ error: 'JSON invalide' }, { status: 400 })
+  }
+
+  const { email, first_name, ebook_id, popup_config_id } = body
   if (!email || !ebook_id) {
     return NextResponse.json({ error: 'email et ebook_id requis' }, { status: 400 })
+  }
+
+  // Validation email basique
+  if (!email.includes('@') || email.length < 5) {
+    return NextResponse.json({ error: 'Email invalide' }, { status: 400 })
   }
 
   const db = createClient(

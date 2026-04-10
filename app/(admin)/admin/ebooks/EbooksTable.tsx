@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { DataTable, type Column } from '@/components/admin/DataTable'
 
 type Row = {
@@ -25,7 +26,7 @@ const columns: Column<Row>[] = [
     label: 'Cover',
     render: (row) =>
       row.cover_image_url ? (
-        <img src={row.cover_image_url} alt="" style={{ width: 40, height: 56, objectFit: 'cover', borderRadius: 4 }} />
+        <Image src={row.cover_image_url} alt="" width={40} height={56} style={{ objectFit: 'cover', borderRadius: 4 }} />
       ) : (
         <div style={{ width: 40, height: 56, background: 'var(--admin-surface-hover)', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, color: 'var(--admin-text-muted)' }}>
           {'\uD83D\uDCD6'}

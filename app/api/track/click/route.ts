@@ -9,6 +9,22 @@ export async function GET(request: NextRequest) {
     updateSendStatus(id, 'clicked', new Date().toISOString()).catch(() => {})
   }
 
-  const target = url ?? process.env.NEXT_PUBLIC_APP_URL ?? 'https://egp.hedjav.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://egp.hedjav.com'
+
+  // Sécurité : restreindre les redirections au domaine hedjav uniquement
+  let target = appUrl
+  if (url) {
+    try {
+      const parsed = new URL(url)
+      const appHost = new URL(appUrl).hostname
+      if (parsed.hostname === appHost || parsed.hostname.endsWith(`.${appHost}`)) {
+        target = url
+      }
+      // Toute URL externe est ignorée → redirige vers la homepage
+    } catch {
+      // URL invalide → redirige vers la homepage
+    }
+  }
+
   return NextResponse.redirect(target, 302)
 }
