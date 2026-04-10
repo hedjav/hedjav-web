@@ -15,12 +15,14 @@ import { createNotification } from '@/lib/notifications/queries'
  * Téléchargement BRVM uniquement — PAS d'IA.
  * Scrape les données + télécharge les PDFs → stocke dans Supabase.
  *
+ * Source PRINCIPALE : sikafinance.com (brvm.org souvent inaccessible).
+ *
  * Étapes :
- * 1. Résumé de séance (données chiffrées)
- * 2. Cours de toutes les actions
- * 3. Indices (généraux + sectoriels)
- * 4. BOC PDF du jour → upload Supabase Storage
- * 5. Annonces émetteurs (avec PDFs si disponibles)
+ * 1. Cours de toutes les actions (sikafinance #tblShare — ~48 titres)
+ * 2. Indices généraux + sectoriels (sikafinance #tabQuotes2 — ~21 indices)
+ * 3. Résumé de séance (construit depuis cours + indices)
+ * 4. BOC PDF du jour → upload Supabase Storage (brvm.org — fallback)
+ * 5. Annonces émetteurs (brvm.org — fallback, échoue silencieusement)
  * 6. Notification admin
  *
  * Cron : tous les jours à 18h UTC
@@ -42,7 +44,35 @@ export async function POST(request: Request) {
     const dataDate = today.toISOString().slice(0, 10)
     const results: Record<string, unknown> = { date: dataDate, step: 'scrape' }
 
-    // ── 1. Résumé de séance ──────────────────────────────────
+    // ── 1. Cours des actions (sikafinance — ~48 titres) ────
+    const coursActions = await scrapeCoursActions()
+    if (coursActions.length > 0) {
+      await db.from('brvm_data').upsert({
+        data_date: dataDate,
+        data_type: 'cours_actions',
+        title: `Cours actions BRVM — ${coursActions.length} titres`,
+        content: `${coursActions.length} titres scrapés depuis sikafinance.com`,
+        source_url: 'https://www.sikafinance.com/marches/aaz',
+        raw_data: { actions: coursActions },
+      }, { onConflict: 'data_date,data_type', ignoreDuplicates: true })
+      results.cours_actions = coursActions.length
+    }
+
+    // ── 2. Indices (sikafinance — ~21 indices) ──────────────
+    const indices = await scrapeIndices()
+    if (indices.length > 0) {
+      await db.from('brvm_data').upsert({
+        data_date: dataDate,
+        data_type: 'indices',
+        title: `Indices BRVM — ${indices.length} indices`,
+        content: indices.map((i) => `${i.name}: ${i.value} (${i.variation})`).join('\n'),
+        source_url: 'https://www.sikafinance.com/marches/aaz',
+        raw_data: { indices },
+      }, { onConflict: 'data_date,data_type', ignoreDuplicates: true })
+      results.indices = indices.length
+    }
+
+    // ── 3. Résumé de séance (construit depuis cours + indices) ──
     const resume = await scrapeResumeSeance()
     if (resume) {
       await db.from('brvm_data').upsert({
@@ -57,38 +87,10 @@ export async function POST(request: Request) {
           brvm_30: resume.brvm_30,
           brvm_pres: resume.brvm_pres,
         }),
-        source_url: 'https://www.brvm.org/fr/resume',
+        source_url: 'https://www.sikafinance.com/marches/aaz',
         raw_data: resume,
       }, { onConflict: 'data_date,data_type', ignoreDuplicates: true })
       results.resume = true
-    }
-
-    // ── 2. Cours des actions ─────────────────────────────────
-    const coursActions = await scrapeCoursActions()
-    if (coursActions.length > 0) {
-      await db.from('brvm_data').upsert({
-        data_date: dataDate,
-        data_type: 'cours_actions',
-        title: `Cours actions BRVM — ${coursActions.length} titres`,
-        content: `${coursActions.length} titres scrapés`,
-        source_url: 'https://www.brvm.org/fr/cours-actions/0',
-        raw_data: { actions: coursActions },
-      }, { onConflict: 'data_date,data_type', ignoreDuplicates: true })
-      results.cours_actions = coursActions.length
-    }
-
-    // ── 3. Indices ───────────────────────────────────────────
-    const indices = await scrapeIndices()
-    if (indices.length > 0) {
-      await db.from('brvm_data').upsert({
-        data_date: dataDate,
-        data_type: 'indices',
-        title: `Indices BRVM — ${indices.length} indices`,
-        content: indices.map((i) => `${i.name}: ${i.value} (${i.variation})`).join('\n'),
-        source_url: 'https://www.brvm.org/fr/cours-indices/0',
-        raw_data: { indices },
-      }, { onConflict: 'data_date,data_type', ignoreDuplicates: true })
-      results.indices = indices.length
     }
 
     // ── 4. BOC PDF ───────────────────────────────────────────
