@@ -1,13 +1,14 @@
 'use client'
 
-import { AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts'
+import { AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts'
 
 type DataPoint = { month: string; revenue: number }
 
 export function RevenueChart({ data }: { data: DataPoint[] }) {
   return (
-    <div style={{ width: '100%', height: 320, minWidth: 400 }}>
-      <AreaChart width={800} height={300} data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+    <div style={{ width: '100%', height: 320, overflow: 'hidden' }}>
+      <ResponsiveContainer width="100%" height="100%">
+      <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
         <defs>
           <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#C5A028" stopOpacity={0.3} />
@@ -51,6 +52,7 @@ export function RevenueChart({ data }: { data: DataPoint[] }) {
           fill="url(#revenueGrad)"
         />
       </AreaChart>
+      </ResponsiveContainer>
     </div>
   )
 }
