@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { createClient } from '@supabase/supabase-js'
 import { BRVMTriggerButton } from './BRVMTriggerButton'
 import { BRVMExportForm } from './BRVMExportForm'
+import { BRVMDataTable } from './BRVMDataTable'
 
 export const metadata: Metadata = { title: 'Admin — Veille BRVM' }
 
@@ -126,70 +127,8 @@ export default async function AdminBRVMPage() {
         <BRVMExportForm />
       </div>
 
-      {/* Data table */}
-      <div style={{ background: 'var(--admin-surface)', borderRadius: 12, overflow: 'hidden', border: '1px solid var(--admin-border)' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', color: 'var(--admin-text)' }}>
-          <thead>
-            <tr style={{ background: 'rgba(0,0,0,.2)' }}>
-              {['Date', 'Type', 'Titre', 'Source', 'Actions'].map((h) => (
-                <th key={h} style={{ padding: 'var(--s3) var(--s4)', textAlign: 'left', fontSize: 11, textTransform: 'uppercase', letterSpacing: '.1em', color: 'var(--admin-text-muted)', fontWeight: 600 }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {brvmData.map((d) => (
-              <tr key={d.id} style={{ borderTop: '1px solid rgba(255,255,255,.04)' }}>
-                <td style={{ padding: 'var(--s3) var(--s4)', fontSize: 12, color: 'var(--admin-text-muted)', fontFamily: 'var(--fm)' }}>
-                  {d.data_date}
-                </td>
-                <td style={{ padding: 'var(--s3) var(--s4)' }}>
-                  <span style={{
-                    padding: '2px 10px',
-                    borderRadius: 9999,
-                    fontSize: 11,
-                    fontWeight: 600,
-                    background: typeColor(d.data_type).bg,
-                    color: typeColor(d.data_type).text,
-                  }}>
-                    {typeLabel(d.data_type)}
-                  </span>
-                </td>
-                <td style={{ padding: 'var(--s3) var(--s4)', fontWeight: 500, maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {d.title ?? '\u2014'}
-                </td>
-                <td style={{ padding: 'var(--s3) var(--s4)', fontSize: 12 }}>
-                  {d.source_url ? (
-                    <a href={d.source_url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--admin-info)', textDecoration: 'none' }}>
-                      brvm.org
-                    </a>
-                  ) : '\u2014'}
-                </td>
-                <td style={{ padding: 'var(--s3) var(--s4)', fontSize: 12 }}>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    {d.file_url && (
-                      <a href={d.file_url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--admin-accent)', textDecoration: 'none', fontWeight: 600 }}>
-                        Telecharger
-                      </a>
-                    )}
-                    {d.ai_summary && (
-                      <span title={d.ai_summary} style={{ color: 'var(--admin-success)', cursor: 'help' }}>
-                        IA
-                      </span>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))}
-            {brvmData.length === 0 && (
-              <tr>
-                <td colSpan={5} style={{ padding: 'var(--s8)', textAlign: 'center', color: 'var(--admin-text-muted)' }}>
-                  Aucune donnee BRVM. Lancez une veille pour commencer.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      {/* Data table avec recherche, filtres, pagination */}
+      <BRVMDataTable data={brvmData as { id: string; data_date: string; data_type: string; title: string | null; source_url: string | null; file_url: string | null; ai_summary: string | null }[]} />
 
       {/* Link to BRVM articles */}
       <div style={{ marginTop: 'var(--s6)', textAlign: 'center' }}>
@@ -204,26 +143,3 @@ export default async function AdminBRVMPage() {
   )
 }
 
-function typeLabel(type: string): string {
-  const map: Record<string, string> = {
-    resume_seance: 'Resume',
-    cours_actions: 'Cours',
-    indices: 'Indices',
-    boc_quotidien: 'BOC',
-    annonce: 'Annonce',
-    rapport_societe: 'Rapport',
-  }
-  return map[type] ?? type
-}
-
-function typeColor(type: string): { bg: string; text: string } {
-  const map: Record<string, { bg: string; text: string }> = {
-    resume_seance: { bg: 'rgba(59,130,246,.15)', text: 'var(--admin-info)' },
-    cours_actions: { bg: 'rgba(197,160,40,.15)', text: 'var(--admin-accent)' },
-    indices: { bg: 'rgba(34,197,94,.15)', text: 'var(--admin-success)' },
-    boc_quotidien: { bg: 'rgba(168,85,247,.15)', text: '#A855F7' },
-    annonce: { bg: 'rgba(245,158,11,.15)', text: 'var(--admin-warning)' },
-    rapport_societe: { bg: 'rgba(59,130,246,.15)', text: 'var(--admin-info)' },
-  }
-  return map[type] ?? { bg: 'rgba(255,255,255,.06)', text: 'var(--admin-text-muted)' }
-}
