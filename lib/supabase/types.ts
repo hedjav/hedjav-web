@@ -204,6 +204,23 @@ export type AdminNotification = {
   created_at: string
 }
 
+export type BrvmData = {
+  id: string
+  data_date: string
+  data_type: string
+  title: string | null
+  content: string | null
+  file_url: string | null
+  source_url: string | null
+  raw_data: Record<string, unknown>
+  ai_summary: string | null
+  article_id: string | null
+  is_sent_to_members: boolean
+  sent_at: string | null
+  metadata: Record<string, unknown>
+  created_at: string
+}
+
 export type AiLog = {
   id: string
   action: string

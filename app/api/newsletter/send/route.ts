@@ -94,7 +94,7 @@ Rédige le corps de la newsletter en HTML simple (h2, p, ul, a) avec :
 1. Une intro de 2-3 phrases
 2. Une section "Articles à lire" si applicable, avec 1-2 phrases d'accroche par article
 3. Une section "Nouveaux ebooks" si applicable
-4. Une conclusion CTA invitant à visiter https://hedjav.com
+4. Une conclusion CTA invitant à visiter https://egp.hedjav.com
 
 Pas de balise <html>, <body>, <head> — uniquement le contenu interne. Pas de styles inline, juste du HTML structurel propre.`
 

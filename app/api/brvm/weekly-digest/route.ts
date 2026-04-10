@@ -2,15 +2,21 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { generateText } from '@/lib/claude/client'
 import { sendEmail } from '@/lib/email/smtp'
-import { newsletterWeeklyEmail } from '@/lib/email/templates'
+import { brvmWeeklyEmail } from '@/lib/email/templates'
+import { createNotification } from '@/lib/notifications/queries'
+import { logAiCall } from '@/lib/ai/log'
 
 /**
  * POST /api/brvm/weekly-digest
  *
- * Récupère les articles BRVM de la semaine, génère un résumé hebdo,
- * et l'envoie aux abonnés newsletter.
- * Protégé par INTERNAL_API_TOKEN.
- * CRON recommandé : vendredi 19h.
+ * 1. Query brvm_data de la semaine
+ * 2. Synthese hebdo via Claude (800-1200 mots, format article blog)
+ * 3. Creer article brouillon (category='BRVM', source='ai', is_published=false)
+ * 4. Email admins
+ * 5. Notification + log IA
+ *
+ * Protege par INTERNAL_API_TOKEN.
+ * CRON : vendredi 19h.
  */
 export async function POST(request: Request) {
   const auth = request.headers.get('authorization') ?? ''
@@ -27,101 +33,215 @@ export async function POST(request: Request) {
   }
 
   try {
-    const admin = createClient(
+    const db = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
       { auth: { persistSession: false } },
     )
 
-    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString()
+    const now = new Date()
+    const weekEnd = now.toISOString().slice(0, 10)
+    const weekStart = new Date(now.getTime() - 7 * 24 * 3600 * 1000).toISOString().slice(0, 10)
 
-    // Récupérer les articles BRVM de la semaine
-    const { data: articles, error: articlesError } = await admin
-      .from('articles')
-      .select('title, slug, excerpt, body, published_at')
-      .eq('category', 'BRVM')
-      .eq('source', 'ai')
-      .eq('is_published', true)
-      .gte('published_at', sevenDaysAgo)
-      .order('published_at', { ascending: false })
+    // ── 1. Recuperer les donnees BRVM de la semaine ──────────
+    const { data: weekData, error: weekErr } = await db
+      .from('brvm_data')
+      .select('*')
+      .gte('data_date', weekStart)
+      .lte('data_date', weekEnd)
+      .order('data_date', { ascending: false })
 
-    if (articlesError) {
-      console.error('[brvm-weekly] Erreur récupération articles:', articlesError)
-      return NextResponse.json({ ok: false, error: articlesError.message }, { status: 500 })
+    if (weekErr) {
+      console.error('[brvm-weekly] Erreur query brvm_data:', weekErr)
+      return NextResponse.json({ ok: false, error: weekErr.message }, { status: 500 })
     }
 
-    if (!articles || articles.length === 0) {
+    if (!weekData || weekData.length === 0) {
       return NextResponse.json({
         ok: true,
         skipped: true,
-        reason: 'Aucun article BRVM cette semaine',
+        reason: 'Aucune donnee BRVM cette semaine',
       })
     }
 
-    // Récupérer les abonnés
-    const { data: subscribers } = await admin
-      .from('newsletter_subscribers')
-      .select('email')
-      .eq('is_active', true)
+    // Categoriser les donnees
+    const resumes = weekData.filter((d) => d.data_type === 'resume_seance')
+    const coursData = weekData.filter((d) => d.data_type === 'cours_actions')
+    const indicesData = weekData.filter((d) => d.data_type === 'indices')
+    const annonces = weekData.filter((d) => d.data_type === 'annonce')
+    const bocs = weekData.filter((d) => d.data_type === 'boc_quotidien')
+    const documents = bocs.length + annonces.length
 
-    const subsCount = subscribers?.length ?? 0
+    // ── 2. Generer synthese IA ───────────────────────────────
+    const startAi = Date.now()
 
-    if (subsCount === 0) {
-      return NextResponse.json({
-        ok: true,
-        skipped: true,
-        reason: 'Aucun abonné actif',
-        articles_count: articles.length,
+    // Construire le contexte pour Claude
+    const resumesSummary = resumes
+      .map((r) => {
+        const content = typeof r.content === 'string' ? r.content : ''
+        return `### ${r.data_date}\n${r.ai_summary ?? content}`
       })
-    }
+      .join('\n\n')
 
-    // Générer le résumé hebdo via Claude (ou fallback)
-    const summaryResult = await generateText({
-      system: 'Tu rédiges le résumé hebdomadaire BRVM pour la newsletter egp.hedjav.com. Style concis, professionnel, en français.',
-      prompt: `Voici les ${articles.length} articles BRVM publiés cette semaine :\n\n${articles.map((a) => `### ${a.title}\n${a.excerpt ?? ''}\n`).join('\n')}\n\nRédige un résumé hebdomadaire de 150-300 mots avec les tendances clés de la semaine, les points forts et les perspectives. En français, pour un public UEMOA.`,
-      maxTokens: 1024,
+    const indicesWeekly = indicesData.slice(0, 3).map((d) => {
+      const content = typeof d.content === 'string' ? d.content : ''
+      return `${d.data_date}: ${content.slice(0, 300)}`
+    }).join('\n')
+
+    const annoncesTxt = annonces.slice(0, 10).map((a) => `- ${a.title}`).join('\n')
+
+    const prompt = `Redige une synthese hebdomadaire BRVM de 800 a 1200 mots pour la semaine du ${weekStart} au ${weekEnd}.
+
+## Resumes des seances
+${resumesSummary || 'Non disponibles'}
+
+## Indices de la semaine
+${indicesWeekly || 'Non disponibles'}
+
+## Annonces emetteurs
+${annoncesTxt || 'Aucune annonce notable'}
+
+## Donnees de la semaine
+- ${resumes.length} seances couvertes
+- ${coursData.length} jours de cours scrapes
+- ${annonces.length} annonces
+- ${bocs.length} BOC telecharges
+
+Redige un article complet en markdown avec :
+1. Un titre accrocheur (une seule ligne, sans #)
+2. Introduction : contexte macro et ambiance generale de la semaine
+3. Performance des indices : evolution, tendances
+4. Titres marquants : hausses, baisses, volumes remarquables
+5. Annonces et evenements cles
+6. Perspectives : elements a surveiller la semaine prochaine
+
+Style professionnel mais accessible, en francais, pour un public UEMOA.
+Le titre doit etre sur la premiere ligne, suivi d'une ligne vide, puis le corps de l'article.`
+
+    const aiResult = await generateText({
+      system: 'Tu es un analyste financier senior specialise sur la BRVM et les marches UEMOA. Tu rediges la synthese hebdomadaire pour egp.hedjav.com, ecole en ligne de gestion de patrimoine.',
+      prompt,
+      maxTokens: 3000,
     })
 
-    const digestExcerpt = summaryResult.ok
-      ? summaryResult.text
-      : articles.map((a) => `- ${a.title}`).join('\n')
+    const durationMs = Date.now() - startAi
 
-    // Construire le template email avec les articles de la semaine
-    const tpl = newsletterWeeklyEmail(
-      articles.map((a) => ({ title: a.title, slug: a.slug, excerpt: digestExcerpt })),
-      [],
-    )
+    let articleTitle: string
+    let articleBody: string
+    let articleExcerpt: string
+
+    if (aiResult.ok) {
+      const lines = aiResult.text.trim().split('\n')
+      articleTitle = lines[0].replace(/^#+\s*/, '').trim()
+      articleBody = lines.slice(1).join('\n').trim()
+      articleExcerpt = articleBody
+        .replace(/^[\s\n]+/, '')
+        .slice(0, 250)
+        .replace(/\n/g, ' ')
+        .trim() + '...'
+    } else {
+      // Fallback article
+      articleTitle = `BRVM — Synthese hebdomadaire du ${weekStart} au ${weekEnd}`
+      articleBody = `Semaine du ${weekStart} au ${weekEnd}.\n\n${resumes.length} seances couvertes, ${annonces.length} annonces, ${bocs.length} BOC.\n\n*Synthese detaillee a venir.*`
+      articleExcerpt = `Synthese de la semaine BRVM du ${weekStart} au ${weekEnd}.`
+    }
 
     if (body.dry_run) {
       return NextResponse.json({
         ok: true,
         dry_run: true,
-        subscribers: subsCount,
-        articles_count: articles.length,
-        subject: tpl.subject,
-        digest_preview: digestExcerpt.slice(0, 300),
+        title: articleTitle,
+        excerpt: articleExcerpt,
+        week: { start: weekStart, end: weekEnd },
+        data_count: weekData.length,
       })
     }
 
-    // Envoyer aux abonnés
-    let sent = 0
-    let failed = 0
-    for (const sub of subscribers ?? []) {
-      const res = await sendEmail({
-        to: sub.email as string,
-        subject: `[BRVM Hebdo] ${tpl.subject}`,
-        html: tpl.html,
+    // ── 3. Creer article brouillon ───────────────────────────
+    const slug = slugify(articleTitle)
+    const { data: article, error: articleErr } = await db
+      .from('articles')
+      .insert({
+        title: articleTitle,
+        slug,
+        body: articleBody,
+        excerpt: articleExcerpt,
+        category: 'BRVM',
+        source: 'ai',
+        is_published: false,
+        metadata: {
+          created_by: 'brvm-weekly-digest',
+          week_start: weekStart,
+          week_end: weekEnd,
+          data_count: weekData.length,
+          resumes_count: resumes.length,
+          annonces_count: annonces.length,
+        },
       })
-      if (res.ok) sent++
-      else failed++
+      .select('id, title, slug')
+      .single()
+
+    if (articleErr) {
+      console.error('[brvm-weekly] Insertion article echouee:', articleErr)
+      return NextResponse.json({ ok: false, error: articleErr.message }, { status: 500 })
     }
+
+    // ── 4. Email admins ──────────────────────────────────────
+    const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://egp.hedjav.com'
+    const articleUrl = `${siteUrl}/admin/articles/${article.id}`
+
+    const { data: admins } = await db
+      .from('profiles')
+      .select('email')
+      .eq('role', 'admin')
+
+    if (admins && admins.length > 0) {
+      const emailData = brvmWeeklyEmail({
+        weekStart,
+        weekEnd,
+        articleTitle: article.title,
+        articleExcerpt,
+        articleUrl,
+        documentsCount: documents,
+      })
+
+      for (const admin of admins) {
+        await sendEmail({
+          to: admin.email,
+          subject: emailData.subject,
+          html: emailData.html,
+          text: emailData.text,
+        })
+      }
+    }
+
+    // ── 5. Notification + log IA ─────────────────────────────
+    await createNotification(
+      'report',
+      `Synthese BRVM hebdo : ${article.title}`,
+      `Article brouillon cree a partir de ${weekData.length} donnees (${weekStart} au ${weekEnd}). A relire et publier dans /admin/articles/${article.id}.`,
+      { article_id: article.id, week_start: weekStart, week_end: weekEnd },
+    )
+
+    await logAiCall({
+      action: 'brvm_weekly_digest',
+      prompt: prompt.slice(0, 500),
+      result: articleTitle,
+      model: 'claude-sonnet-4-20250514',
+      duration_ms: durationMs,
+      status: aiResult.ok ? 'success' : 'error',
+      error_message: aiResult.ok ? undefined : aiResult.error,
+      created_by: 'brvm-weekly-cron',
+    })
 
     return NextResponse.json({
       ok: true,
-      subscribers: subsCount,
-      sent,
-      failed,
-      articles_count: articles.length,
+      article_id: article.id,
+      article_title: article.title,
+      article_slug: article.slug,
+      week: { start: weekStart, end: weekEnd },
+      data_count: weekData.length,
+      documents_count: documents,
     })
   } catch (e) {
     console.error('[brvm-weekly] Erreur inattendue:', e)
@@ -130,4 +250,14 @@ export async function POST(request: Request) {
       { status: 500 },
     )
   }
+}
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 120)
 }

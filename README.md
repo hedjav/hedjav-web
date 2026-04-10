@@ -1,4 +1,4 @@
-# hedjav.com
+# egp.hedjav.com
 
 > **École en ligne de la Gestion de Patrimoine — Zone UEMOA**
 >

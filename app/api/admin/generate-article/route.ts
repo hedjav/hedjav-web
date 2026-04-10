@@ -42,7 +42,7 @@ export async function POST(request: Request) {
   const instructions = body.instructions?.trim() ?? ''
 
   const systemPrompt = `Tu es un redacteur expert en gestion de patrimoine et finance pour la zone UEMOA (Afrique de l'Ouest francophone).
-Tu ecris des articles pour hedjav.com, l'Ecole en ligne de la Gestion de Patrimoine.
+Tu ecris des articles pour egp.hedjav.com, l'Ecole en ligne de la Gestion de Patrimoine.
 Le public cible : investisseurs, epargnants et professionnels en zone UEMOA.
 Monnaie : FCFA. Marche boursier : BRVM.
 

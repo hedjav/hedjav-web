@@ -1,10 +1,10 @@
 /**
- * Générateur d'articles BRVM via Claude API.
- * Utilise les données scrappées pour rédiger un article d'analyse.
+ * Generateur d'articles BRVM via Claude API.
+ * Utilise les donnees scrappees pour rediger un article d'analyse.
  */
 
 import { generateText } from '@/lib/claude/client'
-import type { BRVMIndex, BRVMNews } from './scraper'
+import type { ResumeSeance, IndiceData, Annonce } from './scraper'
 
 type GeneratedArticle = {
   title: string
@@ -14,8 +14,9 @@ type GeneratedArticle = {
 }
 
 export async function generateBRVMArticle(
-  indices: { date: string; indices: BRVMIndex[] },
-  news: BRVMNews[],
+  resume: ResumeSeance | null,
+  indices: IndiceData[],
+  annonces: Annonce[],
 ): Promise<GeneratedArticle> {
   const today = new Date().toLocaleDateString('fr-FR', {
     weekday: 'long',
@@ -24,47 +25,64 @@ export async function generateBRVMArticle(
     day: 'numeric',
   })
 
-  const indicesText = indices.indices.length > 0
-    ? indices.indices.map((i) => `- ${i.name} : ${i.value} (${i.variation})`).join('\n')
-    : 'Données non disponibles'
+  const indicesText = indices.length > 0
+    ? indices.map((i) => `- ${i.name} : ${i.value} (${i.variation})`).join('\n')
+    : 'Donnees non disponibles'
 
-  const newsText = news.length > 0
-    ? news.map((n) => `- ${n.title}${n.summary ? ` : ${n.summary}` : ''}`).join('\n')
-    : 'Aucune actualité récente'
+  const topText = resume?.top5?.length
+    ? resume.top5.map((t) => `- ${t.ticker} (${t.nom}) : ${t.variation}`).join('\n')
+    : 'Non disponibles'
 
-  const prompt = `Tu rédiges un article d'analyse boursière BRVM pour egp.hedjav.com.
-Style professionnel mais accessible, en français, pour un public UEMOA.
+  const flopText = resume?.flop5?.length
+    ? resume.flop5.map((t) => `- ${t.ticker} (${t.nom}) : ${t.variation}`).join('\n')
+    : 'Non disponibles'
+
+  const annoncesText = annonces.length > 0
+    ? annonces.slice(0, 5).map((n) => `- ${n.title}${n.emetteur ? ` (${n.emetteur})` : ''}`).join('\n')
+    : 'Aucune annonce recente'
+
+  const prompt = `Tu rediges un article d'analyse boursiere BRVM pour egp.hedjav.com.
+Style professionnel mais accessible, en francais, pour un public UEMOA.
 
 Date : ${today}
-Date des données : ${indices.date}
+Date des donnees : ${resume?.date ?? today}
 
 ## Indices du jour
 ${indicesText}
 
-## Actualités récentes
-${newsText}
+## Top hausses
+${topText}
 
-Rédige un article complet en markdown avec :
+## Top baisses
+${flopText}
+
+## Annonces recentes
+${annoncesText}
+
+## Donnees cles
+- Valeur des transactions : ${resume?.valeur_transactions ?? 'N/A'}
+- Capitalisation actions : ${resume?.cap_actions ?? 'N/A'}
+
+Redige un article complet en markdown avec :
 1. Un titre accrocheur (une seule ligne, sans #)
-2. Une introduction contextualisant la séance
+2. Une introduction contextualisant la seance
 3. Analyse des indices (tendances, volumes, points remarquables)
-4. Points clés des actualités si disponibles
-5. Perspective et éléments à surveiller
+4. Points cles des actualites si disponibles
+5. Perspective et elements a surveiller
 
-Le titre doit être sur la première ligne, suivi d'une ligne vide, puis le corps de l'article.
+Le titre doit etre sur la premiere ligne, suivi d'une ligne vide, puis le corps de l'article.
 L'article doit faire entre 400 et 800 mots.
-Ne pas inclure de disclaimers légaux dans le texte.`
+Ne pas inclure de disclaimers legaux dans le texte.`
 
   const result = await generateText({
-    system: 'Tu es un analyste financier spécialisé sur la BRVM et les marchés UEMOA. Tu rédiges pour le site egp.hedjav.com, école en ligne de gestion de patrimoine.',
+    system: 'Tu es un analyste financier specialise sur la BRVM et les marches UEMOA. Tu rediges pour le site egp.hedjav.com, ecole en ligne de gestion de patrimoine.',
     prompt,
     maxTokens: 2048,
   })
 
   if (!result.ok) {
-    // Fallback : article placeholder avec données brutes
-    console.warn('[brvm-article] Génération Claude échouée, fallback données brutes:', result.error)
-    return buildFallbackArticle(indices, news, today)
+    console.warn('[brvm-article] Generation Claude echouee, fallback donnees brutes:', result.error)
+    return buildFallbackArticle(resume, indices, annonces, today)
   }
 
   const lines = result.text.trim().split('\n')
@@ -81,37 +99,38 @@ Ne pas inclure de disclaimers légaux dans le texte.`
 }
 
 function buildFallbackArticle(
-  indices: { date: string; indices: BRVMIndex[] },
-  news: BRVMNews[],
+  resume: ResumeSeance | null,
+  indices: IndiceData[],
+  annonces: Annonce[],
   today: string,
 ): GeneratedArticle {
-  const indicesList = indices.indices.length > 0
-    ? indices.indices.map((i) => `- **${i.name}** : ${i.value} (${i.variation})`).join('\n')
-    : '*Données indices non disponibles*'
+  const indicesList = indices.length > 0
+    ? indices.map((i) => `- **${i.name}** : ${i.value} (${i.variation})`).join('\n')
+    : '*Donnees indices non disponibles*'
 
-  const newsList = news.length > 0
-    ? news.map((n) => `- [${n.title}](${n.url})`).join('\n')
-    : '*Aucune actualité disponible*'
+  const annoncesList = annonces.length > 0
+    ? annonces.slice(0, 5).map((n) => `- ${n.title}`).join('\n')
+    : '*Aucune annonce disponible*'
 
   const body = `
-Voici le récapitulatif de la séance BRVM du ${indices.date}.
+Voici le recapitulatif de la seance BRVM du ${resume?.date ?? today}.
 
 ## Indices
 
 ${indicesList}
 
-## Actualités
+## Annonces
 
-${newsList}
+${annoncesList}
 
 ---
 
-*Article généré automatiquement. Analyse détaillée à venir.*
+*Article genere automatiquement. Analyse detaillee a venir.*
 `.trim()
 
   return {
-    title: `BRVM — Point de marché du ${today}`,
-    excerpt: `Récapitulatif de la séance BRVM du ${indices.date}. Indices et actualités du jour.`,
+    title: `BRVM — Point de marche du ${today}`,
+    excerpt: `Recapitulatif de la seance BRVM du ${resume?.date ?? today}. Indices et actualites du jour.`,
     body,
     category: 'BRVM',
   }
