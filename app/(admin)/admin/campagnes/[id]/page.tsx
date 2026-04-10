@@ -3,6 +3,8 @@ import { getCampaignById, getCampaignEmails, getCampaignStats, getSubscribersFor
 import { CampaignStatusButton } from '../CampaignStatusButton'
 import { AddEmailForm } from './AddEmailForm'
 import { GenerateButton } from './GenerateButton'
+import { CampaignEditForm } from './CampaignEditForm'
+import { EmailDeleteButton } from './EmailDeleteButton'
 
 type Props = { params: Promise<{ id: string }> }
 
@@ -51,6 +53,14 @@ export default async function CampaignDetailPage({ params }: Props) {
         <div style={statBoxStyle}><div style={statValueStyle}>{clickRate}%</div><div style={statLabelStyle}>Clics</div></div>
       </div>
 
+      {/* Editable campaign form */}
+      <CampaignEditForm
+        id={id}
+        initialName={campaign.name}
+        initialType={campaign.type}
+        initialTags={(campaign.target_tags ?? []).join(', ')}
+      />
+
       {/* Sequence emails */}
       <h2 style={{ fontFamily: 'var(--fd)', fontSize: 'var(--text-2xl)', color: 'var(--admin-text)', marginBottom: 'var(--s4)' }}>Sequence d&apos;emails</h2>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--s4)', marginBottom: 'var(--s8)' }}>
@@ -67,7 +77,10 @@ export default async function CampaignDetailPage({ params }: Props) {
                 J+{e.delay_days} -- {e.body_html ? 'HTML pret' : 'Pas de contenu'}
               </div>
             </div>
-            <GenerateButton campaignId={id} position={e.position} hasContent={Boolean(e.body_html)} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <GenerateButton campaignId={id} position={e.position} hasContent={Boolean(e.body_html)} />
+              <EmailDeleteButton emailId={e.id} campaignId={id} />
+            </div>
           </div>
         ))}
         {emails.length === 0 && (

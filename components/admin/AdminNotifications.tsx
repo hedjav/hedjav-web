@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 type Notification = {
   id: string
@@ -25,8 +27,12 @@ function timeAgo(dateStr: string): string {
 function typeIcon(type: string): string {
   switch (type) {
     case 'purchase': return '$'
-    case 'subscriber': return '@'
+    case 'registration':
     case 'member': return '+'
+    case 'newsletter':
+    case 'subscriber': return '@'
+    case 'unsubscribe': return '-'
+    case 'error': return '!'
     default: return '!'
   }
 }
@@ -34,9 +40,26 @@ function typeIcon(type: string): string {
 function typeColor(type: string): string {
   switch (type) {
     case 'purchase': return 'var(--admin-success)'
+    case 'newsletter':
     case 'subscriber': return 'var(--admin-info)'
+    case 'registration':
     case 'member': return 'var(--admin-accent)'
+    case 'error': return 'var(--admin-danger)'
     default: return 'var(--admin-text)'
+  }
+}
+
+function typeLink(type: string): string {
+  switch (type) {
+    case 'purchase': return '/admin/ventes'
+    case 'registration':
+    case 'member': return '/admin/clients'
+    case 'newsletter':
+    case 'subscriber':
+    case 'unsubscribe': return '/admin/newsletter'
+    case 'report': return '/admin'
+    case 'error': return '/admin/ia'
+    default: return '/admin'
   }
 }
 
@@ -46,6 +69,7 @@ export function AdminNotifications({ initialCount }: { initialCount: number }) {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [loading, setLoading] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+  const router = useRouter()
 
   useEffect(() => {
     setCount(initialCount)
@@ -88,17 +112,29 @@ export function AdminNotifications({ initialCount }: { initialCount: number }) {
     setCount(0)
   }
 
-  async function markRead(id: string) {
-    await fetch('/api/admin/notifications/read', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id }),
-    })
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)),
-    )
-    setCount((c) => Math.max(0, c - 1))
+  async function handleNotificationClick(n: Notification) {
+    if (!n.is_read) {
+      await fetch('/api/admin/notifications/read', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: n.id }),
+      })
+      setNotifications((prev) =>
+        prev.map((item) => (item.id === n.id ? { ...item, is_read: true } : item)),
+      )
+      setCount((c) => Math.max(0, c - 1))
+    }
+    setOpen(false)
+    router.push(typeLink(n.type))
   }
+
+  // Sort: unread first, then by date
+  const sorted = [...notifications]
+    .sort((a, b) => {
+      if (a.is_read !== b.is_read) return a.is_read ? 1 : -1
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    })
+    .slice(0, 8)
 
   return (
     <div ref={ref} style={{ position: 'relative' }}>
@@ -148,8 +184,8 @@ export function AdminNotifications({ initialCount }: { initialCount: number }) {
             top: '100%',
             right: 0,
             marginTop: 8,
-            width: 360,
-            maxHeight: 480,
+            width: 380,
+            maxHeight: 520,
             overflowY: 'auto',
             background: 'var(--admin-surface)',
             border: '1px solid var(--admin-border)',
@@ -192,23 +228,27 @@ export function AdminNotifications({ initialCount }: { initialCount: number }) {
             <div style={{ padding: 20, textAlign: 'center', color: 'var(--admin-text-muted)', fontSize: 12 }}>
               Chargement...
             </div>
-          ) : notifications.length === 0 ? (
+          ) : sorted.length === 0 ? (
             <div style={{ padding: 20, textAlign: 'center', color: 'var(--admin-text-muted)', fontSize: 12 }}>
               Aucune notification
             </div>
           ) : (
-            notifications.map((n) => (
-              <div
+            sorted.map((n) => (
+              <button
                 key={n.id}
-                onClick={() => !n.is_read && markRead(n.id)}
+                onClick={() => handleNotificationClick(n)}
                 style={{
                   display: 'flex',
                   gap: 10,
                   padding: '10px 16px',
                   borderBottom: '1px solid rgba(255,255,255,.04)',
                   background: n.is_read ? 'transparent' : 'rgba(197,160,40,.05)',
-                  cursor: n.is_read ? 'default' : 'pointer',
+                  cursor: 'pointer',
                   transition: 'background .15s',
+                  width: '100%',
+                  border: 'none',
+                  textAlign: 'left',
+                  fontFamily: 'var(--fb)',
                 }}
               >
                 <span
@@ -216,7 +256,7 @@ export function AdminNotifications({ initialCount }: { initialCount: number }) {
                     width: 28,
                     height: 28,
                     borderRadius: 8,
-                    background: 'var(--admin-surface-hover)',
+                    background: 'rgba(255,255,255,.06)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -261,9 +301,27 @@ export function AdminNotifications({ initialCount }: { initialCount: number }) {
                     }}
                   />
                 )}
-              </div>
+              </button>
             ))
           )}
+
+          {/* Footer link */}
+          <Link
+            href="/admin/notifications"
+            onClick={() => setOpen(false)}
+            style={{
+              display: 'block',
+              textAlign: 'center',
+              padding: '10px 16px',
+              fontSize: 12,
+              fontWeight: 600,
+              color: 'var(--admin-accent)',
+              borderTop: '1px solid var(--admin-border)',
+              textDecoration: 'none',
+            }}
+          >
+            Voir toutes les notifications
+          </Link>
         </div>
       )}
     </div>

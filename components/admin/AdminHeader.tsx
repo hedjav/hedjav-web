@@ -28,7 +28,10 @@ const ROUTE_LABELS: Record<string, string> = {
   '/admin/popup': 'Pop-up',
   '/admin/config': 'Configuration',
   '/admin/mediatheque': 'Mediatheque',
-  '/admin/ia': 'IA & Logs',
+  '/admin/ia': 'Logs IA',
+  '/admin/ia/articles': 'Generateur articles',
+  '/admin/ia/scoring': 'Scoring qualite',
+  '/admin/brvm': 'Veille BRVM',
   '/admin/membres': 'Equipe',
   '/admin/notifications': 'Notifications',
 }

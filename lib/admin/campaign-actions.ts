@@ -87,3 +87,31 @@ export async function deleteCampaignEmail(id: string, campaignId: string): Promi
   revalidatePath(`/admin/campagnes/${campaignId}`)
   return { ok: true }
 }
+
+export async function deleteCampaign(id: string): Promise<Result> {
+  const db = admin()
+  // Delete sends first (FK cascade may not be set)
+  const { data: emails } = await db.from('campaign_emails').select('id').eq('campaign_id', id)
+  if (emails && emails.length > 0) {
+    const emailIds = emails.map((e) => e.id)
+    await db.from('campaign_sends').delete().in('campaign_email_id', emailIds)
+  }
+  // Delete emails
+  await db.from('campaign_emails').delete().eq('campaign_id', id)
+  // Delete campaign
+  const { error } = await db.from('campaigns').delete().eq('id', id)
+  if (error) return { ok: false, error: error.message }
+  revalidatePath('/admin/campagnes')
+  return { ok: true }
+}
+
+export async function updateCampaign(
+  id: string,
+  data: { name?: string; type?: string; target_tags?: string[] },
+): Promise<Result> {
+  const { error } = await admin().from('campaigns').update(data).eq('id', id)
+  if (error) return { ok: false, error: error.message }
+  revalidatePath('/admin/campagnes')
+  revalidatePath(`/admin/campagnes/${id}`)
+  return { ok: true }
+}

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createClient } from '@supabase/supabase-js'
+import { AddMemberForm } from './AddMemberForm'
 
 export const metadata: Metadata = { title: 'Admin — Equipe' }
 
@@ -27,17 +28,20 @@ export default async function AdminMembresPage() {
 
   return (
     <>
-      <h1
-        style={{
-          fontFamily: 'var(--fd)',
-          fontSize: 'var(--text-4xl)',
-          fontWeight: 600,
-          color: 'var(--admin-text)',
-          marginBottom: 'var(--s8)',
-        }}
-      >
-        Equipe ({profiles?.length ?? 0})
-      </h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--s8)' }}>
+        <h1
+          style={{
+            fontFamily: 'var(--fd)',
+            fontSize: 'var(--text-4xl)',
+            fontWeight: 600,
+            color: 'var(--admin-text)',
+          }}
+        >
+          Equipe ({profiles?.length ?? 0})
+        </h1>
+      </div>
+
+      <AddMemberForm />
 
       <div
         style={{
