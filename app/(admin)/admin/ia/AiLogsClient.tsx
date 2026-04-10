@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import Link from 'next/link'
 import { DataTable, type Column } from '@/components/admin/DataTable'
 
 type Log = {
@@ -62,97 +62,24 @@ const logColumns: Column<Log>[] = [
   },
 ]
 
+type ToolCard = {
+  title: string
+  desc: string
+  status: string
+  href?: string
+}
+
+const tools: ToolCard[] = [
+  { title: 'Scoring qualite articles', desc: 'Analyser les articles existants et attribuer un score qualite (0-100).', status: 'Disponible', href: '/admin/ia/scoring' },
+  { title: 'Veille BRVM automatique', desc: 'Resume quotidien des mouvements BRVM genere par IA.', status: 'Disponible', href: '/admin/brvm' },
+  { title: 'Suggestions de sujets', desc: 'Proposer des idees d\'articles bases sur les tendances BRVM et patrimoine.', status: 'A venir' },
+  { title: 'Generation de covers', desc: 'Creer des images de couverture SVG/PNG a partir du titre.', status: 'A venir' },
+  { title: 'Chatbot patrimoine', desc: 'Assistant IA specialise patrimoine UEMOA pour les membres.', status: 'Phase 3' },
+]
+
 export function AiLogsClient({ logs }: { logs: Log[] }) {
-  const [generating, setGenerating] = useState(false)
-  const [topic, setTopic] = useState('')
-  const [genResult, setGenResult] = useState<string | null>(null)
-
-  async function handleGenerate(e: React.FormEvent) {
-    e.preventDefault()
-    if (!topic.trim() || generating) return
-    setGenerating(true)
-    setGenResult(null)
-    try {
-      const res = await fetch('/api/articles', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic: topic.trim() }),
-      })
-      if (res.ok) {
-        const data = await res.json()
-        setGenResult(`Article cree : ${data.title ?? 'OK'}`)
-      } else {
-        const data = await res.json().catch(() => ({}))
-        setGenResult(`Erreur : ${data.error ?? res.statusText}`)
-      }
-    } catch (err) {
-      setGenResult(`Erreur : ${err instanceof Error ? err.message : 'unknown'}`)
-    }
-    setGenerating(false)
-  }
-
   return (
     <>
-      {/* Generate article form */}
-      <div
-        style={{
-          background: 'var(--admin-surface)',
-          borderRadius: 12,
-          border: '1px solid var(--admin-border)',
-          padding: 'var(--s6)',
-          marginBottom: 'var(--s8)',
-        }}
-      >
-        <h2 style={{ fontFamily: 'var(--fd)', fontSize: 'var(--text-xl)', color: 'var(--admin-text)', marginBottom: 'var(--s4)' }}>
-          Generer un article
-        </h2>
-        <form onSubmit={handleGenerate} style={{ display: 'flex', gap: 'var(--s3)', alignItems: 'end' }}>
-          <div style={{ flex: 1 }}>
-            <label style={{ fontSize: 11, color: 'var(--admin-text-muted)', textTransform: 'uppercase', letterSpacing: '.15em', display: 'block', marginBottom: 4 }}>
-              Sujet / brief
-            </label>
-            <input
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              placeholder="Ex: Les 5 erreurs courantes en gestion de patrimoine UEMOA"
-              style={{
-                width: '100%',
-                padding: '10px 14px',
-                background: 'var(--admin-bg)',
-                border: '1px solid var(--admin-border)',
-                borderRadius: 8,
-                color: 'var(--admin-text)',
-                fontSize: 13,
-                fontFamily: 'var(--fb)',
-              }}
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={generating || !topic.trim()}
-            style={{
-              padding: '10px 20px',
-              background: generating ? 'rgba(197,160,40,.3)' : 'var(--admin-accent)',
-              color: '#0F1117',
-              border: 'none',
-              borderRadius: 8,
-              fontWeight: 600,
-              fontSize: 13,
-              fontFamily: 'var(--fb)',
-              cursor: generating ? 'wait' : 'pointer',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {generating ? 'Generation...' : 'Generer'}
-          </button>
-        </form>
-        {genResult && (
-          <div style={{ marginTop: 'var(--s3)', fontSize: 13, color: genResult.startsWith('Erreur') ? 'var(--admin-danger)' : 'var(--admin-success)' }}>
-            {genResult}
-          </div>
-        )}
-      </div>
-
       {/* Tool cards */}
       <div style={{
         display: 'grid',
@@ -160,44 +87,55 @@ export function AiLogsClient({ logs }: { logs: Log[] }) {
         gap: 'var(--s4)',
         marginBottom: 'var(--s8)',
       }}>
-        {[
-          { title: 'Generation newsletter', desc: 'Generer et envoyer la newsletter hebdo via Claude API + Resend.', status: 'Disponible' },
-          { title: 'Scoring qualite articles', desc: 'Analyser les articles existants et attribuer un score qualite (0-100).', status: 'A venir' },
-          { title: 'Suggestions de sujets', desc: 'Proposer des idees d\'articles bases sur les tendances BRVM et patrimoine.', status: 'A venir' },
-          { title: 'Veille BRVM automatique', desc: 'Resume quotidien des mouvements BRVM genere par IA.', status: 'A venir' },
-          { title: 'Generation de covers', desc: 'Creer des images de couverture SVG/PNG a partir du titre.', status: 'A venir' },
-          { title: 'Chatbot patrimoine', desc: 'Assistant IA specialise patrimoine UEMOA pour les membres.', status: 'Phase 3' },
-        ].map((tool) => (
-          <div
-            key={tool.title}
-            style={{
-              background: 'var(--admin-surface)',
-              borderRadius: 12,
-              border: '1px solid var(--admin-border)',
-              padding: 'var(--s5)',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--s2)' }}>
-              <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--admin-text)', fontFamily: 'var(--fb)' }}>
-                {tool.title}
-              </h3>
-              <span style={{
-                fontSize: 10,
-                fontWeight: 600,
-                padding: '2px 8px',
-                borderRadius: 9999,
-                background: tool.status === 'Disponible' ? 'rgba(34,197,94,.15)' : 'rgba(197,160,40,.12)',
-                color: tool.status === 'Disponible' ? 'var(--admin-success)' : 'var(--admin-text-muted)',
-                whiteSpace: 'nowrap',
-              }}>
-                {tool.status}
-              </span>
+        {tools.map((tool) => {
+          const inner = (
+            <>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--s2)' }}>
+                <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--admin-text)', fontFamily: 'var(--fb)' }}>
+                  {tool.title}
+                </h3>
+                <span style={{
+                  fontSize: 10,
+                  fontWeight: 600,
+                  padding: '2px 8px',
+                  borderRadius: 9999,
+                  background: tool.status === 'Disponible' ? 'rgba(34,197,94,.15)' : 'rgba(197,160,40,.12)',
+                  color: tool.status === 'Disponible' ? 'var(--admin-success)' : 'var(--admin-text-muted)',
+                  whiteSpace: 'nowrap',
+                }}>
+                  {tool.status}
+                </span>
+              </div>
+              <p style={{ fontSize: 12, color: 'var(--admin-text-muted)', lineHeight: 1.5 }}>
+                {tool.desc}
+              </p>
+            </>
+          )
+
+          const cardStyle: React.CSSProperties = {
+            background: 'var(--admin-surface)',
+            borderRadius: 12,
+            border: '1px solid var(--admin-border)',
+            padding: 'var(--s5)',
+            textDecoration: 'none',
+            display: 'block',
+            transition: 'border-color .15s',
+          }
+
+          if (tool.href) {
+            return (
+              <Link key={tool.title} href={tool.href} style={cardStyle}>
+                {inner}
+              </Link>
+            )
+          }
+
+          return (
+            <div key={tool.title} style={cardStyle}>
+              {inner}
             </div>
-            <p style={{ fontSize: 12, color: 'var(--admin-text-muted)', lineHeight: 1.5 }}>
-              {tool.desc}
-            </p>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       {/* Logs table */}

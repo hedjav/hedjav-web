@@ -50,18 +50,34 @@ export function AdminHeader({ adminName, initialUnread }: Props) {
   const breadcrumb = getBreadcrumb(pathname)
   const [unread, setUnread] = useState(initialUnread)
 
-  // Poll for notification count every 30s
+  // Poll for notification count every 5 minutes (non-blocking, with timeout)
   useEffect(() => {
-    const interval = setInterval(async () => {
+    let mounted = true
+    let controller: AbortController | null = null
+
+    async function fetchNotifs() {
       try {
-        const res = await fetch('/api/admin/notifications')
-        if (res.ok) {
+        controller = new AbortController()
+        const timeout = setTimeout(() => controller?.abort(), 5000)
+        const res = await fetch('/api/admin/notifications', {
+          signal: controller.signal,
+        })
+        clearTimeout(timeout)
+        if (res.ok && mounted) {
           const data = await res.json()
           setUnread(data.unread_count ?? 0)
         }
-      } catch { /* ignore */ }
-    }, 30000)
-    return () => clearInterval(interval)
+      } catch { /* ignore timeout/abort/network errors */ }
+    }
+
+    fetchNotifs()
+    const interval = setInterval(fetchNotifs, 300000) // 5 minutes
+
+    return () => {
+      mounted = false
+      controller?.abort()
+      clearInterval(interval)
+    }
   }, [])
 
   return (

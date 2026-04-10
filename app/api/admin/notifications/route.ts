@@ -26,5 +26,8 @@ export async function GET() {
     getUnreadCount(),
   ])
 
-  return NextResponse.json({ notifications, unread_count })
+  return NextResponse.json(
+    { notifications, unread_count },
+    { headers: { 'Cache-Control': 'private, max-age=60' } },
+  )
 }
