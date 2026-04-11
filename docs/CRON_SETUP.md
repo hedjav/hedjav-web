@@ -33,11 +33,21 @@ Alternative CLI locale : `npx tsx scripts/cancel-stale-purchases.ts --hours=2`
 
 Voir [`BRVM_ADMIN.md`](./BRVM_ADMIN.md) pour le détail du schéma, des routes et de l'admin.
 
-**Option 1 — Un seul cron simple (recommandé) :**
+### ⚠️ Important — utiliser `?async=1` pour l'orchestrateur
+
+`POST /api/brvm/scrape` sans paramètre est **synchrone** et peut prendre 30 à 90 secondes (scrape complet + upserts Supabase). Les cronjobs externes comme cron-job.org timeoutent à 30s par défaut — ils recevraient une erreur de timeout alors que le scrape continue côté serveur.
+
+**Solution** : ajouter `?async=1` à l'URL du cron. La route retourne `202 Accepted` en <100ms et continue le scrape en arrière-plan. Le résultat final est logué dans les logs PM2/Passenger et inséré dans `admin_notifications`.
+
+**Règle simple** :
+- **Bouton admin "Lancer la veille"** → mode sync (affiche le résultat immédiat)
+- **Cron externe** → mode `?async=1` (zéro timeout)
+
+### Cron jobs BRVM (corrigés pour le mode async)
 
 | Job | URL | Méthode | Fréquence |
 |-----|-----|---------|-----------|
-| BRVM veille orchestrateur | `https://egp.hedjav.com/api/brvm/scrape` | POST | Tous les jours, 18h00 |
+| BRVM veille orchestrateur | `https://egp.hedjav.com/api/brvm/scrape?async=1` | POST | Tous les jours, 18h00 |
 | BRVM résumé IA + email | `https://egp.hedjav.com/api/brvm/summarize` | POST | Tous les jours, 18h30 |
 | BRVM digest hebdo | `https://egp.hedjav.com/api/brvm/weekly-digest` | POST | Vendredi, 19h |
 
