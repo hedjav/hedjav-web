@@ -11,7 +11,7 @@ import {
   scrapeAllAnnonces,
 } from '@/lib/brvm/scrapers/brvm-org'
 import { upsertDocument } from '@/lib/brvm/documents'
-import { getSourceBySlug, markSourceScraped } from '@/lib/brvm/sources'
+import { getSourceBySlugDetailed, markSourceScraped } from '@/lib/brvm/sources'
 import { checkInternalToken } from '@/lib/brvm/auth'
 import { createNotification } from '@/lib/notifications/queries'
 import type { DocumentInput } from '@/lib/brvm/types'
@@ -106,13 +106,25 @@ export async function POST(request: Request) {
   }
 
   // ── 2. 3. 4. Veille documentaire → brvm_documents ──
-  const source = await getSourceBySlug('brvm-org')
-  if (!source) {
+  const sourceResult = await getSourceBySlugDetailed('brvm-org')
+  if (!sourceResult.ok) {
     return NextResponse.json(
-      { ok: false, error: 'Source brvm-org introuvable — migration 020 non appliquée ?', results },
+      {
+        ok: false,
+        error: sourceResult.error,
+        reason: sourceResult.reason,
+        hint:
+          sourceResult.reason === 'table_missing'
+            ? 'Tables BRVM absentes en base. Applique supabase/migrations/023_brvm_clean_reset.sql.'
+            : sourceResult.reason === 'not_seeded'
+              ? 'Tables BRVM présentes mais le seed est vide. Applique supabase/migrations/023_brvm_clean_reset.sql (idempotent).'
+              : "Erreur Supabase inconnue. Vérifie SUPABASE_SERVICE_ROLE_KEY et l'URL du projet dans .env.local.",
+        results,
+      },
       { status: 500 }
     )
   }
+  const source = sourceResult.source
 
   async function ingest(docs: DocumentInput[]): Promise<{ new: number; skipped: number; errors: number }> {
     const stats = { new: 0, skipped: 0, errors: 0 }

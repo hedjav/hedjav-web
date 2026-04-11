@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { checkInternalToken } from '@/lib/brvm/auth'
 import { scrapeBocListing } from '@/lib/brvm/scrapers/brvm-org'
 import { upsertDocument } from '@/lib/brvm/documents'
-import { getSourceBySlug, markSourceScraped } from '@/lib/brvm/sources'
+import { getSourceBySlugDetailed, markSourceScraped } from '@/lib/brvm/sources'
 import type { ScrapeResult } from '@/lib/brvm/types'
 
 /**
@@ -19,10 +19,14 @@ export async function POST(request: Request) {
   if (unauthorized) return unauthorized
 
   const start = Date.now()
-  const source = await getSourceBySlug('brvm-org')
-  if (!source) {
-    return NextResponse.json({ error: 'Source brvm-org introuvable (migration 020 non appliquée ?)' }, { status: 500 })
+  const sourceResult = await getSourceBySlugDetailed('brvm-org')
+  if (!sourceResult.ok) {
+    return NextResponse.json(
+      { ok: false, error: sourceResult.error, reason: sourceResult.reason },
+      { status: 500 }
+    )
   }
+  const source = sourceResult.source
 
   const result: ScrapeResult = {
     source_slug: 'brvm-org',

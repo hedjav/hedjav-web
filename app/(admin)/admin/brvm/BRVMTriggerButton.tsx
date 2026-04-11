@@ -34,7 +34,9 @@ export function BRVMTriggerButton() {
         // Recharge la page pour voir les nouveaux documents
         if (parts.length > 0) setTimeout(() => window.location.reload(), 1500)
       } else {
-        setResult(`Erreur : ${data.error ?? 'Inconnue'}`)
+        // Affiche l'erreur ET le hint si dispo (cas des migrations manquantes)
+        const hint = data.hint ? ` — ${data.hint}` : ''
+        setResult(`Erreur : ${data.error ?? 'Inconnue'}${hint}`)
       }
     } catch {
       setResult('Erreur réseau')
