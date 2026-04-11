@@ -159,38 +159,60 @@ export default async function MesEbooksPage({ searchParams }: PageProps) {
           >
             Commandes en attente de validation
           </h2>
-          <p style={{ margin: '0 0 var(--s4)', fontSize: 13, color: 'var(--muted)' }}>
-            Les commandes suivantes ont été initiées mais leur paiement n&apos;a pas encore
-            été confirmé. Si vous avez déjà payé et été débité, contactez-nous à{' '}
+          <p style={{ margin: '0 0 var(--s4)', fontSize: 13, color: 'var(--muted)', lineHeight: 1.6 }}>
+            Le(s) ebook(s) ci-dessous ont une commande initiée dont le paiement
+            n&apos;a pas encore été confirmé par FedaPay.
+            <br />
+            <strong>Si vous avez déjà payé et été débité</strong>, contactez-nous à{' '}
             <a href="mailto:hedjav@gmail.com" style={{ color: 'var(--g500)' }}>
               hedjav@gmail.com
             </a>{' '}
-            avec la référence ci-dessous.
+            avec la référence ci-dessous, nous débloquons votre accès en moins de 24h.
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {pendingItems.map((p) => (
               <div
                 key={p.purchaseId}
                 style={{
                   display: 'flex',
                   justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: 'var(--s3) var(--s4)',
+                  alignItems: 'flex-start',
+                  padding: 'var(--s4)',
                   background: 'rgba(0,0,0,0.08)',
                   borderRadius: 8,
                   fontSize: 13,
                   flexWrap: 'wrap',
-                  gap: 8,
+                  gap: 12,
                 }}
               >
-                <div>
-                  <strong>{p.ebookTitle}</strong>
-                  <span style={{ marginLeft: 10, color: 'var(--muted)' }}>
-                    {formatAmount(p.amount)} FCFA
-                  </span>
+                <div style={{ flex: 1, minWidth: 200 }}>
+                  <div style={{ fontWeight: 600, marginBottom: 2 }}>{p.ebookTitle}</div>
+                  <div style={{ color: 'var(--muted)', fontSize: 12 }}>
+                    {formatAmount(p.amount)} FCFA · tentative du{' '}
+                    {new Date(p.createdAt).toLocaleDateString('fr-FR', {
+                      day: 'numeric',
+                      month: 'short',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </div>
+                  {p.otherAttemptsCount > 0 && (
+                    <div style={{ color: 'var(--muted)', fontSize: 11, marginTop: 4, fontStyle: 'italic' }}>
+                      {p.otherAttemptsCount} autre
+                      {p.otherAttemptsCount > 1 ? 's' : ''} tentative
+                      {p.otherAttemptsCount > 1 ? 's' : ''} pour cet ebook
+                    </div>
+                  )}
                 </div>
-                <div style={{ fontSize: 11, color: 'var(--muted)', fontFamily: 'var(--fm)' }}>
-                  Ref : {p.paymentRef || '(aucune)'} · {p.status}
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: 'var(--muted)',
+                    fontFamily: 'var(--fm)',
+                    textAlign: 'right',
+                  }}
+                >
+                  Ref : <strong>{p.paymentRef || '(aucune)'}</strong>
                 </div>
               </div>
             ))}
