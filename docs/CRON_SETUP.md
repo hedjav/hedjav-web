@@ -33,21 +33,23 @@ Alternative CLI locale : `npx tsx scripts/cancel-stale-purchases.ts --hours=2`
 
 Voir [`BRVM_ADMIN.md`](./BRVM_ADMIN.md) pour le détail du schéma, des routes et de l'admin.
 
-### ⚠️ Important — utiliser `?async=1` pour l'orchestrateur
+### ⚠️ Important — utiliser `/scrape/async` pour les cronjobs
 
-`POST /api/brvm/scrape` sans paramètre est **synchrone** et peut prendre 30 à 90 secondes (scrape complet + upserts Supabase). Les cronjobs externes comme cron-job.org timeoutent à 30s par défaut — ils recevraient une erreur de timeout alors que le scrape continue côté serveur.
+`POST /api/brvm/scrape` est **synchrone** et peut prendre 30 à 90 secondes (scrape complet + upserts Supabase). Les cronjobs externes comme cron-job.org timeoutent à 30s — ils recevraient une erreur alors que le scrape continue côté serveur.
 
-**Solution** : ajouter `?async=1` à l'URL du cron. La route retourne `202 Accepted` en <100ms et continue le scrape en arrière-plan. Le résultat final est logué dans les logs PM2/Passenger et inséré dans `admin_notifications`.
+**Solution** : route dédiée `POST /api/brvm/scrape/async` qui retourne `202 Accepted` en <100ms et continue le scrape en arrière-plan. Le résultat final est logué dans les logs Passenger et inséré dans `admin_notifications`.
+
+Pourquoi une route dédiée au lieu d'un query param `?async=1` : **cron-job.org (free tier) refuse les URLs avec query params** dans le formulaire de création de cron. Une URL propre passe sans friction.
 
 **Règle simple** :
-- **Bouton admin "Lancer la veille"** → mode sync (affiche le résultat immédiat)
-- **Cron externe** → mode `?async=1` (zéro timeout)
+- **Bouton admin "Lancer la veille"** → `POST /api/brvm/scrape` (mode sync, affiche le résultat immédiat)
+- **Cron externe** → `POST /api/brvm/scrape/async` (fire-and-forget, zéro timeout)
 
-### Cron jobs BRVM (corrigés pour le mode async)
+### Cron jobs BRVM (URL corrigée pour cron-job.org)
 
 | Job | URL | Méthode | Fréquence |
 |-----|-----|---------|-----------|
-| BRVM veille orchestrateur | `https://egp.hedjav.com/api/brvm/scrape?async=1` | POST | Tous les jours, 18h00 |
+| BRVM veille orchestrateur | `https://egp.hedjav.com/api/brvm/scrape/async` | POST | Tous les jours, 18h00 |
 | BRVM résumé IA + email | `https://egp.hedjav.com/api/brvm/summarize` | POST | Tous les jours, 18h30 |
 | BRVM digest hebdo | `https://egp.hedjav.com/api/brvm/weekly-digest` | POST | Vendredi, 19h |
 
