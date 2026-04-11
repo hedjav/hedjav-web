@@ -82,6 +82,15 @@ Maître d'œuvre : **KTALYZ SARL**.
 - Toutes les routes API (`/api/articles`, `/api/newsletter/subscribe`, `/api/purchases/create`, `/api/webhooks/fedapay`) sont conçues pour être appelables par un agent IA.
 - L'admin UI a une section `/admin/ia` avec placeholders pour les futurs outils IA.
 
+### BRVM — règles durables (après refonte veille documentaire)
+- **Le dossier `/hedjav-scrap/` (ou `/hedjav-scrapp/`) NE DOIT JAMAIS être committé.** Il fait 236 MB et est un miroir HTTrack local pour rétro-ingénierie. Les deux orthographes sont dans `.gitignore`.
+- **Priorité des sources** (non négociable) : `brvm.org` > `bfin.brvm.org` > `sikafinance.com`. Toute nouvelle intégration doit respecter cet ordre.
+- **Priorité métier** : le **BOC (Bulletin Officiel de la Cote)** passe avant tout. Les triggers PG et les KPIs admin le mettent en évidence (`priority='high'` pour les notifications BOC).
+- **Stockage des documents BRVM** : par défaut **métadonnées uniquement** (`brvm_documents.title/doc_date/pdf_url/checksum`). Les PDFs ne sont téléchargés **qu'à la demande** via `/admin/brvm/downloader`, `POST /api/brvm/download` ou `scripts/download-brvm-pdfs.ts`, et uniquement dans le bucket privé Supabase Storage `brvm-documents`. Jamais en base en `bytea`.
+- **Pas de publication IA auto tant qu'aucune API IA n'est branchée.** Les routes `/api/brvm/summarize` et `/api/brvm/weekly-digest` ne doivent pas être branchées à un cron actif avant que `ANTHROPIC_API_KEY` soit live en prod.
+- **Maintenance périodique obligatoire** : `GET /api/brvm/maintenance` doit être requêté au moins toutes les 30 min par un monitoring externe. Voir `docs/BRVM_MAINTENANCE.md` pour la cadence complète.
+- **Rétro-ingénierie via miroir** : toute modification d'un scraper doit d'abord être testée contre le miroir HTTrack via `scripts/import-brvm-history.ts --dry-run`. Voir `docs/BRVM_PARSER_STRATEGY.md` et `docs/BRVM_URL_PATTERNS.md`.
+
 ### Contacts publics
 - **Email public unique** : `hedjav@gmail.com`
 - **Privé jamais en front** : `ktalyzconseils@gmail.com`
@@ -218,6 +227,9 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 - `POST /api/brvm/summarize` (bearer) — résumé IA + email admins (inchangé)
 - `POST /api/brvm/weekly-digest` (bearer) — synthèse hebdo → article brouillon (inchangé)
 - `POST /api/admin/brvm-trigger` (session admin) — proxy vers `/api/brvm/scrape`
+- `POST /api/brvm/download` (session admin OU bearer) — télécharge les PDFs d'une période dans le bucket privé `brvm-documents` ; dédup via `metadata.storage_path`. Voir `docs/BRVM_DOWNLOADER.md`
+- `GET /api/brvm/download?document_id=XXX` (session admin) — signed URL 5 min vers un PDF archivé
+- `GET /api/brvm/maintenance` (session admin OU bearer) — rapport de santé complet (tables, sources, documents, anomalies, recommandations). Voir `docs/BRVM_MAINTENANCE.md`
 - **Supprimées** : `/api/brvm/daily` → remplacée par `/api/brvm/scrape`. `/api/brvm/reports-scan` → remplacée par `/api/brvm/scrape/rapports`.
 
 ### Ebooks — Livraison (hotfix)
