@@ -1,17 +1,24 @@
 /**
  * Scraper brvm.org — source prioritaire pour la veille documentaire.
  *
- * Sections couvertes :
- *  1. BOC quotidien  → /fr/bulletins-officiels-de-la-cote.html (+ pagination)
- *  2. Rapports société → /fr/rapports-societe-cotes/[emetteur].html
- *  3. Annonces       → /fr/emetteurs/type-annonces/[categorie].html (+ pagination)
+ * ⚠️ URLs actuelles SANS extension .html (Drupal a nettoyé en 2024/2025).
+ * L'ancienne version du scraper utilisait des URLs `.html` qui retournaient
+ * toutes "Page non trouvée" → 0 résultat. Corrigé.
  *
- * Patterns URL validés via le miroir HTTrack local (voir audit).
- * BOC pattern : sites/default/files/boc_YYYYMMDD_2.pdf (_2 est un suffixe Drupal).
+ * Sections couvertes :
+ *  1. BOC quotidien  → /fr/bulletins-officiels-de-la-cote
+ *  2. Rapports société → /fr/rapports-societes-cotees (ou par émetteur)
+ *  3. Annonces       → /fr/emetteurs/type-annonces/[categorie]
+ *
+ * Stratégie résiliente :
+ *  - Sélecteur permissif `a[href$=".pdf"]` qui capture TOUT lien PDF
+ *  - Classification au runtime par nom de fichier (pas par sélecteur DOM)
+ *  - Essaie plusieurs URLs candidats si la principale échoue (.html fallback)
+ *  - Retourne des stats de diagnostic en plus des documents
  */
 
 import * as cheerio from 'cheerio'
-import type { DocumentInput } from '../types'
+import type { DocumentInput, DocType } from '../types'
 
 const BASE = 'https://www.brvm.org'
 const TIMEOUT = 20_000
@@ -19,7 +26,19 @@ const USER_AGENT = 'Hedjav-BRVM-Watch/1.0 (+contact: hedjav@gmail.com)'
 
 /* ── Fetch helpers ─────────────────────────────────────────────── */
 
-async function fetchHtml(url: string): Promise<string | null> {
+type FetchResult = {
+  url: string
+  ok: boolean
+  status: number | null
+  html: string | null
+  title: string | null
+  error?: string
+}
+
+/**
+ * Fetch avec diagnostic complet (titre, status, erreur).
+ */
+async function fetchHtmlDiagnostic(url: string): Promise<FetchResult> {
   try {
     const ctrl = new AbortController()
     const timer = setTimeout(() => ctrl.abort(), TIMEOUT)
@@ -30,17 +49,67 @@ async function fetchHtml(url: string): Promise<string | null> {
         Accept: 'text/html,application/xhtml+xml',
         'Accept-Language': 'fr-FR,fr;q=0.9',
       },
+      redirect: 'follow',
     })
     clearTimeout(timer)
+
     if (!res.ok) {
-      console.warn(`[brvm-org] HTTP ${res.status} ${url}`)
-      return null
+      return { url, ok: false, status: res.status, html: null, title: null }
     }
-    return await res.text()
+
+    const html = await res.text()
+    const titleMatch = html.match(/<title[^>]*>([^<]*)<\/title>/i)
+    const title = titleMatch ? titleMatch[1].trim() : null
+
+    // Détecte les pages 404 Drupal qui renvoient un 200 OK trompeur
+    if (title && (title.includes('Page non trouvée') || title.includes('Page not found'))) {
+      return {
+        url,
+        ok: false,
+        status: 200,
+        html,
+        title,
+        error: `Page 404 déguisée en 200 : "${title}"`,
+      }
+    }
+
+    return { url, ok: true, status: res.status, html, title }
   } catch (e) {
-    console.warn(`[brvm-org] fetch fail ${url}:`, e instanceof Error ? e.message : e)
-    return null
+    return {
+      url,
+      ok: false,
+      status: null,
+      html: null,
+      title: null,
+      error: e instanceof Error ? e.message : String(e),
+    }
   }
+}
+
+/**
+ * Tente plusieurs URLs candidats dans l'ordre et retourne le premier HTML OK.
+ * Utile quand on ne sait pas si BRVM utilise `.html` ou pas.
+ */
+async function fetchHtmlWithFallback(candidates: string[]): Promise<FetchResult> {
+  let lastResult: FetchResult | null = null
+  for (const url of candidates) {
+    const result = await fetchHtmlDiagnostic(url)
+    if (result.ok && result.html) return result
+    lastResult = result
+    console.warn(
+      `[brvm-org] fallback: ${url} → ${result.error ?? `HTTP ${result.status}`}`
+    )
+  }
+  return (
+    lastResult ?? {
+      url: candidates[0] ?? '',
+      ok: false,
+      status: null,
+      html: null,
+      title: null,
+      error: 'aucun candidat',
+    }
+  )
 }
 
 /* ── Helpers ────────────────────────────────────────────────────── */
@@ -67,237 +136,61 @@ function extractBocDate(pdfUrl: string): string | null {
 }
 
 /**
- * Extrait une date depuis un nom de fichier rapport type `20251205_-_fs_-_emetteur_-_exercice_2025.pdf`.
+ * Extrait une date depuis un nom de fichier type `YYYYMMDD_-_fs_-_...`.
  */
-function extractReportDate(pdfUrl: string): string | null {
-  const m = pdfUrl.match(/\/(\d{4})(\d{2})(\d{2})_/)
+function extractDocDate(pdfUrl: string): string | null {
+  const m = pdfUrl.match(/\/(\d{4})(\d{2})(\d{2})[_-]/)
   if (!m) return null
   return `${m[1]}-${m[2]}-${m[3]}`
 }
 
 /**
- * Slug émetteur depuis un nom de fichier : 'boa-ci', 'air-liquide-ci', etc.
- * Heuristique : on extrait la partie entre "_fs_-_" et "_-_exercice".
+ * Slug émetteur depuis un nom de fichier.
  */
 function extractIssuerSlug(pdfUrl: string): string | null {
-  const m = pdfUrl.match(/_fs_-_([a-z0-9_]+?)_-_(exercice|rapport|arr|etats)/i)
-  if (m) return m[1].replace(/_/g, '-')
+  // Pattern fs : 20120302_-_fs_-_vivo_energy_ci_-_exercice_2012.pdf
+  const m1 = pdfUrl.match(/_fs_-_([a-z0-9_]+?)_-_(exercice|rapport|arr|etats|comptes)/i)
+  if (m1) return m1[1].replace(/_/g, '-')
+  // Pattern communique : 20260409_-_communique_de_presse_-_onatel_bf.pdf
+  const m2 = pdfUrl.match(/_-_([a-z0-9_]+?)(\.pdf|_\d+\.pdf)/i)
+  if (m2) return m2[1].replace(/_/g, '-')
   return null
 }
 
-/* ── 1. BOC ─────────────────────────────────────────────────────── */
-
 /**
- * Scrape la page officielle qui liste les BOC.
- * Retourne tous les BOC trouvés sur la page courante (+ pages suivantes si paginées).
- *
- * Stratégie :
- *  - GET /fr/bulletins-officiels-de-la-cote.html
- *  - Parse tous les <a href> vers `sites/default/files/boc_*.pdf`
- *  - Pour chaque PDF : extraire la date depuis le nom de fichier
- *  - Titre : "BOC du YYYY-MM-DD" (standardisé)
+ * Classifie un nom de fichier PDF en DocType en se basant uniquement sur le nom.
+ * Permet au scraper de rester "dumb" et robuste : on prend tous les PDFs de
+ * la page et on les classifie ici, plutôt que d'avoir des sélecteurs DOM
+ * fragiles par catégorie.
  */
-export async function scrapeBocListing(maxPages = 3): Promise<DocumentInput[]> {
-  const results: DocumentInput[] = []
-  const seen = new Set<string>()
-
-  for (let page = 0; page < maxPages; page++) {
-    const url =
-      page === 0
-        ? `${BASE}/fr/bulletins-officiels-de-la-cote.html`
-        : `${BASE}/fr/bulletins-officiels-de-la-cote.html?page=${page}`
-
-    const html = await fetchHtml(url)
-    if (!html) break
-
-    const $ = cheerio.load(html)
-    let foundOnPage = 0
-
-    $('a[href*="boc_"][href$=".pdf"], a[href*="/boc_"]').each((_, el) => {
-      const href = $(el).attr('href') ?? ''
-      if (!href) return
-      const pdfUrl = absUrl(href)
-      if (seen.has(pdfUrl)) return
-      seen.add(pdfUrl)
-
-      const docDate = extractBocDate(pdfUrl)
-      const title = docDate ? `BOC du ${docDate}` : cleanText($(el).text()) || 'BOC BRVM'
-
-      results.push({
-        source_slug: 'brvm-org',
-        doc_type: 'boc',
-        title,
-        doc_date: docDate,
-        source_url: url,
-        pdf_url: pdfUrl,
-        metadata: { scraper: 'brvm-org/boc-listing', page },
-      })
-      foundOnPage++
-    })
-
-    // Si la page ne contient plus de nouveaux liens, stopper
-    if (foundOnPage === 0) break
-  }
-
-  console.log(`[brvm-org] scrapeBocListing: ${results.length} BOC trouvés`)
-  return results
-}
-
-/* ── 2. Rapports sociétés cotées ────────────────────────────────── */
-
-/**
- * Entrée : /fr/emetteurs/societes-cotees (listing des sociétés)
- * Pour chaque société, suivre /fr/rapports-societe-cotes/[slug].html
- * et extraire les liens PDF.
- *
- * v1 : on scrape juste l'index et on extrait les liens PDF directement présents,
- * sans parcourir chaque page émetteur (coût réseau). L'import historique via
- * scripts/import-brvm-history.ts se chargera de l'exhaustivité depuis le miroir.
- */
-export async function scrapeRapportsIndex(): Promise<DocumentInput[]> {
-  const url = `${BASE}/fr/emetteurs/societes-cotees`
-  const html = await fetchHtml(url)
-  if (!html) return []
-
-  const $ = cheerio.load(html)
-  const results: DocumentInput[] = []
-  const seen = new Set<string>()
-
-  $('a[href$=".pdf"]').each((_, el) => {
-    const href = $(el).attr('href') ?? ''
-    const pdfUrl = absUrl(href)
-    if (!pdfUrl || seen.has(pdfUrl)) return
-    seen.add(pdfUrl)
-
-    const title = cleanText($(el).text()) || pdfUrl.split('/').pop() || 'Rapport'
-    const docDate = extractReportDate(pdfUrl)
-    const issuerSlug = extractIssuerSlug(pdfUrl)
-
-    // Heuristique type : "rapport annuel" si "exercice" dans l'URL, sinon trimestriel
-    const lower = pdfUrl.toLowerCase()
-    const docType: DocumentInput['doc_type'] =
-      lower.includes('exercice') || lower.includes('annuel')
-        ? 'rapport_annuel'
-        : lower.includes('semestr')
-          ? 'rapport_semestriel'
-          : lower.includes('trimestr')
-            ? 'rapport_trimestriel'
-            : 'rapport_annuel'
-
-    results.push({
-      source_slug: 'brvm-org',
-      doc_type: docType,
-      title,
-      doc_date: docDate,
-      source_url: url,
-      pdf_url: pdfUrl,
-      issuer_slug: issuerSlug,
-      metadata: { scraper: 'brvm-org/rapports-index' },
-    })
-  })
-
-  console.log(`[brvm-org] scrapeRapportsIndex: ${results.length} rapports`)
-  return results
-}
-
-/* ── 3. Annonces par catégorie ──────────────────────────────────── */
-
-/** Catégories d'annonces publiées par la BRVM (validées via le miroir HTTrack). */
-export const ANNONCE_CATEGORIES = [
-  'communiques',
-  'changements-de-dirigeants',
-  'franchissements-de-seuil',
-  'assemblees-generales',
-  'augmentation-capital',
-  'distribution-dividendes',
-  'notes-information',
-  'operations-financieres',
-] as const
-
-export type AnnonceCategorie = (typeof ANNONCE_CATEGORIES)[number]
-
-/**
- * Scrape une catégorie d'annonces brvm.org avec pagination.
- */
-export async function scrapeAnnonceCategorie(
-  categorie: AnnonceCategorie,
-  maxPages = 2
-): Promise<DocumentInput[]> {
-  const results: DocumentInput[] = []
-  const seen = new Set<string>()
-
-  // Mapping catégorie → doc_type
-  const docType: DocumentInput['doc_type'] =
-    categorie === 'communiques'
-      ? 'communique'
-      : categorie === 'notes-information'
-        ? 'note_information'
-        : 'annonce'
-
-  for (let page = 0; page < maxPages; page++) {
-    const url =
-      page === 0
-        ? `${BASE}/fr/emetteurs/type-annonces/${categorie}.html`
-        : `${BASE}/fr/emetteurs/type-annonces/${categorie}.html?page=${page}`
-
-    const html = await fetchHtml(url)
-    if (!html) break
-
-    const $ = cheerio.load(html)
-    let foundOnPage = 0
-
-    // Drupal Views : chaque annonce est typiquement dans un .views-row ou <tr>
-    $('.views-row, table tbody tr, article').each((_, el) => {
-      const title = cleanText(
-        $(el).find('h2, h3, .field--name-title, a').first().text()
-      )
-      if (!title || title.length < 5) return
-
-      const dateText = cleanText(
-        $(el).find('.field--name-field-date, time, .date').first().text()
-      )
-      const docDate = parseDateText(dateText)
-
-      const pdfLink = $(el).find('a[href*=".pdf"]').attr('href')
-      const pdfUrl = pdfLink ? absUrl(pdfLink) : null
-
-      // Clé dédup locale : titre + date (pour éviter doublons sur la même page)
-      const localKey = `${title}|${dateText}`
-      if (seen.has(localKey)) return
-      seen.add(localKey)
-
-      results.push({
-        source_slug: 'brvm-org',
-        doc_type: docType,
-        title,
-        doc_date: docDate,
-        source_url: url,
-        pdf_url: pdfUrl,
-        metadata: { scraper: 'brvm-org/annonces', categorie, page },
-      })
-      foundOnPage++
-    })
-
-    if (foundOnPage === 0) break
-  }
-
-  console.log(`[brvm-org] scrapeAnnonceCategorie(${categorie}): ${results.length}`)
-  return results
+export function classifyPdfByName(filename: string): DocType {
+  const lower = filename.toLowerCase()
+  if (lower.startsWith('boc_') || lower.includes('/boc_')) return 'boc'
+  if (lower.includes('_fs_-_') && (lower.includes('exercice') || lower.includes('annuel')))
+    return 'rapport_annuel'
+  if (lower.includes('semestriel') || lower.includes('_s1_') || lower.includes('_s2_'))
+    return 'rapport_semestriel'
+  if (lower.includes('trimestriel') || lower.includes('_t1_') || lower.includes('_t2_') || lower.includes('_t3_') || lower.includes('_t4_'))
+    return 'rapport_trimestriel'
+  if (lower.includes('_fs_-_')) return 'rapport_annuel'
+  if (lower.includes('communique')) return 'communique'
+  if (lower.includes('note_information') || lower.includes('note_dinformation')) return 'note_information'
+  if (lower.includes('avis_ndeg') || lower.includes('/avis_')) return 'avis'
+  if (lower.includes('changement') || lower.includes('franchissement') || lower.includes('assemblee') || lower.includes('convocation') || lower.includes('dividende') || lower.includes('capital'))
+    return 'annonce'
+  return 'autre'
 }
 
 /**
  * Parse une date texte FR/ISO vers YYYY-MM-DD.
- * Supporte : "10/04/2026", "10-04-2026", "2026-04-10", "10 avril 2026".
  */
 function parseDateText(text: string): string | null {
   if (!text) return null
   const cleaned = text.trim()
 
-  // ISO
   const iso = cleaned.match(/(\d{4})-(\d{2})-(\d{2})/)
   if (iso) return `${iso[1]}-${iso[2]}-${iso[3]}`
 
-  // FR: 10/04/2026 ou 10-04-2026
   const fr = cleaned.match(/(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{4})/)
   if (fr) {
     const d = fr[1].padStart(2, '0')
@@ -305,7 +198,6 @@ function parseDateText(text: string): string | null {
     return `${fr[3]}-${m}-${d}`
   }
 
-  // FR littéral: "10 avril 2026"
   const mois: Record<string, string> = {
     janvier: '01', février: '02', fevrier: '02', mars: '03', avril: '04',
     mai: '05', juin: '06', juillet: '07', août: '08', aout: '08',
@@ -320,7 +212,242 @@ function parseDateText(text: string): string | null {
 }
 
 /**
- * Helper : scrape toutes les catégories d'annonces.
+ * Extraction permissive : prend TOUT lien PDF sur une page, élimine les
+ * doublons, et retourne un DocumentInput par PDF. La classification est
+ * faite par le nom de fichier.
+ *
+ * Retourne aussi des stats de diagnostic pour qu'on sache si la page était
+ * accessible.
+ */
+type ExtractResult = {
+  documents: DocumentInput[]
+  diagnostic: {
+    url_fetched: string | null
+    status: number | null
+    title: string | null
+    pdf_links_found: number
+    error?: string
+  }
+}
+
+async function extractPdfsFromPage(
+  candidates: string[],
+  forceDocType?: DocType
+): Promise<ExtractResult> {
+  const fetched = await fetchHtmlWithFallback(candidates)
+  if (!fetched.ok || !fetched.html) {
+    return {
+      documents: [],
+      diagnostic: {
+        url_fetched: fetched.url,
+        status: fetched.status,
+        title: fetched.title,
+        pdf_links_found: 0,
+        error: fetched.error ?? `HTTP ${fetched.status}`,
+      },
+    }
+  }
+
+  const $ = cheerio.load(fetched.html)
+  const seen = new Set<string>()
+  const documents: DocumentInput[] = []
+
+  // Sélecteur permissif : tout lien PDF, peu importe le contexte DOM
+  $('a[href$=".pdf"], a[href*=".pdf?"], a[href*="/sites/default/files/"]').each((_, el) => {
+    const href = $(el).attr('href') ?? ''
+    if (!href) return
+    const pdfUrl = absUrl(href)
+
+    // Filtre : doit vraiment pointer vers un PDF
+    if (!pdfUrl.toLowerCase().includes('.pdf')) return
+    if (seen.has(pdfUrl)) return
+    seen.add(pdfUrl)
+
+    const linkText = cleanText($(el).text())
+    const filename = pdfUrl.split('/').pop() ?? ''
+
+    // Classification
+    const docType = forceDocType ?? classifyPdfByName(filename)
+
+    // Dates
+    const bocDate = extractBocDate(filename)
+    const otherDate = extractDocDate(pdfUrl)
+    const docDate = bocDate ?? otherDate
+
+    // Titre
+    let title: string
+    if (docType === 'boc' && docDate) {
+      title = `BOC du ${docDate}`
+    } else if (linkText && linkText.length > 5) {
+      title = linkText
+    } else {
+      // Reconstruit un titre depuis le nom de fichier
+      title = filename
+        .replace(/\.pdf$/i, '')
+        .replace(/^\d{8}_-_/, '')
+        .replace(/_/g, ' ')
+        .replace(/-/g, ' ')
+        .trim()
+        .slice(0, 200)
+      if (!title) title = filename
+    }
+
+    // Issuer
+    const issuerSlug = extractIssuerSlug(pdfUrl)
+
+    documents.push({
+      source_slug: 'brvm-org',
+      doc_type: docType,
+      title,
+      doc_date: docDate,
+      source_url: fetched.url,
+      pdf_url: pdfUrl,
+      issuer_slug: issuerSlug,
+      metadata: { scraper: 'brvm-org/permissive', link_text: linkText || undefined },
+    })
+  })
+
+  return {
+    documents,
+    diagnostic: {
+      url_fetched: fetched.url,
+      status: fetched.status,
+      title: fetched.title,
+      pdf_links_found: documents.length,
+    },
+  }
+}
+
+/* ── 1. BOC ─────────────────────────────────────────────────────── */
+
+/**
+ * Scrape la page BOC de brvm.org.
+ * URL actuelle (2025+) : `/fr/bulletins-officiels-de-la-cote` (sans .html)
+ * Fallback : ancienne URL `.html` pour compat.
+ */
+export async function scrapeBocListing(maxPages = 3): Promise<DocumentInput[]> {
+  const allDocs: DocumentInput[] = []
+  const seen = new Set<string>()
+
+  for (let page = 0; page < maxPages; page++) {
+    const candidates: string[] =
+      page === 0
+        ? [
+            `${BASE}/fr/bulletins-officiels-de-la-cote`,
+            `${BASE}/fr/bulletins-officiels-de-la-cote.html`,
+            `${BASE}/fr/marche/bulletin-officiel-de-la-cote`,
+          ]
+        : [
+            `${BASE}/fr/bulletins-officiels-de-la-cote?page=${page}`,
+            `${BASE}/fr/bulletins-officiels-de-la-cote.html?page=${page}`,
+          ]
+
+    const { documents, diagnostic } = await extractPdfsFromPage(candidates, 'boc')
+    console.log(
+      `[brvm-org] scrapeBocListing page=${page} url=${diagnostic.url_fetched} found=${diagnostic.pdf_links_found}`
+    )
+
+    let newOnPage = 0
+    for (const doc of documents) {
+      if (doc.pdf_url && seen.has(doc.pdf_url)) continue
+      if (doc.pdf_url) seen.add(doc.pdf_url)
+      allDocs.push(doc)
+      newOnPage++
+    }
+    if (newOnPage === 0) break
+  }
+
+  console.log(`[brvm-org] scrapeBocListing total: ${allDocs.length} BOC`)
+  return allDocs
+}
+
+/* ── 2. Rapports sociétés cotées ────────────────────────────────── */
+
+/**
+ * Scrape les rapports depuis la page index.
+ * URL actuelle (2025+) : `/fr/rapports-societes-cotees` (avec 's' + sans .html)
+ */
+export async function scrapeRapportsIndex(): Promise<DocumentInput[]> {
+  const candidates = [
+    `${BASE}/fr/rapports-societes-cotees`,
+    `${BASE}/fr/rapports-societe-cotes`,
+    `${BASE}/fr/rapports-societe-cotes.html`,
+  ]
+  const { documents, diagnostic } = await extractPdfsFromPage(candidates)
+  console.log(
+    `[brvm-org] scrapeRapportsIndex url=${diagnostic.url_fetched} found=${diagnostic.pdf_links_found}`
+  )
+  return documents
+}
+
+/* ── 3. Annonces par catégorie ──────────────────────────────────── */
+
+export const ANNONCE_CATEGORIES = [
+  'communiques',
+  'changements-de-dirigeants',
+  'franchissements-de-seuil',
+  'assemblees-generales',
+  'augmentation-capital',
+  'distribution-dividendes',
+  'notes-information',
+  'operations-financieres',
+] as const
+
+export type AnnonceCategorie = (typeof ANNONCE_CATEGORIES)[number]
+
+/**
+ * Scrape une catégorie d'annonces avec pagination.
+ */
+export async function scrapeAnnonceCategorie(
+  categorie: AnnonceCategorie,
+  maxPages = 2
+): Promise<DocumentInput[]> {
+  const allDocs: DocumentInput[] = []
+  const seen = new Set<string>()
+
+  // Le doc_type est déterminé par la catégorie de la page MAIS si le scraper
+  // classifie différemment via le nom de fichier, on lui fait confiance.
+  const fallbackType: DocType =
+    categorie === 'communiques'
+      ? 'communique'
+      : categorie === 'notes-information'
+        ? 'note_information'
+        : 'annonce'
+
+  for (let page = 0; page < maxPages; page++) {
+    const candidates: string[] =
+      page === 0
+        ? [
+            `${BASE}/fr/emetteurs/type-annonces/${categorie}`,
+            `${BASE}/fr/emetteurs/type-annonces/${categorie}.html`,
+          ]
+        : [
+            `${BASE}/fr/emetteurs/type-annonces/${categorie}?page=${page}`,
+            `${BASE}/fr/emetteurs/type-annonces/${categorie}.html?page=${page}`,
+          ]
+
+    const { documents, diagnostic } = await extractPdfsFromPage(candidates)
+    console.log(
+      `[brvm-org] scrapeAnnonceCategorie cat=${categorie} page=${page} url=${diagnostic.url_fetched} found=${diagnostic.pdf_links_found}`
+    )
+
+    let newOnPage = 0
+    for (const doc of documents) {
+      if (doc.pdf_url && seen.has(doc.pdf_url)) continue
+      if (doc.pdf_url) seen.add(doc.pdf_url)
+      // Si la classification auto donne 'autre', on force le fallbackType
+      if (doc.doc_type === 'autre') doc.doc_type = fallbackType
+      allDocs.push(doc)
+      newOnPage++
+    }
+    if (newOnPage === 0) break
+  }
+
+  return allDocs
+}
+
+/**
+ * Scrape toutes les catégories d'annonces.
  */
 export async function scrapeAllAnnonces(): Promise<DocumentInput[]> {
   const all: DocumentInput[] = []
@@ -328,5 +455,53 @@ export async function scrapeAllAnnonces(): Promise<DocumentInput[]> {
     const docs = await scrapeAnnonceCategorie(cat, 1)
     all.push(...docs)
   }
+  console.log(`[brvm-org] scrapeAllAnnonces total: ${all.length}`)
   return all
+}
+
+/* ── Diagnostic public (utilisé par /api/brvm/diagnose) ─────────── */
+
+export type DiagnosticSection = {
+  section: string
+  url_fetched: string | null
+  status: number | null
+  title: string | null
+  pdf_links_found: number
+  error?: string
+}
+
+/**
+ * Retourne un diagnostic détaillé de chaque section BRVM sans rien insérer
+ * en base. Utilisé par l'admin pour savoir exactement où le scraping casse.
+ */
+export async function diagnoseBrvmOrg(): Promise<DiagnosticSection[]> {
+  const results: DiagnosticSection[] = []
+
+  // BOC
+  const boc = await extractPdfsFromPage(
+    [
+      `${BASE}/fr/bulletins-officiels-de-la-cote`,
+      `${BASE}/fr/bulletins-officiels-de-la-cote.html`,
+    ],
+    'boc'
+  )
+  results.push({ section: 'boc', ...boc.diagnostic })
+
+  // Rapports
+  const rapports = await extractPdfsFromPage([
+    `${BASE}/fr/rapports-societes-cotees`,
+    `${BASE}/fr/rapports-societe-cotes`,
+  ])
+  results.push({ section: 'rapports', ...rapports.diagnostic })
+
+  // Annonces — juste communiqués pour ne pas hammerer
+  for (const cat of ['communiques', 'changements-de-dirigeants', 'franchissements-de-seuil'] as const) {
+    const res = await extractPdfsFromPage([
+      `${BASE}/fr/emetteurs/type-annonces/${cat}`,
+      `${BASE}/fr/emetteurs/type-annonces/${cat}.html`,
+    ])
+    results.push({ section: `annonces/${cat}`, ...res.diagnostic })
+  }
+
+  return results
 }

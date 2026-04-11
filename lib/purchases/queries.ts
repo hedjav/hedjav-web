@@ -154,13 +154,19 @@ export async function getCurrentUserPendingPurchases(): Promise<
   if (!user) return []
 
   const admin = adminClient()
+  // N'affiche que les pending < 2h. Plus vieilles = abandonnées, seront
+  // auto-cancellées par /api/admin/purchases/cancel-stale. Les cacher évite
+  // les fausses alertes "tu as une commande en attente" sur des purchases
+  // mortes depuis 3 jours.
+  const twoHoursAgo = new Date(Date.now() - 2 * 3600 * 1000).toISOString()
   const { data, error } = await admin
     .from('purchases')
     .select('id, ebook_id, status, amount, created_at, payment_ref, ebook:ebooks(title)')
     .or(`user_id.eq.${user.id},email.eq.${user.email}`)
     .eq('status', 'pending')
+    .gte('created_at', twoHoursAgo)
     .order('created_at', { ascending: false })
-    .limit(50) // lit plus pour pouvoir dédup
+    .limit(50)
 
   if (error) {
     console.error('[purchases] getCurrentUserPendingPurchases:', error.message)

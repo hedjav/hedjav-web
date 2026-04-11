@@ -85,7 +85,7 @@ export async function GET(request: Request) {
   let query = admin
     .from('purchases')
     .select(
-      'id, user_id, email, ebook_id, amount, status, payment_ref, payment_method, created_at, ebook:ebooks(id, title, slug, is_published, file_path), invoices:invoices(pdf_url)'
+      'id, user_id, email, ebook_id, amount, status, payment_ref, payment_method, created_at, raw_payload, ebook:ebooks(id, title, slug, is_published, file_path), invoices:invoices(pdf_url)'
     )
     .order('created_at', { ascending: false })
 
@@ -108,7 +108,16 @@ export async function GET(request: Request) {
     const invoices = (r.invoices as Array<{ pdf_url: string | null }> | null) ?? []
 
     const diagnostic: string[] = []
-    if (r.status !== 'paid') {
+    const rawPayload = r.raw_payload as Record<string, unknown> | null
+    const isCancelled = rawPayload?.cancelled === true
+    const cancelReason =
+      typeof rawPayload?.reason === 'string' ? (rawPayload.reason as string) : null
+
+    if (r.status === 'failed' && isCancelled) {
+      diagnostic.push(
+        `ℹ Annulée (${cancelReason ?? 'manuel'}) — purchase pending expirée ou annulée par un admin.`
+      )
+    } else if (r.status !== 'paid') {
       diagnostic.push(
         `⚠ Status = ${r.status} — le webhook FedaPay n'a pas confirmé le paiement.`
       )

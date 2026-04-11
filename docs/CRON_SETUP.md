@@ -12,6 +12,22 @@ Chaque job doit inclure le header : `Authorization: Bearer [INTERNAL_API_TOKEN]`
 | Newsletter hebdo | `https://egp.hedjav.com/api/newsletter/weekly` | POST | Lundi 8h |
 | Notifications email | `https://egp.hedjav.com/api/notifications/send-email` | POST | Toutes les 5 minutes |
 | Rapport mensuel | `https://egp.hedjav.com/api/reports/monthly` | POST | 1er du mois, 7h |
+| Auto-cancel purchases pending | `https://egp.hedjav.com/api/admin/purchases/cancel-stale?hours=2` | POST | Toutes les heures |
+
+### Auto-cancel purchases pending
+
+Quand un client initie un paiement FedaPay puis annule (ferme l'onglet,
+clique "Retour", le timer expire), la purchase reste en `status='pending'`
+indéfiniment et polue le dashboard. Ce cron marque comme `failed` avec
+`raw_payload.cancelled=true` toutes les pending > 2h.
+
+Header : `Authorization: Bearer [INTERNAL_API_TOKEN]`
+
+Paramètres :
+- `hours` (défaut 2) — âge minimum pour canceller
+- `dry_run=true` — simulation sans modifier la DB
+
+Alternative CLI locale : `npx tsx scripts/cancel-stale-purchases.ts --hours=2`
 
 ## Veille BRVM (refonte 2026-04)
 

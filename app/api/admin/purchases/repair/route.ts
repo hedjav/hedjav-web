@@ -194,8 +194,45 @@ export async function POST(request: Request) {
     }
   }
 
+  // ─── Action 4 : cancel ───
+  // Annule manuellement une purchase pending (status → failed avec flag cancelled)
+  if (action === 'cancel') {
+    if (purchase.status === 'paid') {
+      return NextResponse.json(
+        { error: 'Impossible d\'annuler une purchase déjà paid. Utilise refunded si besoin.' },
+        { status: 400 }
+      )
+    }
+
+    const { error: updateErr } = await admin
+      .from('purchases')
+      .update({
+        status: 'failed',
+        raw_payload: {
+          ...((purchase.raw_payload as Record<string, unknown> | null) ?? {}),
+          cancelled: true,
+          reason: 'manual_cancel',
+          cancelled_by: adminUser.email,
+          cancelled_at: new Date().toISOString(),
+        },
+      })
+      .eq('id', purchase_id)
+
+    if (updateErr) {
+      return NextResponse.json({ error: updateErr.message }, { status: 500 })
+    }
+
+    return NextResponse.json({
+      ok: true,
+      message: `Purchase ${purchase_id} annulée manuellement.`,
+      previous_status: purchase.status,
+    })
+  }
+
   return NextResponse.json(
-    { error: `action inconnue: ${action}. Valides: mark_paid | link_user | resend_email` },
+    {
+      error: `action inconnue: ${action}. Valides: mark_paid | link_user | resend_email | cancel`,
+    },
     { status: 400 }
   )
 }
