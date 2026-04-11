@@ -18,27 +18,91 @@ import type { DocumentInput } from '@/lib/brvm/types'
 
 /**
  * POST /api/brvm/scrape
+ * POST /api/brvm/scrape?async=1
  *
- * Orchestrateur veille BRVM unifié. Remplace l'ancienne /api/brvm/daily.
+ * Orchestrateur veille BRVM unifié.
+ *
+ * Deux modes :
+ *  - **Mode synchrone (défaut)** : lance le scrape complet et attend le résultat.
+ *    Utilisé par le bouton "Lancer la veille" dans /admin/brvm qui veut voir
+ *    le résumé immédiatement. Peut prendre 30-90 secondes.
+ *
+ *  - **Mode async (`?async=1`)** : retourne `202 Accepted` immédiatement (<100ms)
+ *    et continue le scrape en arrière-plan. Indispensable pour les cronjobs
+ *    externes comme cron-job.org qui ont un timeout de 30s. Le résultat final
+ *    est loggé côté serveur et inséré dans `admin_notifications`.
  *
  * Étapes :
- *  1. Données marché (cours, indices, résumé séance) → table brvm_data (sikafinance.com)
- *  2. Documents BOC           → brvm_documents (brvm.org)
- *  3. Rapports sociétés       → brvm_documents (brvm.org)
- *  4. Annonces émetteurs      → brvm_documents (brvm.org)
+ *  1. Données marché (cours, indices, résumé séance) → brvm_data (sikafinance)
+ *  2. Documents BOC                                    → brvm_documents (brvm.org)
+ *  3. Rapports sociétés                                → brvm_documents (brvm.org)
+ *  4. Annonces émetteurs                               → brvm_documents (brvm.org)
  *  5. Notification admin agrégée
  *
  * On ne télécharge JAMAIS les PDFs ici — on stocke métadonnées + URLs + checksum.
  *
- * Pour scraper un seul type, utiliser /api/brvm/scrape/{boc,rapports,annonces}.
- * Pour le résumé IA quotidien, appeler /api/brvm/summarize séparément.
- *
  * Auth : Bearer INTERNAL_API_TOKEN
  */
+
+// Évite que Next.js coupe la route trop tôt en mode synchrone. Ignoré sur
+// self-hosted (Hostinger Passenger) mais utile si jamais on déploie ailleurs.
+export const maxDuration = 300
+
 export async function POST(request: Request) {
   const unauthorized = checkInternalToken(request)
   if (unauthorized) return unauthorized
 
+  const url = new URL(request.url)
+  const isAsync = url.searchParams.get('async') === '1'
+
+  if (isAsync) {
+    // Fire-and-forget : on lance le scrape en arrière-plan et on retourne
+    // immédiatement. Le process Node.js (Passenger sur Hostinger shared)
+    // reste vivant tant que la promesse n'est pas résolue, donc le scrape
+    // continue même après la réponse HTTP.
+    runFullScrape()
+      .then((results) => {
+        console.log('[brvm-scrape async] terminé :', JSON.stringify(results))
+      })
+      .catch((e) => {
+        console.error('[brvm-scrape async] fatal :', e)
+      })
+
+    return NextResponse.json(
+      {
+        ok: true,
+        mode: 'async',
+        message:
+          'Scrape lancé en arrière-plan. Le résultat sera dans admin_notifications ~60s.',
+        started_at: new Date().toISOString(),
+      },
+      { status: 202 }
+    )
+  }
+
+  // Mode synchrone : on attend le résultat et on le retourne
+  try {
+    const results = await runFullScrape()
+    return NextResponse.json({ ok: true, mode: 'sync', ...results })
+  } catch (e) {
+    console.error('[brvm-scrape sync] error:', e)
+    return NextResponse.json(
+      { ok: false, error: e instanceof Error ? e.message : 'unknown' },
+      { status: 500 }
+    )
+  }
+}
+
+/**
+ * Exécute le scrape complet (market data + BOC + rapports + annonces) et
+ * crée la notification admin de fin. Retourne le résumé des counts.
+ *
+ * Peut prendre 30 à 120 secondes selon :
+ *  - la latence réseau vers brvm.org et sikafinance
+ *  - le nombre de nouveaux documents à upsert
+ *  - la parallélisation des 3 scrapers documentaires (déjà en Promise.all)
+ */
+async function runFullScrape(): Promise<Record<string, unknown>> {
   const db = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -49,7 +113,7 @@ export async function POST(request: Request) {
   const start = Date.now()
   const results: Record<string, unknown> = { date: dataDate }
 
-  // ── 1. Données marché → brvm_data (comportement historique préservé) ──
+  // ── 1. Données marché → brvm_data (sikafinance, TLS strict, rapide) ──
   try {
     const [cours, indices, resume] = await Promise.all([
       scrapeCoursActions(),
@@ -77,7 +141,9 @@ export async function POST(request: Request) {
           data_date: dataDate,
           data_type: 'indices',
           title: `Indices BRVM — ${indices.length} indices`,
-          content: indices.map((i) => `${i.name}: ${i.value} (${i.variation})`).join('\n'),
+          content: indices
+            .map((i) => `${i.name}: ${i.value} (${i.variation})`)
+            .join('\n'),
           source_url: 'https://www.sikafinance.com/marches/aaz',
           raw_data: { indices },
         },
@@ -99,7 +165,11 @@ export async function POST(request: Request) {
       )
     }
 
-    results.market = { cours: cours.length, indices: indices.length, resume: !!resume }
+    results.market = {
+      cours: cours.length,
+      indices: indices.length,
+      resume: !!resume,
+    }
   } catch (e) {
     console.error('[brvm-scrape] market data error:', e)
     results.market = { error: e instanceof Error ? e.message : 'unknown' }
@@ -108,25 +178,25 @@ export async function POST(request: Request) {
   // ── 2. 3. 4. Veille documentaire → brvm_documents ──
   const sourceResult = await getSourceBySlugDetailed('brvm-org')
   if (!sourceResult.ok) {
-    return NextResponse.json(
-      {
-        ok: false,
-        error: sourceResult.error,
-        reason: sourceResult.reason,
-        hint:
-          sourceResult.reason === 'table_missing'
-            ? 'Tables BRVM absentes en base. Applique supabase/migrations/023_brvm_clean_reset.sql.'
-            : sourceResult.reason === 'not_seeded'
-              ? 'Tables BRVM présentes mais le seed est vide. Applique supabase/migrations/023_brvm_clean_reset.sql (idempotent).'
-              : "Erreur Supabase inconnue. Vérifie SUPABASE_SERVICE_ROLE_KEY et l'URL du projet dans .env.local.",
-        results,
-      },
-      { status: 500 }
-    )
+    // On retourne les results avec une erreur (sans throw) pour que
+    // le mode async fire-and-forget puisse logger proprement.
+    results.error = sourceResult.error
+    results.reason = sourceResult.reason
+    results.hint =
+      sourceResult.reason === 'table_missing'
+        ? 'Tables BRVM absentes en base. Applique supabase/migrations/023_brvm_clean_reset.sql.'
+        : sourceResult.reason === 'not_seeded'
+          ? 'Tables BRVM présentes mais le seed est vide. Applique supabase/migrations/023_brvm_clean_reset.sql (idempotent).'
+          : "Erreur Supabase inconnue. Vérifie SUPABASE_SERVICE_ROLE_KEY et l'URL du projet dans .env.local."
+    return results
   }
   const source = sourceResult.source
 
-  async function ingest(docs: DocumentInput[]): Promise<{ new: number; skipped: number; errors: number }> {
+  async function ingest(docs: DocumentInput[]): Promise<{
+    new: number
+    skipped: number
+    errors: number
+  }> {
     const stats = { new: 0, skipped: 0, errors: 0 }
     for (const doc of docs) {
       const res = await upsertDocument(doc)
@@ -166,15 +236,21 @@ export async function POST(request: Request) {
   const bocStats = results.boc as { new: number } | undefined
   const rapportStats = results.rapports as { new: number } | undefined
   const annonceStats = results.annonces as { new: number } | undefined
-  const totalNew = (bocStats?.new ?? 0) + (rapportStats?.new ?? 0) + (annonceStats?.new ?? 0)
+  const totalNew =
+    (bocStats?.new ?? 0) + (rapportStats?.new ?? 0) + (annonceStats?.new ?? 0)
 
   const duration = Math.round((Date.now() - start) / 1000)
-  await createNotification(
-    'report',
-    `Veille BRVM ${dataDate} — ${totalNew} nouveauté(s)`,
-    `BOC: ${bocStats?.new ?? 0} | Rapports: ${rapportStats?.new ?? 0} | Annonces: ${annonceStats?.new ?? 0}. Durée : ${duration}s.`,
-    { date: dataDate, results }
-  )
+  try {
+    await createNotification(
+      'report',
+      `Veille BRVM ${dataDate} — ${totalNew} nouveauté(s)`,
+      `BOC: ${bocStats?.new ?? 0} | Rapports: ${rapportStats?.new ?? 0} | Annonces: ${annonceStats?.new ?? 0}. Durée : ${duration}s.`,
+      { date: dataDate, results }
+    )
+  } catch (e) {
+    console.error('[brvm-scrape] notification error:', e)
+  }
 
-  return NextResponse.json({ ok: true, duration_ms: Date.now() - start, ...results })
+  results.duration_ms = Date.now() - start
+  return results
 }
