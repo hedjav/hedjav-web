@@ -18,11 +18,60 @@
  */
 
 import * as cheerio from 'cheerio'
+import { Agent } from 'undici'
 import type { DocumentInput, DocType } from '../types'
 
 const BASE = 'https://www.brvm.org'
-const TIMEOUT = 20_000
-const USER_AGENT = 'Hedjav-BRVM-Watch/1.0 (+contact: hedjav@gmail.com)'
+const TIMEOUT = 25_000
+// User-Agent navigateur standard : brvm.org (Drupal 7) filtre parfois les UA exotiques
+const USER_AGENT =
+  'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+
+/**
+ * Agent undici avec validation SSL relâchée, utilisé UNIQUEMENT pour les
+ * fetches vers *.brvm.org et sikafinance.com. Raison : le serveur brvm.org
+ * a un cert chain incomplet (pas d'intermediate envoyé côté serveur),
+ * ce que curl tolère avec -k mais que Node.js rejette par défaut avec
+ * "fetch failed" (cause: UNABLE_TO_VERIFY_LEAF_SIGNATURE).
+ *
+ * Ne JAMAIS appliquer cet agent en global — il désactive la protection MITM
+ * pour TOUS les fetches du process. Scopé explicitement aux URLs brvm.org
+ * dans fetchHtmlDiagnostic().
+ */
+const relaxedTlsAgent = new Agent({
+  connect: {
+    rejectUnauthorized: false,
+    timeout: TIMEOUT,
+  },
+  headersTimeout: TIMEOUT,
+  bodyTimeout: TIMEOUT,
+})
+
+function shouldUseRelaxedAgent(url: string): boolean {
+  try {
+    const u = new URL(url)
+    return (
+      u.hostname.endsWith('brvm.org') ||
+      u.hostname.endsWith('bfin.brvm.org') ||
+      u.hostname === 'www.brvm.org'
+    )
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Extrait le maximum d'info d'une erreur de fetch Node.js. Le message générique
+ * "fetch failed" cache la vraie raison dans `e.cause` (DNS, SSL, ECONNREFUSED).
+ */
+function extractFetchError(e: unknown): string {
+  if (!(e instanceof Error)) return String(e)
+  const cause = (e as Error & { cause?: { code?: string; message?: string } }).cause
+  const parts: string[] = [e.message]
+  if (cause?.code) parts.push(`[${cause.code}]`)
+  if (cause?.message && cause.message !== e.message) parts.push(`— ${cause.message}`)
+  return parts.join(' ')
+}
 
 /* ── Fetch helpers ─────────────────────────────────────────────── */
 
@@ -37,24 +86,50 @@ type FetchResult = {
 
 /**
  * Fetch avec diagnostic complet (titre, status, erreur).
+ *
+ * Pour brvm.org : utilise un undici Agent avec `rejectUnauthorized: false`
+ * pour contourner le cert chain incomplet du serveur Drupal (sinon Node.js
+ * renvoie "fetch failed" avec cause UNABLE_TO_VERIFY_LEAF_SIGNATURE).
+ *
+ * En cas d'erreur, extrait la cause chain complète (`e.cause`) pour remonter
+ * le vrai code erreur (ENOTFOUND / ECONNREFUSED / ETIMEDOUT / SSL) au lieu
+ * du générique "fetch failed".
  */
 async function fetchHtmlDiagnostic(url: string): Promise<FetchResult> {
+  const useRelaxedTls = shouldUseRelaxedAgent(url)
+
   try {
     const ctrl = new AbortController()
     const timer = setTimeout(() => ctrl.abort(), TIMEOUT)
-    const res = await fetch(url, {
+
+    const fetchOpts: RequestInit & { dispatcher?: Agent } = {
       signal: ctrl.signal,
       headers: {
         'User-Agent': USER_AGENT,
-        Accept: 'text/html,application/xhtml+xml',
-        'Accept-Language': 'fr-FR,fr;q=0.9',
+        Accept:
+          'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+        'Accept-Language': 'fr-FR,fr;q=0.9,en;q=0.8',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Cache-Control': 'no-cache',
       },
       redirect: 'follow',
-    })
+    }
+    if (useRelaxedTls) {
+      fetchOpts.dispatcher = relaxedTlsAgent
+    }
+
+    const res = await fetch(url, fetchOpts)
     clearTimeout(timer)
 
     if (!res.ok) {
-      return { url, ok: false, status: res.status, html: null, title: null }
+      return {
+        url,
+        ok: false,
+        status: res.status,
+        html: null,
+        title: null,
+        error: `HTTP ${res.status} ${res.statusText}`,
+      }
     }
 
     const html = await res.text()
@@ -81,7 +156,7 @@ async function fetchHtmlDiagnostic(url: string): Promise<FetchResult> {
       status: null,
       html: null,
       title: null,
-      error: e instanceof Error ? e.message : String(e),
+      error: extractFetchError(e),
     }
   }
 }
