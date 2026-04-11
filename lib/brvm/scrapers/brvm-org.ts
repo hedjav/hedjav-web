@@ -269,10 +269,21 @@ async function extractPdfsFromPage(
     // Classification
     const docType = forceDocType ?? classifyPdfByName(filename)
 
-    // Dates
+    // Dates — chain de fallback pour garantir un doc_date non-NULL :
+    //   1. Pattern BOC (boc_YYYYMMDD)
+    //   2. Pattern générique du nom de fichier (YYYYMMDD_...)
+    //   3. Parsing du texte du lien (ex: "10/04/2026" ou "10 avril 2026")
+    //   4. Fallback final = date du jour du scraping (traçabilité via date_source)
     const bocDate = extractBocDate(filename)
     const otherDate = extractDocDate(pdfUrl)
-    const docDate = bocDate ?? otherDate
+    const linkTextDate = parseDateText(linkText)
+    const fallbackScrapeDate = new Date().toISOString().slice(0, 10)
+    const docDate = bocDate ?? otherDate ?? linkTextDate ?? fallbackScrapeDate
+    const dateSource: 'boc_filename' | 'doc_filename' | 'link_text' | 'scrape_fallback' =
+      bocDate ? 'boc_filename'
+        : otherDate ? 'doc_filename'
+          : linkTextDate ? 'link_text'
+            : 'scrape_fallback'
 
     // Titre
     let title: string
@@ -303,7 +314,11 @@ async function extractPdfsFromPage(
       source_url: fetched.url,
       pdf_url: pdfUrl,
       issuer_slug: issuerSlug,
-      metadata: { scraper: 'brvm-org/permissive', link_text: linkText || undefined },
+      metadata: {
+        scraper: 'brvm-org/permissive',
+        link_text: linkText || undefined,
+        date_source: dateSource,
+      },
     })
   })
 
