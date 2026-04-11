@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { BRVMTriggerButton } from './BRVMTriggerButton'
 import { BrvmDocumentsPanel } from './BrvmDocumentsPanel'
+import { BrvmSubNav } from './BrvmSubNav'
 import { listDocuments, getDocumentStats } from '@/lib/brvm/documents'
 import { getAllSources } from '@/lib/brvm/sources'
 import { DOC_TYPE_LABELS } from '@/lib/brvm/types'
@@ -53,6 +54,8 @@ export default async function AdminBRVMPage() {
 
   return (
     <>
+      <BrvmSubNav />
+
       {/* Header */}
       <div
         style={{
