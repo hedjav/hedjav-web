@@ -21,10 +21,10 @@
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { computeFileChecksum } from './checksum'
+import { brvmFetchOptions, extractFetchError } from './http'
 import type { DocType, BrvmDocument } from './types'
 
 const DOWNLOAD_TIMEOUT = 30_000 // 30s par PDF
-const USER_AGENT = 'Hedjav-BRVM-Downloader/1.0 (+contact: hedjav@gmail.com)'
 const STORAGE_BUCKET = 'brvm-documents'
 const HARD_SQL_LIMIT = 500
 
@@ -168,11 +168,17 @@ async function fetchPdfBuffer(url: string): Promise<
   try {
     const ctrl = new AbortController()
     const timer = setTimeout(() => ctrl.abort(), DOWNLOAD_TIMEOUT)
-    const res = await fetch(url, {
-      signal: ctrl.signal,
-      headers: { 'User-Agent': USER_AGENT, Accept: 'application/pdf,*/*' },
-      redirect: 'follow',
-    })
+
+    // Utilise brvmFetchOptions pour appliquer l'Agent SSL-relâché quand
+    // l'URL pointe sur brvm.org (cert chain incomplet Drupal 7). Ce fetch
+    // servait les 404 "fetch failed" sur tous les BOCs avant PR #66.
+    const res = await fetch(
+      url,
+      brvmFetchOptions(url, {
+        signal: ctrl.signal,
+        headers: { Accept: 'application/pdf,*/*' },
+      })
+    )
     clearTimeout(timer)
 
     if (res.status === 404) return { ok: false, reason: 'not_found', error: `HTTP 404 ${url}` }
@@ -198,8 +204,8 @@ async function fetchPdfBuffer(url: string): Promise<
 
     return { ok: true, buffer: Buffer.from(ab), contentType: 'application/pdf' }
   } catch (e) {
-    const msg = e instanceof Error ? e.message : 'erreur inconnue'
-    if (msg.includes('abort') || msg.includes('timeout')) {
+    const msg = extractFetchError(e)
+    if (msg.includes('abort') || msg.includes('timeout') || msg.includes('Timeout')) {
       return { ok: false, reason: 'timeout', error: msg }
     }
     return { ok: false, reason: 'network', error: msg }
