@@ -208,6 +208,22 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 - `POST /api/reports/monthly` (bearer `INTERNAL_API_TOKEN`) — calcule stats mois précédent + crée notification report
 - `POST /api/auth/signout` — clear cookies sb-* + retour client
 
+### BRVM — Veille documentaire (refonte)
+- `POST /api/brvm/scrape` (bearer `INTERNAL_API_TOKEN`) — orchestrateur : market data + BOC + rapports + annonces en 1 appel
+- `POST /api/brvm/scrape/boc` (bearer) — scraping BOC uniquement (priorité métier)
+- `POST /api/brvm/scrape/rapports` (bearer) — rapports société cotée brvm.org
+- `POST /api/brvm/scrape/annonces` (bearer) — toutes catégories annonces brvm.org
+- `GET /api/brvm/documents` (session admin) — liste paginée avec filtres (doc_type, source, is_new, date, search)
+- `POST /api/brvm/documents/[id]/process` (session admin) — marquer traité
+- `POST /api/brvm/summarize` (bearer) — résumé IA + email admins (inchangé)
+- `POST /api/brvm/weekly-digest` (bearer) — synthèse hebdo → article brouillon (inchangé)
+- `POST /api/admin/brvm-trigger` (session admin) — proxy vers `/api/brvm/scrape`
+- **Supprimées** : `/api/brvm/daily` → remplacée par `/api/brvm/scrape`. `/api/brvm/reports-scan` → remplacée par `/api/brvm/scrape/rapports`.
+
+### Ebooks — Livraison (hotfix)
+- `GET /api/ebooks/download?ebook_id=XXX` (session user) — signed URL 5 min après vérification purchase paid
+- `POST /api/admin/ebooks/upload-file` (session admin, multipart) — upload PDF/ePub/ZIP dans bucket privé `ebook-files`
+
 ---
 
 ## Tables Supabase
@@ -229,8 +245,11 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 | `popup_config` | ebook_id, is_active, display_delay_seconds, scroll_threshold_percent, headline, cta_text, stats_shown, stats_submitted |
 | `site_config` | key (unique), value, type (text/number/boolean/json/url/email), category, label, description, metadata, updated_by |
 | `invoices` | invoice_number (unique), purchase_id, user_id, user_email, user_name, ebook_title, amount, currency, status, company_*, pdf_url, metadata |
-| `admin_notifications` | type, title, message, is_read, metadata |
+| `admin_notifications` | type, title, message, is_read, metadata, priority, email_sent |
 | `ai_logs` | action, prompt, result, model, tokens_used, duration_ms, status, error_message, created_by, metadata |
+| `brvm_data` | Données marché (cours, indices, résumé séance) — legacy, stocke JSON par data_date+data_type |
+| `brvm_sources` | slug (brvm-org/bfin/sikafinance), name, base_url, priority, last_scraped_at, last_success_at, last_error |
+| `brvm_documents` | **Veille documentaire** : source_id, doc_type, title, doc_date, source_url, pdf_url, issuer_*, checksum UNIQUE, is_new, is_processed, metadata |
 
 **Migrations** dans `supabase/migrations/` (à exécuter en ordre dans Supabase Dashboard SQL Editor) :
 1. `001_ebooks.sql`
@@ -250,6 +269,10 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 15. `015_notifications.sql` (admin_notifications)
 16. `016_ai_logs.sql` (ai_logs)
 17. `017_megafix.sql` (admin_notifications: email_sent, email_sent_at, priority + fonction notify_admin)
+18. `018_corrections_textes.sql` (corrections site_config)
+19. `019_brvm_data.sql` (brvm_data — données marché BRVM)
+20. `020_brvm_refactor.sql` (**brvm_sources + brvm_documents** — veille documentaire avec checksum, priorité source, trigger notification sur nouveau doc. Contient un filet qui crée brvm_data si 019 n'a jamais été appliquée.)
+21. `021_ebook_files.sql` (ebooks.file_path + bucket privé `ebook-files` + RLS admin upload/delete — fix livraison post-paiement FedaPay)
 
 ---
 
@@ -310,7 +333,7 @@ L'architecture est prête pour :
 - **Scoring qualité** : champ `quality_score` (0-100) déjà en base, à remplir via un endpoint `PATCH /api/articles/[id]/score`
 - **Publication automatique** : scheduler (cron) qui publie les articles dont le score dépasse un seuil
 - **Génération d'ebooks** via ghost-writer (skill Claude.ai)
-- **Veille BRVM** : scraping + résumé quotidien
+- **Veille BRVM** : scraping + résumé quotidien — voir [`docs/BRVM_ADMIN.md`](./docs/BRVM_ADMIN.md) pour la refonte veille documentaire (tables `brvm_sources` + `brvm_documents`, dédup checksum, admin UI `/admin/brvm`, script `scripts/import-brvm-history.ts`)
 - **Génération de covers** SVG/PNG à partir du titre
 
 Tout ça se branchera dans `/admin/ia` qui est déjà câblé avec 7 placeholder cards.

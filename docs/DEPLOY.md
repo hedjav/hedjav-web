@@ -42,7 +42,16 @@ Client (navigateur) -> Hostinger Node.js (Next.js 16) -> Supabase (PostgreSQL + 
 ## Migrations Supabase
 
 Executer dans l'ordre dans Supabase Dashboard -> SQL Editor :
-1. `001_ebooks.sql` a `016_ai_logs.sql`
+1. `001_ebooks.sql` à `018_corrections_textes.sql`
+2. `019_brvm_data.sql` — table brvm_data (données marché)
+3. `020_brvm_refactor.sql` — **veille documentaire BRVM** : brvm_sources + brvm_documents + trigger notification (contient un filet qui crée brvm_data si 019 n'a jamais été appliquée)
+4. `021_ebook_files.sql` — **fix livraison FedaPay** : ebooks.file_path + bucket privé `ebook-files` + policies RLS admin
+
+Après la migration 020, vérifier :
+- Dans Supabase > Table Editor : `brvm_sources` contient 3 lignes (brvm-org, bfin, sikafinance)
+- Dans Supabase > Storage : bucket `ebook-files` existe et est **Private** (non Public)
+
+Voir [`BRVM_ADMIN.md`](./BRVM_ADMIN.md) pour le schéma complet et le dépannage.
 
 ## Configuration Supabase
 
