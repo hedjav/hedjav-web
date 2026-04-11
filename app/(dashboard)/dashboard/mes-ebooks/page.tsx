@@ -1,5 +1,8 @@
 import type { Metadata } from 'next'
-import { getCurrentUserPaidEbooksWithInvoices } from '@/lib/purchases/queries'
+import {
+  getCurrentUserPaidEbooksWithInvoices,
+  getCurrentUserPendingPurchases,
+} from '@/lib/purchases/queries'
 import { PurchasedEbookCard } from '@/components/features/PurchasedEbookCard'
 
 export const metadata: Metadata = { title: 'Mes ebooks' }
@@ -61,10 +64,21 @@ type PageProps = {
   searchParams: Promise<{ download_error?: string; debug?: string }>
 }
 
+function formatAmount(n: number): string {
+  return new Intl.NumberFormat('fr-FR').format(n)
+}
+
 export default async function MesEbooksPage({ searchParams }: PageProps) {
   const { download_error: downloadError, debug } = await searchParams
-  const items = await getCurrentUserPaidEbooksWithInvoices()
+  const [paidItems, pendingItems] = await Promise.all([
+    getCurrentUserPaidEbooksWithInvoices(),
+    getCurrentUserPendingPurchases(),
+  ])
   const errorInfo = downloadError ? DOWNLOAD_ERROR_MESSAGES[downloadError] : null
+
+  // Sépare les achats où l'ebook est disponible de ceux où il a été supprimé/dépublié
+  const availableItems = paidItems.filter((item) => item.ebook !== null)
+  const orphanItems = paidItems.filter((item) => item.ebook === null)
 
   return (
     <>
@@ -105,7 +119,7 @@ export default async function MesEbooksPage({ searchParams }: PageProps) {
           )}
           {debug && (
             <details style={{ marginTop: 'var(--s3)', fontSize: 12, color: 'var(--muted)' }}>
-              <summary style={{ cursor: 'pointer' }}>Détails techniques (dev)</summary>
+              <summary style={{ cursor: 'pointer' }}>Détails techniques</summary>
               <pre
                 style={{
                   margin: 'var(--s2) 0 0',
@@ -123,7 +137,120 @@ export default async function MesEbooksPage({ searchParams }: PageProps) {
         </div>
       )}
 
-      {items.length === 0 ? (
+      {/* Section : commandes en attente (paiement non confirmé) */}
+      {pendingItems.length > 0 && (
+        <div
+          style={{
+            padding: 'var(--s5) var(--s6)',
+            marginBottom: 'var(--s6)',
+            background: 'rgba(245, 158, 11, 0.08)',
+            border: '1px solid rgba(245, 158, 11, 0.3)',
+            borderRadius: 12,
+          }}
+        >
+          <h2
+            style={{
+              margin: '0 0 var(--s3)',
+              fontFamily: 'var(--fd)',
+              fontSize: 20,
+              fontWeight: 600,
+              color: 'var(--text)',
+            }}
+          >
+            Commandes en attente de validation
+          </h2>
+          <p style={{ margin: '0 0 var(--s4)', fontSize: 13, color: 'var(--muted)' }}>
+            Les commandes suivantes ont été initiées mais leur paiement n&apos;a pas encore
+            été confirmé. Si vous avez déjà payé et été débité, contactez-nous à{' '}
+            <a href="mailto:hedjav@gmail.com" style={{ color: 'var(--g500)' }}>
+              hedjav@gmail.com
+            </a>{' '}
+            avec la référence ci-dessous.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {pendingItems.map((p) => (
+              <div
+                key={p.purchaseId}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: 'var(--s3) var(--s4)',
+                  background: 'rgba(0,0,0,0.08)',
+                  borderRadius: 8,
+                  fontSize: 13,
+                  flexWrap: 'wrap',
+                  gap: 8,
+                }}
+              >
+                <div>
+                  <strong>{p.ebookTitle}</strong>
+                  <span style={{ marginLeft: 10, color: 'var(--muted)' }}>
+                    {formatAmount(p.amount)} FCFA
+                  </span>
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--muted)', fontFamily: 'var(--fm)' }}>
+                  Ref : {p.paymentRef || '(aucune)'} · {p.status}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Section : achats orphelins (ebook supprimé/dépublié) */}
+      {orphanItems.length > 0 && (
+        <div
+          style={{
+            padding: 'var(--s5) var(--s6)',
+            marginBottom: 'var(--s6)',
+            background: 'rgba(59, 130, 246, 0.08)',
+            border: '1px solid rgba(59, 130, 246, 0.3)',
+            borderRadius: 12,
+          }}
+        >
+          <h2
+            style={{
+              margin: '0 0 var(--s3)',
+              fontFamily: 'var(--fd)',
+              fontSize: 20,
+              fontWeight: 600,
+              color: 'var(--text)',
+            }}
+          >
+            Achats en attente de fichier
+          </h2>
+          <p style={{ margin: '0 0 var(--s4)', fontSize: 13, color: 'var(--muted)' }}>
+            Vous avez bien acheté le(s) ebook(s) suivant(s) mais le fichier n&apos;est
+            pas encore disponible dans notre catalogue. Contactez-nous à{' '}
+            <a href="mailto:hedjav@gmail.com" style={{ color: 'var(--g500)' }}>
+              hedjav@gmail.com
+            </a>{' '}
+            avec votre référence de paiement pour obtenir le fichier immédiatement.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {orphanItems.map((p) => (
+              <div
+                key={p.purchaseId}
+                style={{
+                  padding: 'var(--s3) var(--s4)',
+                  background: 'rgba(0,0,0,0.08)',
+                  borderRadius: 8,
+                  fontSize: 13,
+                }}
+              >
+                <strong>Ebook #{p.ebookId.slice(0, 8)}</strong>
+                <span style={{ marginLeft: 10, color: 'var(--muted)' }}>
+                  {formatAmount(p.amount)} FCFA — acheté le{' '}
+                  {new Date(p.purchaseCreatedAt).toLocaleDateString('fr-FR')}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {availableItems.length === 0 && orphanItems.length === 0 ? (
         <div className="hedjav-empty-state">
           <p style={{ color: 'var(--muted)' }}>Vous n&apos;avez pas encore acheté d&apos;ebook.</p>
           <a href="/ebooks" className="btn btn-gold" style={{ marginTop: 'var(--s5)' }}>
@@ -132,8 +259,12 @@ export default async function MesEbooksPage({ searchParams }: PageProps) {
         </div>
       ) : (
         <div className="hedjav-grid-3">
-          {items.map(({ ebook, invoiceUrl, purchaseId }) => (
-            <PurchasedEbookCard key={purchaseId} ebook={ebook} invoiceUrl={invoiceUrl} />
+          {availableItems.map(({ ebook, invoiceUrl, purchaseId }) => (
+            <PurchasedEbookCard
+              key={purchaseId}
+              ebook={ebook!}
+              invoiceUrl={invoiceUrl}
+            />
           ))}
         </div>
       )}

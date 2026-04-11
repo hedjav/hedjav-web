@@ -67,17 +67,31 @@ export async function POST(request: Request) {
     .maybeSingle()
 
   // --- Already purchased? ---
+  // On cherche par user_id OU email pour couvrir les achats pré-auth (user_id null)
+  // qui auraient été matchés côté webhook via l'email.
   const { data: existing } = await admin
     .from('purchases')
-    .select('id')
-    .eq('user_id', user.id)
+    .select('id, status')
     .eq('ebook_id', ebook_id)
     .eq('status', 'paid')
+    .or(`user_id.eq.${user.id},email.eq.${user.email}`)
     .limit(1)
     .maybeSingle()
 
   if (existing) {
-    return NextResponse.json({ error: 'Ebook déjà acheté' }, { status: 409 })
+    return NextResponse.json(
+      {
+        error: 'Ebook déjà acheté',
+        message:
+          "Vous avez déjà acheté cet ebook avec succès. Accédez-y depuis votre bibliothèque.",
+        action: {
+          label: 'Voir mes ebooks',
+          href: '/dashboard/mes-ebooks',
+        },
+        purchase_id: existing.id,
+      },
+      { status: 409 }
+    )
   }
 
   // --- Create purchase pending ---
