@@ -177,7 +177,9 @@ Tout est documenté dans **[`DEPLOY.md`](./DEPLOY.md)** :
 
 - **[`CLAUDE.md`](./CLAUDE.md)** — état complet du projet, vision 4 phases, règles d'architecture
 - **[`AGENTS.md`](./AGENTS.md)** — règles pour agents IA Next.js 16
-- **[`DEPLOY.md`](./DEPLOY.md)** — guide déploiement Hostinger VPS
+- **[`docs/DEPLOY.md`](./docs/DEPLOY.md)** — guide déploiement Hostinger VPS
+- **[`docs/BRVM_ADMIN.md`](./docs/BRVM_ADMIN.md)** — veille documentaire BRVM (tables, routes, admin UI, import historique)
+- **[`docs/CRON_SETUP.md`](./docs/CRON_SETUP.md)** — configuration des crons (BRVM, newsletter, notifications)
 
 ---
 

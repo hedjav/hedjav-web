@@ -13,21 +13,31 @@ export function BRVMTriggerButton() {
       const res = await fetch('/api/admin/brvm-trigger', { method: 'POST' })
       const data = await res.json()
       if (data.ok) {
+        // Nouveau shape /api/brvm/scrape : { boc:{new}, rapports:{new}, annonces:{new}, market:{cours,indices} }
+        const boc = data.boc as { new?: number } | undefined
+        const rapports = data.rapports as { new?: number } | undefined
+        const annonces = data.annonces as { new?: number } | undefined
+        const market = data.market as { cours?: number; indices?: number; resume?: boolean } | undefined
+
         const parts: string[] = []
-        if (data.resume) parts.push('resume')
-        if (data.cours_actions) parts.push(`${data.cours_actions} titres`)
-        if (data.indices) parts.push(`${data.indices} indices`)
-        if (data.boc) parts.push('BOC')
-        if (data.annonces) parts.push(`${data.annonces} annonces`)
-        if (data.ai_summary) parts.push('resume IA')
-        setResult(parts.length > 0 ? `Collecte : ${parts.join(', ')}` : 'Veille terminee')
-      } else if (data.skipped) {
-        setResult(`Ignore : ${data.reason ?? 'Pas de donnees'}`)
+        if (boc?.new) parts.push(`${boc.new} BOC`)
+        if (rapports?.new) parts.push(`${rapports.new} rapports`)
+        if (annonces?.new) parts.push(`${annonces.new} annonces`)
+        if (market?.cours) parts.push(`${market.cours} titres`)
+        if (market?.indices) parts.push(`${market.indices} indices`)
+
+        setResult(
+          parts.length > 0
+            ? `✓ ${parts.join(', ')}`
+            : 'Veille terminée — rien de nouveau depuis le dernier run'
+        )
+        // Recharge la page pour voir les nouveaux documents
+        if (parts.length > 0) setTimeout(() => window.location.reload(), 1500)
       } else {
         setResult(`Erreur : ${data.error ?? 'Inconnue'}`)
       }
     } catch {
-      setResult('Erreur reseau')
+      setResult('Erreur réseau')
     }
     setLoading(false)
   }

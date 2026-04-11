@@ -3,8 +3,8 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 
 /**
  * POST /api/admin/brvm-trigger
- * Proxy for /api/brvm/daily — calls it server-side with INTERNAL_API_TOKEN.
- * Protected by admin session.
+ * Proxy pour /api/brvm/scrape (orchestrateur veille BRVM).
+ * Protégé par session admin.
  */
 export async function POST() {
   // Verify admin session
@@ -30,7 +30,7 @@ export async function POST() {
   }
 
   try {
-    const res = await fetch(`${appUrl}/api/brvm/daily`, {
+    const res = await fetch(`${appUrl}/api/brvm/scrape`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
     })
