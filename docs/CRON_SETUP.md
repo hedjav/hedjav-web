@@ -51,3 +51,37 @@ En un seul appel, avec dédup SHA256 automatique.
 | `/api/brvm/reports-scan` | `/api/brvm/scrape/rapports` |
 
 Si tu avais ces crons configurés, supprime-les ou mets à jour les URLs.
+
+## Maintenance BRVM (recommandé)
+
+Pour monitorer la santé de la brique BRVM, ajouter un cron toutes les 30 min :
+
+| Job | URL | Méthode | Fréquence |
+|-----|-----|---------|-----------|
+| BRVM health monitoring | `https://egp.hedjav.com/api/brvm/maintenance` | GET | Toutes les 30 minutes |
+
+Header : `Authorization: Bearer [INTERNAL_API_TOKEN]`.
+
+La réponse contient `report.overall_status` (`ok` / `warning` / `critical`). À utiliser dans un webhook vers Slack, un monitoring externe ou une simple alerte email si != `ok`. Voir [`BRVM_MAINTENANCE.md`](./BRVM_MAINTENANCE.md).
+
+## PDF downloader BRVM (à la demande)
+
+**⚠ Pas de cron par défaut** pour `/api/brvm/download`. Le téléchargement de PDFs se fait **à la demande** par l'admin depuis `/admin/brvm/downloader` ou via CLI (`scripts/download-brvm-pdfs.ts`).
+
+Si tu veux un refresh historique mensuel automatique (ex: re-scanner et archiver les BOC du mois), ajouter :
+
+| Job | URL | Méthode | Fréquence |
+|-----|-----|---------|-----------|
+| BRVM BOC archivage mensuel | `https://egp.hedjav.com/api/brvm/download` | POST | 1er du mois, 2h00 |
+
+Avec body JSON :
+```json
+{
+  "date_from": "2026-03-01",
+  "date_to": "2026-03-31",
+  "doc_types": ["boc"],
+  "limit": 200
+}
+```
+
+Voir [`BRVM_DOWNLOADER.md`](./BRVM_DOWNLOADER.md).

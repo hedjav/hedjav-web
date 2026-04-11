@@ -51,7 +51,21 @@ Après la migration 020, vérifier :
 - Dans Supabase > Table Editor : `brvm_sources` contient 3 lignes (brvm-org, bfin, sikafinance)
 - Dans Supabase > Storage : bucket `ebook-files` existe et est **Private** (non Public)
 
-Voir [`BRVM_ADMIN.md`](./BRVM_ADMIN.md) pour le schéma complet et le dépannage.
+Voir [`BRVM_ADMIN.md`](./BRVM_ADMIN.md) pour le schéma complet et le dépannage, et [`BRVM_MAINTENANCE.md`](./BRVM_MAINTENANCE.md) pour les health checks et rapports.
+
+## Vérification post-déploiement BRVM
+
+Après chaque déploiement touchant la brique BRVM :
+```bash
+# Health check local (depuis le VPS ou en dev)
+npx tsx scripts/brvm-health-check.ts
+
+# Ou via l'API (remplace le token)
+curl -s https://egp.hedjav.com/api/brvm/maintenance \
+  -H "Authorization: Bearer $INTERNAL_API_TOKEN" | jq '.report.overall_status'
+```
+
+Si `overall_status` n'est pas `ok`, voir le rapport complet pour la recommandation précise.
 
 ## Configuration Supabase
 

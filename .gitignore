@@ -6,9 +6,12 @@
 /hedjav-scrap/
 /hedjav-scrap.whtt
 
-# BRVM — données de travail locales (exports, caches scraper)
+# BRVM — données de travail locales (exports, caches scraper, reports)
 /.brvm-cache/
 /.brvm-exports/
+/.brvm-reports/
+# Aussi la variante d'orthographe si un dossier hedjav-scrapp existe
+/hedjav-scrapp/
 
 # dependencies
 /node_modules

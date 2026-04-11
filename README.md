@@ -175,11 +175,19 @@ Tout est documenté dans **[`DEPLOY.md`](./DEPLOY.md)** :
 
 ## 📚 Documentation
 
+### Générale
 - **[`CLAUDE.md`](./CLAUDE.md)** — état complet du projet, vision 4 phases, règles d'architecture
 - **[`AGENTS.md`](./AGENTS.md)** — règles pour agents IA Next.js 16
 - **[`docs/DEPLOY.md`](./docs/DEPLOY.md)** — guide déploiement Hostinger VPS
-- **[`docs/BRVM_ADMIN.md`](./docs/BRVM_ADMIN.md)** — veille documentaire BRVM (tables, routes, admin UI, import historique)
 - **[`docs/CRON_SETUP.md`](./docs/CRON_SETUP.md)** — configuration des crons (BRVM, newsletter, notifications)
+
+### Brique BRVM (veille documentaire)
+- **[`docs/BRVM_FINAL_AUDIT.md`](./docs/BRVM_FINAL_AUDIT.md)** — état du système après les 3 PRs de refonte
+- **[`docs/BRVM_ADMIN.md`](./docs/BRVM_ADMIN.md)** — guide opérationnel admin (tables, routes, troubleshooting)
+- **[`docs/BRVM_DOWNLOADER.md`](./docs/BRVM_DOWNLOADER.md)** — téléchargeur PDF par période (usage UI, CLI, API)
+- **[`docs/BRVM_MAINTENANCE.md`](./docs/BRVM_MAINTENANCE.md)** — health check + rapport de maintenance
+- **[`docs/BRVM_PARSER_STRATEGY.md`](./docs/BRVM_PARSER_STRATEGY.md)** — stratégie de parsing résiliente, fallback, checklist
+- **[`docs/BRVM_URL_PATTERNS.md`](./docs/BRVM_URL_PATTERNS.md)** — catalogue des patterns d'URL BRVM observés
 
 ---
 
