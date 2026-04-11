@@ -8,9 +8,21 @@ import { checkRateLimit, getClientIp } from '@/lib/utils/rate-limit'
  * POST /api/purchases/create
  * Body : { ebook_id }
  *
- * Crée une purchase pending + transaction FedaPay server-side.
- * Retourne { payment_url, purchase_id }.
+ * Crée ou RÉUTILISE une purchase pending + transaction FedaPay server-side.
+ * Retourne { payment_url, purchase_id, reused }.
+ *
+ * Déduplication des pending :
+ *  - Si une purchase paid existe → 409 "déjà acheté"
+ *  - Si une pending < 30 min existe pour le même ebook → on régénère un
+ *    token FedaPay pour sa transaction existante (si possible) et on renvoie
+ *    le même purchase_id, évitant la prolifération de pending
+ *  - Si la réutilisation échoue (transaction expirée/invalide côté FedaPay),
+ *    on marque la vieille pending comme 'failed' et on en crée une nouvelle
+ *  - Les pending > 30 min sont marquées comme 'failed' en arrière-plan
  */
+
+const REUSE_WINDOW_MINUTES = 30
+
 export async function POST(request: Request) {
   // Rate limit : 3 requêtes par minute par IP
   const rl = checkRateLimit(`purchases:${getClientIp(request)}`, 3, 60_000)
@@ -18,7 +30,9 @@ export async function POST(request: Request) {
 
   // --- Auth ---
   const supabase = await createSupabaseServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
   if (!user) {
     return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
@@ -41,7 +55,7 @@ export async function POST(request: Request) {
   const admin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { persistSession: false } },
+    { auth: { persistSession: false } }
   )
 
   // --- Ebook ---
@@ -67,9 +81,7 @@ export async function POST(request: Request) {
     .maybeSingle()
 
   // --- Already purchased? ---
-  // On cherche par user_id OU email pour couvrir les achats pré-auth (user_id null)
-  // qui auraient été matchés côté webhook via l'email.
-  const { data: existing } = await admin
+  const { data: existingPaid } = await admin
     .from('purchases')
     .select('id, status')
     .eq('ebook_id', ebook_id)
@@ -78,7 +90,7 @@ export async function POST(request: Request) {
     .limit(1)
     .maybeSingle()
 
-  if (existing) {
+  if (existingPaid) {
     return NextResponse.json(
       {
         error: 'Ebook déjà acheté',
@@ -88,13 +100,83 @@ export async function POST(request: Request) {
           label: 'Voir mes ebooks',
           href: '/dashboard/mes-ebooks',
         },
-        purchase_id: existing.id,
+        purchase_id: existingPaid.id,
       },
       { status: 409 }
     )
   }
 
-  // --- Create purchase pending ---
+  // --- Cleanup : marquer les pending trop vieilles (> 30 min) comme 'failed' ---
+  // Ça évite la prolifération de purchases pending abandonnées pour ce user+ebook.
+  const cutoff = new Date(Date.now() - REUSE_WINDOW_MINUTES * 60 * 1000).toISOString()
+  await admin
+    .from('purchases')
+    .update({
+      status: 'failed',
+      raw_payload: { auto_expired: true, expired_at: new Date().toISOString() },
+    })
+    .eq('ebook_id', ebook_id)
+    .eq('status', 'pending')
+    .or(`user_id.eq.${user.id},email.eq.${user.email}`)
+    .lt('created_at', cutoff)
+
+  // --- Init FedaPay ---
+  FedaPaySDK.FedaPay.setApiKey(process.env.FEDAPAY_API_KEY!)
+  FedaPaySDK.FedaPay.setEnvironment('live')
+
+  // --- Dedup : chercher une pending récente réutilisable ---
+  const { data: recentPending } = await admin
+    .from('purchases')
+    .select('id, payment_ref, created_at')
+    .eq('ebook_id', ebook_id)
+    .eq('status', 'pending')
+    .or(`user_id.eq.${user.id},email.eq.${user.email}`)
+    .gte('created_at', cutoff)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (recentPending && recentPending.payment_ref) {
+    // Tente de régénérer un token pour la transaction FedaPay existante
+    try {
+      const txId = Number(recentPending.payment_ref)
+      if (!isNaN(txId)) {
+        const existingTx = await FedaPaySDK.Transaction.retrieve(txId)
+        const token = await existingTx.generateToken()
+        const paymentUrl = (token as unknown as { url: string }).url
+        if (paymentUrl) {
+          console.log(
+            `[purchases/create] reused pending ${recentPending.id} (FedaPay tx ${txId})`
+          )
+          return NextResponse.json({
+            payment_url: paymentUrl,
+            purchase_id: recentPending.id,
+            reused: true,
+          })
+        }
+      }
+    } catch (e) {
+      // La transaction FedaPay n'est plus valide/récupérable → on marque la
+      // pending comme failed et on crée une nouvelle en dessous
+      console.warn(
+        `[purchases/create] cannot reuse pending ${recentPending.id}:`,
+        e instanceof Error ? e.message : e
+      )
+      await admin
+        .from('purchases')
+        .update({
+          status: 'failed',
+          raw_payload: {
+            reuse_failed: true,
+            failed_at: new Date().toISOString(),
+            reason: e instanceof Error ? e.message : 'unknown',
+          },
+        })
+        .eq('id', recentPending.id)
+    }
+  }
+
+  // --- Create new pending purchase ---
   const { data: purchase, error: purchaseErr } = await admin
     .from('purchases')
     .insert({
@@ -113,11 +195,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Erreur interne' }, { status: 500 })
   }
 
-  // --- FedaPay Transaction ---
+  // --- Create FedaPay Transaction ---
   try {
-    FedaPaySDK.FedaPay.setApiKey(process.env.FEDAPAY_API_KEY!)
-    FedaPaySDK.FedaPay.setEnvironment('live')
-
     const transaction = await FedaPaySDK.Transaction.create({
       description: `Achat ebook : ${ebook.title}`,
       amount: ebook.price,
@@ -141,6 +220,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       payment_url: (token as unknown as { url: string }).url,
       purchase_id: purchase.id,
+      reused: false,
     })
   } catch (e) {
     console.error('[purchases/create] FedaPay error', e)
@@ -150,7 +230,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(
       { error: 'Erreur lors de la création du paiement FedaPay' },
-      { status: 500 },
+      { status: 500 }
     )
   }
 }

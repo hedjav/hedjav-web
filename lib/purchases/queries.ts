@@ -128,18 +128,23 @@ export async function getCurrentUserPaidEbooksWithInvoices(): Promise<PaidPurcha
 }
 
 /**
- * Retourne les achats du user en statut pending ou failed.
- * Utilisé pour afficher une section "commandes en attente" dans /dashboard/mes-ebooks
- * quand un paiement FedaPay a été débité mais que le webhook n'a pas abouti.
+ * Retourne les achats du user en statut pending (UNIQUEMENT).
+ * Dédupliqués par ebook_id : on garde seulement la purchase la plus récente
+ * par ebook pour éviter d'afficher 4 lignes quand le client a cliqué 4 fois.
+ *
+ * Les purchases 'failed' sont volontairement exclues (bruit inutile pour le user).
+ * Utilisé par /dashboard/mes-ebooks pour la section "commandes en attente".
  */
 export async function getCurrentUserPendingPurchases(): Promise<
   Array<{
     purchaseId: string
+    ebookId: string
     ebookTitle: string
     status: string
     amount: number
     createdAt: string
     paymentRef: string
+    otherAttemptsCount: number
   }>
 > {
   const supabase = await createSupabaseServerClient()
@@ -151,11 +156,11 @@ export async function getCurrentUserPendingPurchases(): Promise<
   const admin = adminClient()
   const { data, error } = await admin
     .from('purchases')
-    .select('id, status, amount, created_at, payment_ref, ebook:ebooks(title)')
+    .select('id, ebook_id, status, amount, created_at, payment_ref, ebook:ebooks(title)')
     .or(`user_id.eq.${user.id},email.eq.${user.email}`)
-    .in('status', ['pending', 'failed'])
+    .eq('status', 'pending')
     .order('created_at', { ascending: false })
-    .limit(10)
+    .limit(50) // lit plus pour pouvoir dédup
 
   if (error) {
     console.error('[purchases] getCurrentUserPendingPurchases:', error.message)
@@ -164,6 +169,7 @@ export async function getCurrentUserPendingPurchases(): Promise<
 
   const rows = (data ?? []) as Array<{
     id: string
+    ebook_id: string
     status: string
     amount: number
     created_at: string
@@ -171,15 +177,32 @@ export async function getCurrentUserPendingPurchases(): Promise<
     ebook: { title: string } | { title: string }[] | null
   }>
 
-  return rows.map((p) => {
+  // Dédup : une entrée par ebook_id, on garde la plus récente (les rows sont
+  // déjà triées par created_at DESC)
+  const seen = new Map<
+    string,
+    { row: (typeof rows)[number]; count: number }
+  >()
+  for (const row of rows) {
+    const existing = seen.get(row.ebook_id)
+    if (existing) {
+      existing.count += 1
+    } else {
+      seen.set(row.ebook_id, { row, count: 1 })
+    }
+  }
+
+  return Array.from(seen.values()).map(({ row: p, count }) => {
     const ebook = Array.isArray(p.ebook) ? p.ebook[0] : p.ebook
     return {
       purchaseId: p.id,
+      ebookId: p.ebook_id,
       ebookTitle: ebook?.title ?? '(ebook inconnu)',
       status: p.status,
       amount: p.amount,
       createdAt: p.created_at,
       paymentRef: p.payment_ref,
+      otherAttemptsCount: count - 1, // combien de tentatives en plus de la plus récente
     }
   })
 }
