@@ -11,6 +11,12 @@
  *
  * Le storage_path est stocké dans `brvm_documents.metadata.storage_path`
  * (évite une migration pour une V1).
+ *
+ * ── Tolérance aux `doc_date = NULL` ────────────────────────────────────────
+ * Le filtre de période n'utilise plus `.gte/.lte('doc_date', ...)` côté SQL
+ * (qui excluent les NULL), mais un post-filtre JS via `effectiveDate(doc)`
+ * qui retombe sur `discovered_at.slice(0,10)` quand `doc_date` est NULL.
+ * Les requêtes chargent au plus 500 lignes puis filtrent en mémoire.
  */
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
@@ -20,6 +26,7 @@ import type { DocType, BrvmDocument } from './types'
 const DOWNLOAD_TIMEOUT = 30_000 // 30s par PDF
 const USER_AGENT = 'Hedjav-BRVM-Downloader/1.0 (+contact: hedjav@gmail.com)'
 const STORAGE_BUCKET = 'brvm-documents'
+const HARD_SQL_LIMIT = 500
 
 /* ── Types publics ─────────────────────────────────────────────── */
 
@@ -47,6 +54,30 @@ export type DownloadItem = {
   duration_ms?: number
 }
 
+export type ReasonIfZero =
+  | 'table_vide'
+  | 'aucun_type_match'
+  | 'hors_plage_de_dates'
+  | 'filtre_source'
+  | null
+
+export type DownloaderDiagnostic = {
+  db_total: number
+  db_with_doc_date: number
+  db_without_doc_date: number
+  min_doc_date: string | null
+  max_doc_date: string | null
+  min_discovered_at: string | null
+  max_discovered_at: string | null
+  last_5_inserted: Array<{
+    id: string
+    title: string
+    doc_type: string
+    doc_date: string | null
+    discovered_at: string
+  }>
+}
+
 export type DownloadReport = {
   request: DownloadRequest
   started_at: string
@@ -62,6 +93,11 @@ export type DownloadReport = {
     error: number
   }
   items: DownloadItem[]
+  /**
+   * Rempli uniquement quand `total_matched === 0` pour comprendre pourquoi.
+   * Contient un snapshot DB + un `reason_if_zero` qui dit la cause en clair.
+   */
+  diagnostic?: DownloaderDiagnostic & { reason_if_zero: ReasonIfZero }
 }
 
 /* ── Helpers ──────────────────────────────────────────────────── */
@@ -72,6 +108,36 @@ function adminClient(): SupabaseClient {
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     { auth: { persistSession: false } }
   )
+}
+
+/**
+ * Date effective pour le filtrage de période : `doc_date` si présent,
+ * sinon fallback sur le jour où le document a été découvert.
+ * Garantit qu'un document sans date extraite reste éligible au downloader.
+ */
+function effectiveDate(doc: {
+  doc_date: string | null
+  discovered_at: string | null
+}): string | null {
+  if (doc.doc_date) return doc.doc_date
+  if (doc.discovered_at) return doc.discovered_at.slice(0, 10)
+  return null
+}
+
+/**
+ * Vrai si le document tombe dans la période [from, to] selon `effectiveDate`.
+ * Bornes ouvertes acceptées (undefined = pas de borne).
+ */
+function matchesPeriod(
+  doc: { doc_date: string | null; discovered_at: string | null },
+  from?: string,
+  to?: string
+): boolean {
+  const eff = effectiveDate(doc)
+  if (!eff) return false
+  if (from && eff < from) return false
+  if (to && eff > to) return false
+  return true
 }
 
 /**
@@ -149,7 +215,15 @@ type DocumentWithSource = BrvmDocument & {
 
 /**
  * Liste les documents qui correspondent à la requête de téléchargement.
- * Ne lance pas les téléchargements — juste la requête DB.
+ *
+ * Stratégie :
+ *  1. On ne filtre PAS `doc_date` côté SQL (évite d'exclure les NULL
+ *     silencieusement via `.gte/.lte`)
+ *  2. On applique les filtres non-date côté SQL : `doc_type`, `source_slug`
+ *  3. On charge jusqu'à 500 lignes triées par `discovered_at DESC`
+ *  4. On post-filtre en JS via `matchesPeriod` qui utilise `effectiveDate`
+ *     (fallback `discovered_at` quand `doc_date = NULL`)
+ *  5. On coupe à `request.limit` utilisateur (défaut 50)
  */
 export async function listDocumentsForDownload(
   request: DownloadRequest
@@ -158,10 +232,8 @@ export async function listDocumentsForDownload(
   let query = db
     .from('brvm_documents')
     .select('*, brvm_sources!inner(slug, name)')
-    .order('doc_date', { ascending: false, nullsFirst: false })
+    .order('discovered_at', { ascending: false })
 
-  if (request.date_from) query = query.gte('doc_date', request.date_from)
-  if (request.date_to) query = query.lte('doc_date', request.date_to)
   if (request.doc_types && request.doc_types.length > 0) {
     query = query.in('doc_type', request.doc_types)
   }
@@ -169,8 +241,8 @@ export async function listDocumentsForDownload(
     query = query.in('brvm_sources.slug', request.source_slugs)
   }
 
-  const limit = Math.min(request.limit ?? 50, 500)
-  query = query.limit(limit)
+  // Hard cap SQL pour borner le coût mémoire
+  query = query.limit(HARD_SQL_LIMIT)
 
   const { data, error } = await query
   if (error) {
@@ -178,14 +250,153 @@ export async function listDocumentsForDownload(
     throw new Error(`Erreur Supabase: ${error.message}`)
   }
 
-  return (data ?? []).map((r: Record<string, unknown>) => {
+  const rows = (data ?? []).map((r: Record<string, unknown>) => {
     const src = r.brvm_sources as { slug: string; name: string } | null
     return {
       ...(r as unknown as BrvmDocument),
       source_slug: src?.slug ?? '',
       source_name: src?.name ?? '',
-    }
+    } as DocumentWithSource
   })
+
+  // Post-filtrage JS par période avec fallback discovered_at
+  const filtered = rows.filter((d) => matchesPeriod(d, request.date_from, request.date_to))
+
+  const userLimit = Math.min(request.limit ?? 50, HARD_SQL_LIMIT)
+  return filtered.slice(0, userLimit)
+}
+
+/**
+ * Snapshot complet de `brvm_documents` pour diagnostic UI et API.
+ * Chaque query est wrappée en try/catch indépendant : si l'une plante,
+ * les autres aboutissent quand même. Latence cible ~150ms via `Promise.all`.
+ */
+export async function getDownloaderDiagnostic(): Promise<DownloaderDiagnostic> {
+  const db = adminClient()
+
+  // Helpers async pour pouvoir utiliser try/catch autour des PromiseLike Supabase
+  async function countTotal(): Promise<number> {
+    try {
+      const r = await db.from('brvm_documents').select('*', { count: 'exact', head: true })
+      return r.count ?? 0
+    } catch {
+      return 0
+    }
+  }
+
+  async function countWithDate(): Promise<number> {
+    try {
+      const r = await db
+        .from('brvm_documents')
+        .select('*', { count: 'exact', head: true })
+        .not('doc_date', 'is', null)
+      return r.count ?? 0
+    } catch {
+      return 0
+    }
+  }
+
+  async function fetchMinDocDate(): Promise<string | null> {
+    try {
+      const r = await db
+        .from('brvm_documents')
+        .select('doc_date')
+        .not('doc_date', 'is', null)
+        .order('doc_date', { ascending: true })
+        .limit(1)
+        .maybeSingle()
+      return (r.data?.doc_date as string | null) ?? null
+    } catch {
+      return null
+    }
+  }
+
+  async function fetchMaxDocDate(): Promise<string | null> {
+    try {
+      const r = await db
+        .from('brvm_documents')
+        .select('doc_date')
+        .not('doc_date', 'is', null)
+        .order('doc_date', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+      return (r.data?.doc_date as string | null) ?? null
+    } catch {
+      return null
+    }
+  }
+
+  async function fetchMinDiscoveredAt(): Promise<string | null> {
+    try {
+      const r = await db
+        .from('brvm_documents')
+        .select('discovered_at')
+        .order('discovered_at', { ascending: true })
+        .limit(1)
+        .maybeSingle()
+      return (r.data?.discovered_at as string | null) ?? null
+    } catch {
+      return null
+    }
+  }
+
+  async function fetchLast5(): Promise<DownloaderDiagnostic['last_5_inserted']> {
+    try {
+      const r = await db
+        .from('brvm_documents')
+        .select('id, title, doc_type, doc_date, discovered_at')
+        .order('discovered_at', { ascending: false })
+        .limit(5)
+      return (r.data ?? []) as DownloaderDiagnostic['last_5_inserted']
+    } catch {
+      return []
+    }
+  }
+
+  const [total, withDate, minDate, maxDate, minDiscovered, last5] = await Promise.all([
+    countTotal(),
+    countWithDate(),
+    fetchMinDocDate(),
+    fetchMaxDocDate(),
+    fetchMinDiscoveredAt(),
+    fetchLast5(),
+  ])
+
+  // max_discovered_at = première ligne de last_5_inserted (trié DESC)
+  const maxDiscovered = last5.length > 0 ? last5[0].discovered_at : null
+
+  return {
+    db_total: total,
+    db_with_doc_date: withDate,
+    db_without_doc_date: Math.max(0, total - withDate),
+    min_doc_date: minDate,
+    max_doc_date: maxDate,
+    min_discovered_at: minDiscovered,
+    max_discovered_at: maxDiscovered,
+    last_5_inserted: last5,
+  }
+}
+
+/**
+ * Calcule la raison la plus probable pour un `total_matched = 0`.
+ * Priorité : table vide > hors plage > filtre types/sources.
+ */
+function computeReasonIfZero(
+  request: DownloadRequest,
+  diag: DownloaderDiagnostic
+): ReasonIfZero {
+  if (diag.db_total === 0) return 'table_vide'
+
+  const from = request.date_from
+  const to = request.date_to
+
+  // Si la plage demandée est hors de la plage des docs en base, on le détecte
+  if (from && diag.max_doc_date && diag.max_doc_date < from) return 'hors_plage_de_dates'
+  if (to && diag.min_doc_date && diag.min_doc_date > to) return 'hors_plage_de_dates'
+
+  // Si on n'a pas pu prouver qu'on est hors plage, c'est probablement un filtre
+  // types/sources qui exclut tout, ou une plage qui coupe au milieu
+  return 'aucun_type_match'
 }
 
 /**
@@ -318,6 +529,9 @@ async function downloadOne(
  * Point d'entrée principal — télécharge tous les PDFs matchés par la requête.
  * Appelle downloadOne() pour chaque document en séquence (pas en parallèle pour
  * éviter de surcharger brvm.org).
+ *
+ * Quand `items.length === 0`, enrichit le rapport avec un `diagnostic` qui
+ * explique pourquoi en clair (table vide, hors plage, filtre trop strict).
  */
 export async function downloadByPeriod(request: DownloadRequest): Promise<DownloadReport> {
   const startedAt = new Date()
@@ -343,6 +557,15 @@ export async function downloadByPeriod(request: DownloadRequest): Promise<Downlo
     error: items.filter((i) => i.status === 'error').length,
   }
 
+  // Diagnostic si 0 matché : snapshot DB + raison la plus probable
+  let diagnostic: DownloadReport['diagnostic']
+  if (items.length === 0) {
+    const diag = await getDownloaderDiagnostic().catch(() => null)
+    if (diag) {
+      diagnostic = { ...diag, reason_if_zero: computeReasonIfZero(request, diag) }
+    }
+  }
+
   const finishedAt = new Date()
   return {
     request,
@@ -353,6 +576,7 @@ export async function downloadByPeriod(request: DownloadRequest): Promise<Downlo
     total_processed: items.length,
     counts,
     items,
+    diagnostic,
   }
 }
 

@@ -16,6 +16,22 @@ type DownloadItem = {
   error?: string
 }
 
+type ReasonIfZero =
+  | 'table_vide'
+  | 'aucun_type_match'
+  | 'hors_plage_de_dates'
+  | 'filtre_source'
+  | null
+
+type DownloaderDiagnosticLite = {
+  db_total: number
+  db_with_doc_date: number
+  db_without_doc_date: number
+  min_doc_date: string | null
+  max_doc_date: string | null
+  reason_if_zero: ReasonIfZero
+}
+
 type DownloadReport = {
   total_matched: number
   total_processed: number
@@ -28,6 +44,7 @@ type DownloadReport = {
     error: number
   }
   items: DownloadItem[]
+  diagnostic?: DownloaderDiagnosticLite
 }
 
 type Source = { slug: string; name: string }
@@ -312,6 +329,10 @@ function ReportView({ report }: { report: DownloadReport }) {
         Rapport de téléchargement
       </h2>
 
+      {report.total_matched === 0 && report.diagnostic && (
+        <ZeroReasonBanner diag={report.diagnostic} />
+      )}
+
       <div
         style={{
           display: 'grid',
@@ -423,6 +444,101 @@ function Stat({ label, value, accent }: { label: string; value: number | string;
       >
         {value}
       </div>
+    </div>
+  )
+}
+
+/**
+ * Bandeau explicatif affiché quand `total_matched === 0`.
+ * Traduit `reason_if_zero` en message humain actionnable.
+ */
+function ZeroReasonBanner({ diag }: { diag: DownloaderDiagnosticLite }) {
+  const { reason_if_zero, db_total, min_doc_date, max_doc_date } = diag
+
+  let title = 'Aucun document matché'
+  let body: React.ReactNode = null
+
+  if (reason_if_zero === 'table_vide') {
+    title = '⚠ La table brvm_documents est vide'
+    body = (
+      <>
+        Aucun document n&apos;est indexé. Lance d&apos;abord la veille via{' '}
+        <a
+          href="/admin/brvm"
+          style={{ color: 'var(--admin-accent, #C5A028)', fontWeight: 600 }}
+        >
+          /admin/brvm
+        </a>{' '}
+        puis reviens ici.
+      </>
+    )
+  } else if (reason_if_zero === 'hors_plage_de_dates') {
+    title = 'Ta plage de dates ne couvre aucun document'
+    body = (
+      <>
+        La base contient <strong>{db_total}</strong> document(s) avec des dates allant du{' '}
+        <strong>{min_doc_date ?? '—'}</strong> au <strong>{max_doc_date ?? '—'}</strong>,
+        mais aucun ne tombe dans la plage que tu as choisie. Élargis la plage.
+      </>
+    )
+  } else if (reason_if_zero === 'aucun_type_match') {
+    title = 'Aucun document ne correspond aux filtres'
+    body = (
+      <>
+        La base contient <strong>{db_total}</strong> document(s)
+        {min_doc_date && max_doc_date ? (
+          <>
+            {' '}(du <strong>{min_doc_date}</strong> au <strong>{max_doc_date}</strong>)
+          </>
+        ) : null}
+        , mais aucun ne correspond à la combinaison types + sources + plage que tu as choisie.
+        Retire un filtre (ex: coche plus de types) ou élargis la plage.
+      </>
+    )
+  } else if (reason_if_zero === 'filtre_source') {
+    title = 'Aucun document ne correspond à la source'
+    body = <>La source sélectionnée ne contient aucun document indexé.</>
+  } else {
+    // reason_if_zero === null : pas de diagnostic particulier disponible
+    title = 'Aucun document matché'
+    body = (
+      <>
+        La requête n&apos;a retourné aucun document. Vérifie l&apos;état de la base ci-dessus.
+      </>
+    )
+  }
+
+  return (
+    <div
+      style={{
+        padding: 'var(--s4) var(--s5)',
+        marginBottom: 'var(--s5)',
+        background: 'rgba(255, 155, 30, 0.1)',
+        border: '1px solid rgba(255, 155, 30, 0.4)',
+        borderRadius: 10,
+      }}
+    >
+      <p
+        style={{
+          margin: 0,
+          fontSize: 14,
+          fontWeight: 700,
+          color: '#FFB84D',
+          fontFamily: 'var(--fd)',
+        }}
+      >
+        {title}
+      </p>
+      <p
+        style={{
+          margin: 'var(--s2) 0 0',
+          fontSize: 13,
+          color: 'var(--admin-text)',
+          lineHeight: 1.6,
+        }}
+      >
+        {body}
+      </p>
     </div>
   )
 }
