@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { upsertEbookAction, deleteEbookAction } from '@/lib/admin/actions'
 import { MediaPicker } from '@/components/admin/MediaPicker'
+import { EbookFileUploader } from '@/components/features/EbookFileUploader'
 import type { Ebook } from '@/lib/supabase/types'
 
 type Props = { ebook?: Ebook | null }
@@ -90,6 +91,16 @@ export function AdminEbookForm({ ebook }: Props) {
         <Checkbox label="Publie" name="is_published" defaultChecked={ebook?.is_published ?? false} />
         <Checkbox label="Featured" name="is_featured" defaultChecked={ebook?.is_featured ?? false} />
       </div>
+
+      {/* Upload du fichier livrable — uniquement en édition (besoin de l'ebook.id) */}
+      {ebook?.id && (
+        <EbookFileUploader
+          ebookId={ebook.id}
+          currentFilePath={ebook.file_path ?? null}
+          currentFileSizeBytes={ebook.file_size_bytes ?? null}
+          currentUploadedAt={ebook.file_uploaded_at ?? null}
+        />
+      )}
 
       <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
         <button

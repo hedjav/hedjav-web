@@ -134,8 +134,9 @@ export async function POST(request: Request) {
     const ebookTitle = (purchase.ebook as { title?: string } | null)?.title ?? 'votre ebook'
     const amount = (purchase.amount as number) ?? 0
 
-    // Email de confirmation
-    const tpl = purchaseConfirmationEmail('', ebookTitle, amount)
+    // Email de confirmation (avec lien direct de téléchargement)
+    const ebookId = (purchase.ebook_id as string | undefined) ?? null
+    const tpl = purchaseConfirmationEmail('', ebookTitle, amount, ebookId)
     sendEmail({
       to: purchase.email as string,
       subject: tpl.subject,
