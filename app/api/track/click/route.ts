@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { updateSendStatus } from '@/lib/campaigns/queries'
+import { siteBase } from '@/lib/url'
 
 export async function GET(request: NextRequest) {
   const id = request.nextUrl.searchParams.get('id')
@@ -9,7 +10,7 @@ export async function GET(request: NextRequest) {
     updateSendStatus(id, 'clicked', new Date().toISOString()).catch(() => {})
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://egp.hedjav.com'
+  const appUrl = siteBase()
 
   // Sécurité : restreindre les redirections au domaine hedjav uniquement
   let target = appUrl

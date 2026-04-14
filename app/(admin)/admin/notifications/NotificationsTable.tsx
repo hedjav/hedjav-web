@@ -2,6 +2,12 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import {
+  notificationColor,
+  notificationIcon,
+  notificationTypeLabel,
+  resolveNotificationTarget,
+} from '@/lib/notifications/target-url'
 
 type Row = {
   id: string
@@ -10,48 +16,11 @@ type Row = {
   message: string
   priority: string
   is_read: boolean
+  metadata?: Record<string, unknown> | null
+  target_url?: string | null
+  entity_type?: string | null
+  entity_id?: string | null
   created_at: string
-}
-
-function typeIcon(type: string): string {
-  switch (type) {
-    case 'purchase': return '$'
-    case 'registration': return '+'
-    case 'newsletter': return '@'
-    case 'unsubscribe': return '-'
-    case 'report': return '#'
-    case 'error': return '!'
-    case 'subscriber': return '@'
-    case 'member': return '+'
-    default: return '!'
-  }
-}
-
-function typeColor(type: string): string {
-  switch (type) {
-    case 'purchase': return 'var(--admin-success)'
-    case 'newsletter':
-    case 'subscriber': return 'var(--admin-info)'
-    case 'registration':
-    case 'member': return 'var(--admin-accent)'
-    case 'error': return 'var(--admin-danger)'
-    case 'unsubscribe': return '#ff9b9b'
-    default: return 'var(--admin-text)'
-  }
-}
-
-function typeLink(type: string): string {
-  switch (type) {
-    case 'purchase': return '/admin/ventes'
-    case 'registration':
-    case 'member': return '/admin/clients'
-    case 'newsletter':
-    case 'subscriber':
-    case 'unsubscribe': return '/admin/newsletter'
-    case 'report': return '/admin'
-    case 'error': return '/admin/ia'
-    default: return '/admin'
-  }
 }
 
 function priorityBadge(priority: string) {
@@ -174,7 +143,7 @@ export function NotificationsTable({ rows }: { rows: Row[] }) {
         {filtered.map((row) => (
           <Link
             key={row.id}
-            href={typeLink(row.type)}
+            href={resolveNotificationTarget(row)}
             onClick={() => { if (!row.is_read) handleMarkRead(row.id) }}
             style={{
               display: 'flex',
@@ -200,16 +169,30 @@ export function NotificationsTable({ rows }: { rows: Row[] }) {
                 justifyContent: 'center',
                 fontSize: 14,
                 fontWeight: 700,
-                color: typeColor(row.type),
+                color: notificationColor(row.type),
                 flexShrink: 0,
               }}
             >
-              {typeIcon(row.type)}
+              {notificationIcon(row.type)}
             </span>
 
             {/* Content */}
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
+                <span
+                  style={{
+                    padding: '2px 8px',
+                    borderRadius: 999,
+                    fontSize: 10,
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '.06em',
+                    background: 'rgba(255,255,255,.06)',
+                    color: 'var(--admin-text-muted)',
+                  }}
+                >
+                  {notificationTypeLabel(row.type)}
+                </span>
                 <span style={{ fontSize: 13, fontWeight: row.is_read ? 400 : 700, color: 'var(--admin-text)' }}>
                   {row.title}
                 </span>

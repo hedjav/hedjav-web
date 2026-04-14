@@ -53,7 +53,7 @@ export function FounderBlock({ bio, bullets }: FounderBlockProps = {}) {
                   }}
                 >
                   <strong style={{ color: 'var(--text)' }}>
-                    Analyste financier — 17 ans d&apos;expérience à Bank of Africa Bénin (BOA).
+                    Analyste financier — 13 ans d&apos;expérience à Bank of Africa Bénin (BOA).
                   </strong>{' '}
                   Hermann a accompagné des centaines de cadres, entrepreneurs et
                   familles ouest-africaines sur des sujets de financement,
@@ -85,7 +85,7 @@ export function FounderBlock({ bio, bullets }: FounderBlockProps = {}) {
               }}
             >
               {(bullets ?? [
-                '17 ans Bank of Africa Bénin (BOA)',
+                '13 ans Bank of Africa Bénin (BOA)',
                 'Fondateur KTALYZ Conseils — Cotonou',
                 'Expert BRVM, fiscalité OHADA, structuration patrimoniale',
                 "Auteur d'ebooks et de formations sur la finance UEMOA",

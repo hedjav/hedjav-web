@@ -6,7 +6,7 @@
 
 Plateforme numérique centrale d'un écosystème intégrant ebooks, formations, analyses BRVM, club d'investissement, magazine HEDJAV Finance, SaaS MonPatrimoine, et future SGP. Cible : 174 M FCFA/an de revenus à maturité (Phase 4 — An 4).
 
-Maître d'ouvrage : **Hermann D. AVAHOUIN** — analyste financier, 17 ans d'expérience BOA Bénin, fondateur KTALYZ Conseils, expert patrimoine UEMOA.
+Maître d'ouvrage : **Hermann D. AVAHOUIN** — analyste financier, 13 ans d'expérience BOA Bénin, fondateur KTALYZ Conseils, expert patrimoine UEMOA. Tous les textes publics mentionnent **13 ans**. Jamais mentionner LinkedIn (le compte n'existe pas).
 Maître d'œuvre : **KTALYZ SARL**.
 
 ## Vision 4 phases (cahier des charges V1.0 — Avril 2026)

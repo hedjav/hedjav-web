@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { isInactive, type MemberRole } from '@/lib/auth/inactivity'
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request })
@@ -33,36 +34,54 @@ export async function proxy(request: NextRequest) {
     const { data } = await supabase.auth.getUser()
     user = data.user
   } catch {
-    // Erreur réseau/timeout Supabase → laisser passer sans rediriger
     return response
   }
 
-  // Routes protégées : /dashboard et /admin
-  if (path.startsWith('/dashboard') && !user) {
+  const isDashboardRoute = path.startsWith('/dashboard')
+  const isAdminRoute = path === '/admin' || path.startsWith('/admin/')
+  const needsAuth = isDashboardRoute || isAdminRoute
+
+  if (needsAuth && !user) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     url.searchParams.set('next', path)
     return NextResponse.redirect(url)
   }
 
-  const isAdminRoute = path === '/admin' || path.startsWith('/admin/')
-  if (isAdminRoute) {
-    if (!user) {
-      const url = request.nextUrl.clone()
-      url.pathname = '/login'
-      url.searchParams.set('next', path)
-      return NextResponse.redirect(url)
-    }
+  // Pour les routes authentifiées, on lit le profil (role + last_visit_at)
+  // pour décider de l'expiration et du droit admin.
+  if (needsAuth && user) {
     try {
       const { data: profile } = await supabase
         .from('profiles')
-        .select('role')
+        .select('role, last_visit_at')
         .eq('id', user.id)
         .single()
-      if (profile?.role !== 'admin') {
+
+      if (isAdminRoute && profile?.role !== 'admin') {
         const url = request.nextUrl.clone()
         url.pathname = '/'
         return NextResponse.redirect(url)
+      }
+
+      // Expiration par inactivité — admin strict (défaut 30 min),
+      // membre souple (défaut 7 j). Voir docs/SESSION_SECURITY_POLICY.md.
+      const role: MemberRole = profile?.role === 'admin' ? 'admin' : 'member'
+      if (isInactive(profile?.last_visit_at ?? null, role)) {
+        // On ne déconnecte pas en dur ici (pas de cookie clearing côté proxy)
+        // — on route vers /login?expired=1 qui se charge du sign-out.
+        const url = request.nextUrl.clone()
+        url.pathname = '/login'
+        url.searchParams.set('expired', '1')
+        url.searchParams.set('next', path)
+        const redirect = NextResponse.redirect(url)
+        // Invalide les cookies sb-* pour forcer un vrai sign-out.
+        for (const c of request.cookies.getAll()) {
+          if (c.name.startsWith('sb-')) {
+            redirect.cookies.set(c.name, '', { maxAge: 0, path: '/' })
+          }
+        }
+        return redirect
       }
     } catch {
       // Erreur réseau sur la vérif profil → laisser passer
@@ -71,7 +90,9 @@ export async function proxy(request: NextRequest) {
   }
 
   // Si user déjà connecté visite /login ou /register → renvoyer au dashboard
+  // (sauf si on arrive avec expired=1, cas où on vient justement d'être kické)
   if (user && (path === '/login' || path === '/register')) {
+    if (request.nextUrl.searchParams.get('expired') === '1') return response
     const url = request.nextUrl.clone()
     url.pathname = '/dashboard'
     return NextResponse.redirect(url)

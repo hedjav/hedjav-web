@@ -73,6 +73,10 @@ export type BrvmDocument = {
   pdf_url: string | null
   issuer_slug: string | null
   issuer_name: string | null
+  /** Secteur d'activité (banque, agro, télécom, industrie, etc.). Ajouté par migration 025. */
+  sector: string | null
+  /** Indice boursier / univers marché (BRVM Composite, BRVM 30, Prestige…). Ajouté par 025. */
+  market_index: string | null
   checksum: string
   is_new: boolean
   is_processed: boolean

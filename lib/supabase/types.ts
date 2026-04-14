@@ -205,6 +205,12 @@ export type AdminNotification = {
   email_sent_at: string | null
   priority: 'low' | 'normal' | 'high' | 'urgent'
   metadata: Record<string, unknown>
+  /** URL admin cible du clic (ex: /admin/brvm?doc=UUID). Ajouté par migration 026. */
+  target_url: string | null
+  /** Type d'entité liée (brvm_document, purchase, profile, subscriber…). */
+  entity_type: string | null
+  /** Identifiant brut (UUID, email, slug). */
+  entity_id: string | null
   created_at: string
 }
 

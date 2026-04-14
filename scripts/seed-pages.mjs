@@ -41,7 +41,7 @@ Hedjav comble ce vide.
 
 ## Hermann D. AVAHOUIN — Le fondateur
 
-**17 ans d'expérience dans la finance ouest-africaine.**
+**13 ans d'expérience dans la finance ouest-africaine.**
 
 Analyste financier de formation, Hermann a passé plus d'une décennie au sein de **Bank of Africa Bénin (BOA)**, où il a accompagné des centaines de clients sur des sujets de financement, d'investissement et de gestion de patrimoine.
 

@@ -15,7 +15,10 @@ const C = {
   border: '#E0E6EF',
 } as const
 
-const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://egp.hedjav.com'
+import { siteBase } from '@/lib/url'
+
+// Source unique de l'URL canonique. Jamais de localhost en prod.
+const SITE_URL = siteBase()
 
 /* ── Layout partagé ──────────────────────────────────────────── */
 
