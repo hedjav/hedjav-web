@@ -19,17 +19,21 @@ export default async function AlertesPage() {
         <h1 className="h2" style={{ marginTop: 'var(--s3)' }}>
           Mes alertes
         </h1>
-        <p style={{ marginTop: 'var(--s4)', color: 'var(--muted)' }}>
-          Les dernières publications Hedjav (30 derniers jours).
+        <p style={{ marginTop: 'var(--s4)', color: 'var(--muted)', maxWidth: 640 }}>
+          Retrouvez ici les derniers ebooks publiés et les nouveaux articles du blog Hedjav
+          (30 derniers jours). Pour ne rien manquer, pensez aussi à la newsletter hebdomadaire.
         </p>
       </div>
 
       <section style={{ marginBottom: 'var(--s10)' }}>
         <h2 className="h3" style={{ marginBottom: 'var(--s5)' }}>
-          📚 Nouveaux ebooks ({ebooks.length})
+          Nouveaux ebooks ({ebooks.length})
         </h2>
         {ebooks.length === 0 ? (
-          <p style={{ color: 'var(--muted)' }}>Aucun nouvel ebook ce mois-ci.</p>
+          <p style={{ color: 'var(--muted)' }}>
+            Pas de nouvel ebook ce mois-ci. Notre catalogue est enrichi régulièrement —
+            vous serez notifié ici dès la prochaine sortie.
+          </p>
         ) : (
           <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: 'var(--s3)' }}>
             {ebooks.map((e) => (
@@ -62,10 +66,13 @@ export default async function AlertesPage() {
 
       <section>
         <h2 className="h3" style={{ marginBottom: 'var(--s5)' }}>
-          ✍️ Nouveaux articles ({articles.length})
+          Nouveaux articles ({articles.length})
         </h2>
         {articles.length === 0 ? (
-          <p style={{ color: 'var(--muted)' }}>Aucun nouvel article ce mois-ci.</p>
+          <p style={{ color: 'var(--muted)' }}>
+            Pas de nouvel article ce mois-ci. En attendant, explorez les archives du blog,
+            classées par thématique (BRVM, patrimoine, immobilier, IA…).
+          </p>
         ) : (
           <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: 'var(--s3)' }}>
             {articles.map((a) => (

@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { generateText } from '@/lib/claude/client'
+import { generateText } from '@/lib/ai/client'
 import { sendEmail } from '@/lib/email/smtp'
 import { brvmWeeklyEmail } from '@/lib/email/templates'
 import { createNotification } from '@/lib/notifications/queries'
-import { logAiCall } from '@/lib/ai/log'
 
 /**
  * POST /api/brvm/weekly-digest
@@ -73,9 +72,7 @@ export async function POST(request: Request) {
     const documents = bocs.length + annonces.length
 
     // ── 2. Generer synthese IA ───────────────────────────────
-    const startAi = Date.now()
-
-    // Construire le contexte pour Claude
+    // Construire le contexte pour l'IA
     const resumesSummary = resumes
       .map((r) => {
         const content = typeof r.content === 'string' ? r.content : ''
@@ -119,12 +116,11 @@ Style professionnel mais accessible, en francais, pour un public UEMOA.
 Le titre doit etre sur la premiere ligne, suivi d'une ligne vide, puis le corps de l'article.`
 
     const aiResult = await generateText({
-      system: 'Tu es un analyste financier senior specialise sur la BRVM et les marches UEMOA. Tu rediges la synthese hebdomadaire pour egp.hedjav.com, ecole en ligne de gestion de patrimoine.',
+      system: 'Tu es un analyste financier senior specialise sur la BRVM et les marches UEMOA. Tu rediges la synthese hebdomadaire pour egp.hedjav.com, Ecole de la Gestion de Patrimoine (EGP, marque Hedjav).',
       prompt,
       maxTokens: 3000,
+      action: 'brvm_weekly_digest',
     })
-
-    const durationMs = Date.now() - startAi
 
     let articleTitle: string
     let articleBody: string
@@ -222,17 +218,6 @@ Le titre doit etre sur la premiere ligne, suivi d'une ligne vide, puis le corps 
       `Article brouillon cree a partir de ${weekData.length} donnees (${weekStart} au ${weekEnd}). A relire et publier dans /admin/articles/${article.id}.`,
       { article_id: article.id, week_start: weekStart, week_end: weekEnd },
     )
-
-    await logAiCall({
-      action: 'brvm_weekly_digest',
-      prompt: prompt.slice(0, 500),
-      result: articleTitle,
-      model: 'claude-sonnet-4-20250514',
-      duration_ms: durationMs,
-      status: aiResult.ok ? 'success' : 'error',
-      error_message: aiResult.ok ? undefined : aiResult.error,
-      created_by: 'brvm-weekly-cron',
-    })
 
     return NextResponse.json({
       ok: true,

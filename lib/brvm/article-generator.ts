@@ -1,9 +1,9 @@
 /**
- * Generateur d'articles BRVM via Claude API.
+ * Generateur d'articles BRVM via la couche IA unifiee (OpenAI ou Anthropic).
  * Utilise les donnees scrappees pour rediger un article d'analyse.
  */
 
-import { generateText } from '@/lib/claude/client'
+import { generateText } from '@/lib/ai/client'
 import type { ResumeSeance, IndiceData, Annonce } from './scraper'
 
 type GeneratedArticle = {
@@ -75,13 +75,14 @@ L'article doit faire entre 400 et 800 mots.
 Ne pas inclure de disclaimers legaux dans le texte.`
 
   const result = await generateText({
-    system: 'Tu es un analyste financier specialise sur la BRVM et les marches UEMOA. Tu rediges pour le site egp.hedjav.com, ecole en ligne de gestion de patrimoine.',
+    system: 'Tu es un analyste financier specialise sur la BRVM et les marches UEMOA. Tu rediges pour le site egp.hedjav.com, Ecole de la Gestion de Patrimoine (EGP, marque Hedjav).',
     prompt,
     maxTokens: 2048,
+    action: 'brvm_article_auto',
   })
 
   if (!result.ok) {
-    console.warn('[brvm-article] Generation Claude echouee, fallback donnees brutes:', result.error)
+    // Fallback silencieux sur les donnees brutes (pas de leak de clef)
     return buildFallbackArticle(resume, indices, annonces, today)
   }
 

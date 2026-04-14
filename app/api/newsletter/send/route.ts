@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { generateText } from '@/lib/claude/client'
+import { generateText } from '@/lib/ai/client'
 import { sendEmail } from '@/lib/email/smtp'
 import { newsletterWeeklyEmail } from '@/lib/email/templates'
 
@@ -100,12 +100,17 @@ Pas de balise <html>, <body>, <head> — uniquement le contenu interne. Pas de s
 
   const generated = await generateText({
     prompt,
-    system: 'Tu es le rédacteur en chef de la newsletter Hedjav. Tu écris en français pour un public africain francophone (zone UEMOA).',
+    system: 'Tu es le redacteur en chef de la newsletter Hedjav (EGP - Ecole de la Gestion de Patrimoine). Tu ecris en francais pour un public africain francophone (zone UEMOA).',
     maxTokens: 2000,
+    action: 'newsletter_weekly_send',
   })
 
   if (!generated.ok) {
-    return NextResponse.json({ error: generated.error }, { status: 502 })
+    // Si provider non configure, on continue quand meme avec le template statique.
+    // Si erreur reelle du provider, on remonte 502.
+    if (!generated.skipped) {
+      return NextResponse.json({ error: generated.error }, { status: 502 })
+    }
   }
 
   const subject =
@@ -127,7 +132,8 @@ Pas de balise <html>, <body>, <head> — uniquement le contenu interne. Pas de s
       articles: articlesCount,
       ebooks: ebooksCount,
       subject,
-      preview: generated.text.slice(0, 500),
+      preview: generated.ok ? generated.text.slice(0, 500) : '(template statique, IA non configuree)',
+      provider: generated.ok ? generated.provider : null,
     })
   }
 

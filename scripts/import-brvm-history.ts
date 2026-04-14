@@ -121,7 +121,7 @@ async function main() {
     await stat(MIRROR_ROOT)
   } catch {
     console.error(`[import-brvm-history] ❌ Miroir introuvable : ${MIRROR_ROOT}`)
-    console.error('   Vérifie que hedjav-scrap/ est présent localement (voir docs/BRVM_ADMIN.md).')
+    console.error('   Vérifie que hedjav-scrap/ est présent localement (voir docs/BRVM.md § 7).')
     process.exit(1)
   }
 

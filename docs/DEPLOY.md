@@ -51,7 +51,7 @@ Après la migration 020, vérifier :
 - Dans Supabase > Table Editor : `brvm_sources` contient 3 lignes (brvm-org, bfin, sikafinance)
 - Dans Supabase > Storage : bucket `ebook-files` existe et est **Private** (non Public)
 
-Voir [`BRVM_ADMIN.md`](./BRVM_ADMIN.md) pour le schéma complet et le dépannage, et [`BRVM_MAINTENANCE.md`](./BRVM_MAINTENANCE.md) pour les health checks et rapports.
+Voir [`BRVM.md`](./BRVM.md) (guide unifié) pour le schéma complet, le dépannage, les health checks et les rapports.
 
 ## Vérification post-déploiement BRVM
 

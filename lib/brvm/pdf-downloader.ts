@@ -1,7 +1,7 @@
 /**
  * PDF downloader BRVM — téléchargement par période depuis les sources live.
  *
- * Règles métier (voir docs/BRVM_DOWNLOADER.md) :
+ * Règles métier (voir docs/BRVM.md § 5) :
  *  - Priorité : brvm.org > bfin > sikafinance
  *  - Stockage : bucket privé Supabase `brvm-documents` (jamais base64 en DB)
  *  - Dédup : par checksum binaire SHA256 du fichier + par storage_path

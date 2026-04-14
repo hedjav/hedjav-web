@@ -575,3 +575,186 @@ export function newsletterSubscribedEmail(name: string) {
     text: `Bienvenue dans la communauté Hedjav !\n\nVotre inscription à la newsletter est confirmée.\n\nVisitez ${SITE_URL}\n\n— L'équipe Hedjav`,
   }
 }
+
+/* ── i) BRVM Document Digest (admin daily/weekly/monthly) ─────────── */
+
+type DocDigestItem = {
+  id: string
+  doc_type_label: string
+  doc_type: string
+  title: string
+  issuer_name?: string | null
+  source_name: string
+  doc_date: string | null
+  discovered_at: string
+  pdf_url: string | null
+  source_url: string
+}
+
+type BrvmDocDigestProps = {
+  frequency: 'daily' | 'weekly' | 'monthly' | 'manual'
+  periodLabel: string
+  groupedDocs: Record<string, { label: string; docs: DocDigestItem[] }>
+  totalCount: number
+  aiAnalysis?: string | null
+  aiProvider?: string | null
+}
+
+/**
+ * Template digest BRVM admin : classement par catégorie, tri DESC par groupe,
+ * liens directs vers les sources et PDFs, encart IA optionnel.
+ *
+ * Prioritise BOC (toujours en premier) puis Rapports → Communiqués → Avis → reste.
+ */
+export function brvmDocDigestEmail(props: BrvmDocDigestProps) {
+  const { frequency, periodLabel, groupedDocs, totalCount, aiAnalysis, aiProvider } = props
+
+  const FREQ_LABELS: Record<BrvmDocDigestProps['frequency'], string> = {
+    daily: 'quotidienne',
+    weekly: 'hebdomadaire',
+    monthly: 'mensuelle',
+    manual: 'manuelle',
+  }
+
+  const FREQ_BADGES: Record<BrvmDocDigestProps['frequency'], string> = {
+    daily: 'DIGEST JOURNALIER',
+    weekly: 'DIGEST HEBDO',
+    monthly: 'DIGEST MENSUEL',
+    manual: 'DIGEST MANUEL',
+  }
+
+  // Ordre produit : BOC toujours en tête, puis ordre naturel des autres catégories.
+  const ORDER_PRIORITY = [
+    'boc',
+    'rapport_annuel',
+    'rapport_semestriel',
+    'rapport_trimestriel',
+    'communique',
+    'avis',
+    'note_information',
+    'annonce',
+    'autre',
+  ]
+
+  const orderedKeys = Object.keys(groupedDocs).sort((a, b) => {
+    const ia = ORDER_PRIORITY.indexOf(a)
+    const ib = ORDER_PRIORITY.indexOf(b)
+    return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib)
+  })
+
+  const aiBlock = aiAnalysis
+    ? `
+      <div style="margin:0 0 28px;padding:18px 20px;background:${C.cream};border-left:4px solid ${C.gold};border-radius:8px;">
+        <div style="font-size:11px;color:${C.goldDark};text-transform:uppercase;letter-spacing:.15em;font-weight:700;margin-bottom:8px;">
+          Analyse IA ${aiProvider ? `· ${aiProvider}` : ''}
+        </div>
+        <div style="font-size:14px;line-height:1.7;color:${C.text};white-space:pre-wrap;">${escapeHtml(aiAnalysis)}</div>
+      </div>
+    `
+    : ''
+
+  const groupsHtml = orderedKeys
+    .map((key) => {
+      const group = groupedDocs[key]
+      if (!group || group.docs.length === 0) return ''
+
+      const docsHtml = group.docs
+        .map((doc) => {
+          const date = doc.doc_date ?? doc.discovered_at.slice(0, 10)
+          const issuer = doc.issuer_name ? ` · ${escapeHtml(doc.issuer_name)}` : ''
+          const links: string[] = []
+          if (doc.pdf_url) {
+            links.push(`<a href="${escapeAttr(doc.pdf_url)}" style="color:${C.goldDark};text-decoration:none;font-weight:600;">PDF</a>`)
+          }
+          links.push(`<a href="${escapeAttr(doc.source_url)}" style="color:${C.muted};text-decoration:none;">Source</a>`)
+
+          return `
+            <tr>
+              <td style="padding:12px 0;border-bottom:1px solid ${C.border};vertical-align:top;">
+                <div style="font-size:11px;color:${C.muted};font-family:monospace;margin-bottom:4px;">${date}${issuer}</div>
+                <div style="font-size:14px;color:${C.text};line-height:1.5;margin-bottom:4px;">${escapeHtml(doc.title)}</div>
+                <div style="font-size:12px;color:${C.muted};">
+                  ${escapeHtml(doc.source_name)} · ${links.join(' · ')}
+                </div>
+              </td>
+            </tr>
+          `
+        })
+        .join('')
+
+      const isBoc = key === 'boc'
+      const badgeColor = isBoc ? C.gold : C.navy
+
+      return `
+        <div style="margin:0 0 28px;">
+          <div style="display:inline-block;padding:4px 10px;background:${badgeColor};color:${C.white};font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;border-radius:4px;margin-bottom:10px;">
+            ${escapeHtml(group.label)} · ${group.docs.length}
+          </div>
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+            ${docsHtml}
+          </table>
+        </div>
+      `
+    })
+    .join('')
+
+  const emptyBlock =
+    totalCount === 0
+      ? `<p style="margin:0 0 24px;color:${C.muted};font-style:italic;">Aucune nouvelle publication BRVM sur la période.</p>`
+      : ''
+
+  const bodyHtml = `
+    <div style="font-size:10px;color:${C.goldDark};text-transform:uppercase;letter-spacing:.15em;font-weight:700;margin-bottom:10px;">
+      ${FREQ_BADGES[frequency]} · ${escapeHtml(periodLabel)}
+    </div>
+    <h1 style="margin:0 0 14px;font-family:Georgia,serif;font-size:26px;font-weight:600;color:${C.navy};line-height:1.3;">
+      Veille BRVM — synthèse ${FREQ_LABELS[frequency]}
+    </h1>
+    <p style="margin:0 0 24px;color:${C.muted};font-size:14px;">
+      <strong style="color:${C.text};">${totalCount}</strong> publication${totalCount > 1 ? 's' : ''}
+      ${totalCount > 0 ? 'classée' + (totalCount > 1 ? 's' : '') + ' par catégorie, tri décroissant (plus récent en tête).' : ''}
+    </p>
+
+    ${aiBlock}
+    ${emptyBlock}
+    ${groupsHtml}
+
+    ${btn('Ouvrir le Centre de Veille BRVM', `${SITE_URL}/admin/brvm`)}
+    ${hr()}
+    ${smallNote(`Digest envoyé automatiquement. Fréquence : ${FREQ_LABELS[frequency]}. ${aiProvider ? `Analyse IA via ${escapeHtml(aiProvider)}.` : 'Analyse IA désactivée (aucun provider configuré).'}`)}
+  `
+
+  return {
+    subject: `[BRVM ${FREQ_LABELS[frequency]}] ${totalCount} publication${totalCount > 1 ? 's' : ''} · ${periodLabel}`,
+    html: layout({
+      preheader: `${totalCount} document${totalCount > 1 ? 's' : ''} BRVM · ${periodLabel}`,
+      bodyHtml,
+    }),
+    text:
+      `Veille BRVM — synthèse ${FREQ_LABELS[frequency]}\n${periodLabel}\n` +
+      `${totalCount} publication(s)\n\n` +
+      (aiAnalysis ? `Analyse IA${aiProvider ? ` (${aiProvider})` : ''} :\n${aiAnalysis}\n\n` : '') +
+      orderedKeys
+        .map((key) => {
+          const g = groupedDocs[key]
+          if (!g || g.docs.length === 0) return ''
+          const lines = g.docs.map((d) => `  - ${d.doc_date ?? d.discovered_at.slice(0, 10)} | ${d.title}${d.issuer_name ? ` (${d.issuer_name})` : ''}${d.pdf_url ? ` — ${d.pdf_url}` : ''}`)
+          return `${g.label} (${g.docs.length}):\n${lines.join('\n')}`
+        })
+        .filter(Boolean)
+        .join('\n\n') +
+      `\n\nHub : ${SITE_URL}/admin/brvm`,
+  }
+}
+
+function escapeHtml(s: string): string {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}
+
+function escapeAttr(s: string): string {
+  return escapeHtml(s).replace(/'/g, '&#39;')
+}

@@ -20,17 +20,18 @@ export default async function MerciPage({ searchParams }: PageProps) {
   let purchaseStatus: string | null = null
   let ebookTitle: string | null = null
   let ebookSlug: string | null = null
+  let purchasedEbookId: string | null = null
+
+  const db = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false } },
+  )
 
   if (purchaseId) {
-    const db = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      { auth: { persistSession: false } },
-    )
-
     const { data } = await db
       .from('purchases')
-      .select('status, ebook:ebooks(title, slug)')
+      .select('status, ebook_id, ebook:ebooks(title, slug)')
       .eq('id', purchaseId)
       .maybeSingle()
 
@@ -39,12 +40,29 @@ export default async function MerciPage({ searchParams }: PageProps) {
       const ebook = data.ebook as { title?: string; slug?: string } | null
       ebookTitle = ebook?.title ?? null
       ebookSlug = ebook?.slug ?? null
+      purchasedEbookId = (data.ebook_id as string | null) ?? null
     }
   }
 
   const isPaid = purchaseStatus === 'paid'
   const isPending = purchaseStatus === 'pending'
   const isFailed = purchaseStatus === 'failed'
+
+  // Cross-sell : 3 autres ebooks publiés (exclut celui qui vient d'être acheté)
+  type CrossSell = { id: string; slug: string; title: string; price: number; cover: string | null }
+  let crossSell: CrossSell[] = []
+  if (isPaid) {
+    let q = db
+      .from('ebooks')
+      .select('id, slug, title, price, cover')
+      .eq('is_published', true)
+      .order('is_featured', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(3)
+    if (purchasedEbookId) q = q.neq('id', purchasedEbookId)
+    const { data } = await q
+    crossSell = ((data as CrossSell[] | null) ?? []).slice(0, 3)
+  }
 
   return (
     <section className="section">
@@ -138,6 +156,86 @@ export default async function MerciPage({ searchParams }: PageProps) {
           </Link>
         </div>
       </div>
+
+      {/* Cross-sell : ne s'affiche que sur paiement confirmé + 1+ autre ebook publié */}
+      {isPaid && crossSell.length > 0 && (
+        <div
+          className="hedjav-container"
+          style={{ maxWidth: 960, marginTop: 'var(--s12)' }}
+        >
+          <div style={{ textAlign: 'center', marginBottom: 'var(--s6)' }}>
+            <span className="eyebrow">À découvrir aussi</span>
+            <h2
+              className="h2"
+              style={{ marginTop: 'var(--s3)', fontSize: 'clamp(var(--text-2xl), 4vw, var(--text-4xl))' }}
+            >
+              Prolongez votre élan
+            </h2>
+            <p style={{ marginTop: 'var(--s3)', color: 'var(--muted)', fontSize: 'var(--text-base)' }}>
+              D&apos;autres guides pratiques Hedjav pour avancer sur votre plan patrimonial.
+            </p>
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+              gap: 'var(--s4)',
+            }}
+          >
+            {crossSell.map((b) => (
+              <Link
+                key={b.id}
+                href={`/ebooks/${b.slug}`}
+                style={{
+                  display: 'block',
+                  background: 'var(--n50)',
+                  border: '1px solid var(--n200)',
+                  borderRadius: 'var(--r2)',
+                  padding: 'var(--s5)',
+                  textDecoration: 'none',
+                  color: 'inherit',
+                  transition: 'border-color .15s, transform .15s',
+                }}
+              >
+                <div
+                  style={{
+                    fontFamily: 'var(--fd)',
+                    fontSize: 'var(--text-lg)',
+                    fontWeight: 600,
+                    color: 'var(--n900)',
+                    lineHeight: 1.3,
+                    marginBottom: 'var(--s3)',
+                  }}
+                >
+                  {b.title}
+                </div>
+                <div
+                  style={{
+                    fontFamily: 'var(--fm)',
+                    fontSize: 'var(--text-sm)',
+                    color: 'var(--g700)',
+                    fontWeight: 600,
+                  }}
+                >
+                  {b.price.toLocaleString('fr-FR')} F CFA
+                </div>
+                <span
+                  style={{
+                    display: 'inline-block',
+                    marginTop: 'var(--s3)',
+                    fontSize: 'var(--text-sm)',
+                    color: 'var(--g700)',
+                    fontWeight: 500,
+                  }}
+                >
+                  Découvrir →
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </section>
   )
 }

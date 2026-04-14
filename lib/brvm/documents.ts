@@ -1,5 +1,6 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { computeChecksum } from './checksum'
+import { resolvePeriod, type PeriodRange, type PeriodPreset } from './periods'
 import { getSourceBySlug } from './sources'
 import type { BrvmDocument, DocType, DocumentInput } from './types'
 
@@ -16,11 +17,6 @@ export type UpsertResult = { status: 'inserted' | 'skipped' | 'error'; id?: stri
 /**
  * Insère un document s'il n'existe pas déjà (dédup par checksum).
  * Retourne 'skipped' si le document existe déjà — pas d'erreur.
- *
- * Gestion des conflits de priorité source :
- *   Si un document avec le même checksum existe déjà, on NE met PAS à jour
- *   les champs (sauf cas où la source actuelle est plus prioritaire — non
- *   implémenté en v1, on garde simple : premier arrivé, premier servi).
  */
 export async function upsertDocument(input: DocumentInput): Promise<UpsertResult> {
   const db = adminClient()
@@ -32,7 +28,6 @@ export async function upsertDocument(input: DocumentInput): Promise<UpsertResult
 
   const checksum = computeChecksum(input)
 
-  // Vérification explicite avant insert pour distinguer "skipped" de "error"
   const { data: existing } = await db
     .from('brvm_documents')
     .select('id')
@@ -63,7 +58,6 @@ export async function upsertDocument(input: DocumentInput): Promise<UpsertResult
     .single()
 
   if (error) {
-    // Race condition : un autre worker a inséré entre-temps → traiter comme skipped
     if (error.code === '23505') {
       return { status: 'skipped' }
     }
@@ -75,7 +69,6 @@ export async function upsertDocument(input: DocumentInput): Promise<UpsertResult
 
 /**
  * Marque un document comme traité (workflow admin).
- * Le drapeau is_new passe à false pour sortir de l'onglet "Nouveautés".
  */
 export async function markProcessed(documentId: string, adminUserId: string): Promise<boolean> {
   const db = adminClient()
@@ -96,15 +89,32 @@ export async function markProcessed(documentId: string, adminUserId: string): Pr
   return true
 }
 
+export type SortField = 'discovered_desc' | 'doc_date_desc' | 'type_then_date'
+
 export type DocumentListFilters = {
+  /** Préréglage de période (tri et filtre basés sur discovered_at). */
+  period?: PeriodPreset
+  /** Début personnalisé (yyyy-mm-dd). Utilisé si period='custom'. */
+  period_from?: string | null
+  /** Fin personnalisée (yyyy-mm-dd). Utilisé si period='custom'. */
+  period_to?: string | null
+  /** Filtre mono-type (legacy). */
   doc_type?: DocType
+  /** Filtre multi-types (préféré pour l'UI hub). */
+  doc_types?: DocType[]
   source_slug?: string
   is_new?: boolean
   is_processed?: boolean
   issuer_slug?: string
+  /** Secteur (stocké dans metadata->>'sector' ou colonne `sector`). */
+  sector?: string
+  /** Indice boursier (BRVM Composite / BRVM 30 / BRVM Prestige / etc.). */
+  market_index?: string
+  /** Filtres manuels sur doc_date (bypass period). */
   date_from?: string
   date_to?: string
   search?: string
+  sort?: SortField
   limit?: number
   offset?: number
 }
@@ -115,29 +125,78 @@ export type DocumentListRow = BrvmDocument & {
 }
 
 /**
- * Liste paginée pour l'admin, avec jointure source pour afficher le nom lisible.
- * Attention : order by discovered_at pour voir les nouveautés en tête.
+ * Liste paginée pour l'admin + hub de veille.
+ *
+ * Tri par défaut : discovered_at DESC (toujours décroissant, couvre 100 % des
+ * docs même ceux dont doc_date est NULL). Règle produit : plus récent en haut.
  */
 export async function listDocuments(filters: DocumentListFilters = {}): Promise<{
   rows: DocumentListRow[]
   total: number
+  period: PeriodRange
 }> {
   const db = adminClient()
+
+  const period = resolvePeriod(
+    filters.period ?? 'all',
+    filters.period_from ?? null,
+    filters.period_to ?? null,
+  )
+
+  const sort: SortField = filters.sort ?? 'discovered_desc'
 
   let query = db
     .from('brvm_documents')
     .select('*, brvm_sources!inner(slug, name)', { count: 'exact' })
-    .order('discovered_at', { ascending: false })
 
-  if (filters.doc_type) query = query.eq('doc_type', filters.doc_type)
+  // Tri — TOUJOURS décroissant, règle produit non négociable.
+  if (sort === 'doc_date_desc') {
+    // doc_date peut être null → on met nullsLast pour ne pas perdre les docs
+    query = query.order('doc_date', { ascending: false, nullsFirst: false })
+                 .order('discovered_at', { ascending: false })
+  } else if (sort === 'type_then_date') {
+    query = query.order('doc_type', { ascending: true })
+                 .order('discovered_at', { ascending: false })
+  } else {
+    query = query.order('discovered_at', { ascending: false })
+  }
+
+  // Filtre période (sur discovered_at : tous les docs en ont)
+  if (period.from) {
+    query = query.gte('discovered_at', `${period.from}T00:00:00.000Z`)
+  }
+  if (period.to) {
+    query = query.lte('discovered_at', `${period.to}T23:59:59.999Z`)
+  }
+
+  // Multi-types préféré
+  if (filters.doc_types && filters.doc_types.length > 0) {
+    query = query.in('doc_type', filters.doc_types)
+  } else if (filters.doc_type) {
+    query = query.eq('doc_type', filters.doc_type)
+  }
+
   if (filters.is_new !== undefined) query = query.eq('is_new', filters.is_new)
   if (filters.is_processed !== undefined) query = query.eq('is_processed', filters.is_processed)
   if (filters.issuer_slug) query = query.eq('issuer_slug', filters.issuer_slug)
+
+  // Filtres doc_date explicites (cas admin avancé)
   if (filters.date_from) query = query.gte('doc_date', filters.date_from)
   if (filters.date_to) query = query.lte('doc_date', filters.date_to)
+
   if (filters.source_slug) query = query.eq('brvm_sources.slug', filters.source_slug)
+
+  // Secteur / indice : via metadata (souple, pas besoin de migration pour le v1)
+  if (filters.sector) {
+    query = query.eq('metadata->>sector', filters.sector)
+  }
+  if (filters.market_index) {
+    query = query.eq('metadata->>market_index', filters.market_index)
+  }
+
   if (filters.search) {
-    query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%`)
+    const safe = filters.search.replace(/[,()]/g, ' ')
+    query = query.or(`title.ilike.%${safe}%,description.ilike.%${safe}%,issuer_name.ilike.%${safe}%`)
   }
 
   const limit = filters.limit ?? 50
@@ -147,10 +206,9 @@ export async function listDocuments(filters: DocumentListFilters = {}): Promise<
   const { data, error, count } = await query
   if (error) {
     console.error('[brvm/documents] listDocuments:', error.message)
-    return { rows: [], total: 0 }
+    return { rows: [], total: 0, period }
   }
 
-  // Aplatir la jointure
   const rows: DocumentListRow[] = (data ?? []).map((r: Record<string, unknown>) => {
     const source = r.brvm_sources as { slug: string; name: string } | null
     return {
@@ -160,7 +218,7 @@ export async function listDocuments(filters: DocumentListFilters = {}): Promise<
     }
   })
 
-  return { rows, total: count ?? 0 }
+  return { rows, total: count ?? 0, period }
 }
 
 /**
@@ -207,4 +265,30 @@ export async function getDocumentStats(): Promise<{
     new_boc_7d: newBoc7d.count ?? 0,
     unprocessed: unprocessed.count ?? 0,
   }
+}
+
+/**
+ * Regroupement par type de document sur une période.
+ * Utilisé par les digests email admin (journalier/hebdo/mensuel).
+ */
+export async function listDocumentsGroupedByType(
+  period: PeriodRange,
+  opts: { limit_per_type?: number } = {},
+): Promise<Record<string, DocumentListRow[]>> {
+  const { rows } = await listDocuments({
+    period: period.preset,
+    period_from: period.from,
+    period_to: period.to,
+    sort: 'discovered_desc',
+    limit: 500,
+  })
+
+  const perTypeCap = opts.limit_per_type ?? 25
+  const groups: Record<string, DocumentListRow[]> = {}
+  for (const row of rows) {
+    const key = row.doc_type
+    if (!groups[key]) groups[key] = []
+    if (groups[key].length < perTypeCap) groups[key].push(row)
+  }
+  return groups
 }
