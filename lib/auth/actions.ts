@@ -6,6 +6,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { sendEmail } from '@/lib/email/smtp'
 import { welcomeEmail } from '@/lib/email/templates'
 import { createNotification } from '@/lib/notifications/queries'
+import { touchLastVisit } from '@/lib/dashboard/queries'
 import { siteUrl } from '@/lib/url'
 import { validatePassword } from '@/lib/utils/validation'
 
@@ -67,8 +68,17 @@ export async function signInAction(formData: FormData): Promise<ActionResult> {
   }
 
   const supabase = await createSupabaseServerClient()
-  const { error } = await supabase.auth.signInWithPassword({ email, password })
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
   if (error) return { ok: false, error: 'Identifiants incorrects.' }
+
+  // CRITIQUE : rafraîchir last_visit_at immédiatement après login, sinon
+  // le proxy.ts lit un last_visit_at ancien et kicke l'utilisateur en
+  // boucle vers /login?expired=1 (voir docs/SESSION_SECURITY_POLICY.md).
+  if (data.user?.id) {
+    await touchLastVisit(data.user.id).catch((e) => {
+      console.error('[auth] touchLastVisit after signin failed', e)
+    })
+  }
 
   revalidatePath('/', 'layout')
   redirect(next)
