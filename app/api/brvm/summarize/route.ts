@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { generateText } from '@/lib/claude/client'
+import { generateText } from '@/lib/ai/client'
 import { sendEmail } from '@/lib/email/smtp'
 import { brvmDailyEmail } from '@/lib/email/templates'
 import { createNotification } from '@/lib/notifications/queries'
-import { logAiCall } from '@/lib/ai/log'
 
 /**
  * POST /api/brvm/summarize
@@ -62,8 +61,6 @@ export async function POST(request: Request) {
     const coursCount = (coursData?.raw_data as { actions?: unknown[] })?.actions?.length ?? 0
 
     // ── 2. Générer le résumé IA ──────────────────────────────
-    const startAi = Date.now()
-
     const indicesTxt = indices.length > 0
       ? indices.map((i) => `- ${i.name}: ${i.value} (${i.variation})`).join('\n')
       : 'Non disponibles'
@@ -92,33 +89,22 @@ ${flop5.map((t) => `${t.ticker}: ${t.variation}`).join(', ') || 'N/A'}
 Rédige en français, style professionnel mais accessible, pour des investisseurs UEMOA.`
 
     const aiResult = await generateText({
-      system: 'Tu es un analyste financier spécialisé BRVM. Tu rédiges pour egp.hedjav.com, l\'école de gestion de patrimoine.',
+      system: 'Tu es un analyste financier specialise BRVM. Tu rediges pour egp.hedjav.com, l\'Ecole de la Gestion de Patrimoine (EGP, marque Hedjav).',
       prompt,
       maxTokens: 1024,
+      action: 'brvm_daily_summary',
     })
 
-    let aiSummary = 'Résumé non disponible (clé API IA non configurée).'
-    if (aiResult.ok) {
-      aiSummary = aiResult.text
-    }
+    const aiSummary = aiResult.ok
+      ? aiResult.text
+      : 'Resume IA non disponible pour cette seance (provider non configure ou indisponible). Les donnees brutes sont consultables dans l\'espace admin.'
 
-    // Mettre à jour brvm_data avec le résumé
+    // Mettre a jour brvm_data avec le resume
     if (resumeData) {
       await db.from('brvm_data')
         .update({ ai_summary: aiSummary })
         .eq('id', resumeData.id)
     }
-
-    await logAiCall({
-      action: 'brvm_daily_summary',
-      prompt: prompt.slice(0, 500),
-      result: aiSummary.slice(0, 500),
-      model: 'claude-sonnet-4-20250514',
-      duration_ms: Date.now() - startAi,
-      status: aiResult.ok ? 'success' : 'error',
-      error_message: aiResult.ok ? undefined : (aiResult as { error: string }).error,
-      created_by: 'brvm-summarize-cron',
-    })
 
     // ── 3. Envoyer email aux membres (admins) ────────────────
     const { data: admins } = await db

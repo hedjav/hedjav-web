@@ -1,18 +1,18 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { BRVMTriggerButton } from './BRVMTriggerButton'
-import { BrvmDocumentsPanel } from './BrvmDocumentsPanel'
+import { BrvmHubPanel } from './BrvmHubPanel'
 import { BrvmSubNav } from './BrvmSubNav'
 import { listDocuments, getDocumentStats } from '@/lib/brvm/documents'
 import { getAllSources } from '@/lib/brvm/sources'
 import { DOC_TYPE_LABELS } from '@/lib/brvm/types'
 
-export const metadata: Metadata = { title: 'Admin — Veille BRVM' }
+export const metadata: Metadata = { title: 'Admin — Centre de Veille BRVM' }
 export const dynamic = 'force-dynamic'
 
 export default async function AdminBRVMPage() {
-  // Parallèle : stats + toutes les sources + liste initiale (50 derniers)
-  const [stats, sources, { rows: docs }] = await Promise.all([
+  // Parallèle : stats + toutes les sources + première fenêtre (7 derniers jours)
+  const [stats, sources, initial] = await Promise.all([
     getDocumentStats().catch(() => ({
       total: 0,
       boc_total: 0,
@@ -23,31 +23,36 @@ export default async function AdminBRVMPage() {
       unprocessed: 0,
     })),
     getAllSources().catch(() => []),
-    listDocuments({ limit: 100 }).catch(() => ({ rows: [], total: 0 })),
+    listDocuments({ period: '7d', sort: 'discovered_desc', limit: 200 }).catch(() => ({
+      rows: [],
+      total: 0,
+      period: { preset: '7d' as const, from: null, to: null, label: '7 derniers jours' },
+    })),
   ])
 
   const statCards = [
     {
-      label: 'Nouveaux BOC aujourd\'hui',
+      label: 'Nouveaux BOC (aujourd\'hui)',
       value: String(stats.new_boc_today),
       accent: 'var(--admin-accent, #C5A028)',
       hint: 'Priorité métier',
     },
     {
-      label: 'Nouveaux BOC (7j)',
-      value: String(stats.new_boc_7d),
+      label: 'Nouveautés (7 derniers jours)',
+      value: String(stats.new_7d),
       accent: '#8BE07A',
+      hint: `${stats.new_boc_7d} BOC`,
     },
     {
       label: 'Total documents indexés',
       value: String(stats.total),
       accent: 'var(--admin-info, #4A90D9)',
-      hint: `${stats.boc_total} BOC`,
+      hint: `${stats.boc_total} BOC · toutes sources`,
     },
     {
       label: 'Nouveautés à traiter',
       value: String(stats.unprocessed),
-      accent: '#ff9b9b',
+      accent: stats.unprocessed > 0 ? '#ff9b9b' : '#8BE07A',
       hint: stats.unprocessed > 0 ? 'À réviser' : 'À jour',
     },
   ]
@@ -62,7 +67,7 @@ export default async function AdminBRVMPage() {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: 'var(--s8)',
+          marginBottom: 'var(--s6)',
           flexWrap: 'wrap',
           gap: 16,
         }}
@@ -76,16 +81,19 @@ export default async function AdminBRVMPage() {
               color: 'var(--admin-text)',
             }}
           >
-            Veille BRVM
+            Centre de Veille BRVM
           </h1>
           <p
             style={{
               color: 'var(--admin-text-muted)',
               fontSize: 'var(--text-sm)',
               marginTop: 4,
+              maxWidth: 720,
             }}
           >
-            Suivi des documents publiés par brvm.org, bfin et sikafinance. Priorité : BOC.
+            Publications BRVM suivies bout-en-bout : BOC, rapports, communiqués, avis, annonces.
+            Filtrez, classez, archivez et traitez depuis une seule page. Tri toujours décroissant,
+            priorité BOC mais aucun type négligé.
           </p>
         </div>
         <BRVMTriggerButton />
@@ -97,7 +105,7 @@ export default async function AdminBRVMPage() {
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
           gap: 'var(--s4)',
-          marginBottom: 'var(--s8)',
+          marginBottom: 'var(--s6)',
         }}
       >
         {statCards.map((card) => (
@@ -142,7 +150,7 @@ export default async function AdminBRVMPage() {
         ))}
       </div>
 
-      {/* Sources état */}
+      {/* État des sources */}
       {sources.length > 0 && (
         <div
           style={{
@@ -150,7 +158,7 @@ export default async function AdminBRVMPage() {
             borderRadius: 12,
             padding: 'var(--s4) var(--s5)',
             border: '1px solid var(--admin-border)',
-            marginBottom: 'var(--s6)',
+            marginBottom: 'var(--s5)',
             display: 'flex',
             gap: 20,
             flexWrap: 'wrap',
@@ -181,7 +189,7 @@ export default async function AdminBRVMPage() {
               <span
                 key={s.id}
                 style={{
-                  color: 'var(--admin-text, #E7ECF5)',
+                  color: 'var(--admin-text)',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 6,
@@ -204,15 +212,16 @@ export default async function AdminBRVMPage() {
         </div>
       )}
 
-      {/* Panneau documents (tabs + DataTable, client-side) */}
-      <BrvmDocumentsPanel
-        initialDocs={docs.map((d) => ({
+      {/* Hub central : filtres + tableau + actions inline */}
+      <BrvmHubPanel
+        initialRows={initial.rows.map((d) => ({
           id: d.id,
           doc_type: d.doc_type,
           doc_type_label: DOC_TYPE_LABELS[d.doc_type] ?? d.doc_type,
           doc_date: d.doc_date,
           title: d.title,
           source_name: d.source_name,
+          source_slug: d.source_slug,
           source_url: d.source_url,
           pdf_url: d.pdf_url,
           issuer_name: d.issuer_name,
@@ -220,19 +229,32 @@ export default async function AdminBRVMPage() {
           is_processed: d.is_processed,
           discovered_at: d.discovered_at,
         }))}
+        initialTotal={initial.total}
+        sources={sources.map((s) => ({ slug: s.slug, name: s.name }))}
       />
 
       {/* Footer nav */}
-      <div style={{ marginTop: 'var(--s6)', textAlign: 'center' }}>
+      <div
+        style={{
+          marginTop: 'var(--s6)',
+          textAlign: 'center',
+          display: 'flex',
+          gap: 16,
+          justifyContent: 'center',
+          flexWrap: 'wrap',
+        }}
+      >
         <Link
           href="/admin/articles?category=BRVM"
-          style={{
-            color: 'var(--admin-text-muted)',
-            fontSize: 13,
-            textDecoration: 'none',
-          }}
+          style={{ color: 'var(--admin-text-muted)', fontSize: 13, textDecoration: 'none' }}
         >
-          Voir les articles générés depuis la veille BRVM →
+          Voir les articles générés depuis la veille →
+        </Link>
+        <Link
+          href="/admin/brvm/maintenance"
+          style={{ color: 'var(--admin-text-muted)', fontSize: 13, textDecoration: 'none' }}
+        >
+          Maintenance & diagnostics →
         </Link>
       </div>
     </>

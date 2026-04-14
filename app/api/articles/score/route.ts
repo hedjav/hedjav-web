@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
-import { generateText } from '@/lib/claude/client'
-import { logAiCall } from '@/lib/ai/log'
+import { generateText } from '@/lib/ai/client'
 
 function adminDb() {
   return createClient(
@@ -31,25 +30,15 @@ async function scoreArticle(articleId: string): Promise<{ id: string; score: num
 
   if (!article) return null
 
-  const start = Date.now()
   const result = await generateText({
     system: SCORING_PROMPT,
     prompt: `Titre: ${article.title}\nCategorie: ${article.category}\n\nContenu:\n${(article.body as string).substring(0, 3000)}`,
     maxTokens: 32,
+    temperature: 0.2,
+    action: 'article_scoring',
   })
-  const duration = Date.now() - start
 
-  if (!result.ok) {
-    await logAiCall({
-      action: 'article_scoring',
-      prompt: `Score article: ${article.title}`,
-      status: 'error',
-      error_message: result.error,
-      duration_ms: duration,
-      created_by: 'admin-scoring',
-    })
-    return null
-  }
+  if (!result.ok) return null
 
   // Parse integer from response
   const match = result.text.match(/\d+/)
@@ -57,16 +46,6 @@ async function scoreArticle(articleId: string): Promise<{ id: string; score: num
   if (score == null) return null
 
   await db.from('articles').update({ quality_score: score }).eq('id', articleId)
-
-  await logAiCall({
-    action: 'article_scoring',
-    prompt: `Score article: ${article.title}`,
-    result: result.text,
-    status: 'success',
-    duration_ms: duration,
-    created_by: 'admin-scoring',
-  })
-
   return { id: articleId, score }
 }
 

@@ -1,14 +1,14 @@
 /**
- * Client Claude API — utilisé pour générer du contenu (newsletter, emails,
- * articles auto plus tard). Wrapper minimal sur l'API Anthropic Messages.
+ * @deprecated Utiliser `@/lib/ai/client` à la place.
  *
- * Variables d'env requises : ANTHROPIC_API_KEY
- * Modèle par défaut : claude-sonnet-4-6
+ * Ce fichier est maintenu pour la compatibilité avec les call-sites existants.
+ * Il délègue toute la logique à la couche IA unifiée, qui sait parler à
+ * OpenAI et Anthropic sans changement côté consommateur.
+ *
+ * Nouveau code : importer `generateText` depuis `@/lib/ai/client`.
  */
 
-const API = 'https://api.anthropic.com/v1/messages'
-const VERSION = '2023-06-01'
-const DEFAULT_MODEL = 'claude-sonnet-4-6'
+import { generateText as aiGenerateText } from '@/lib/ai/client'
 
 type GenerateOptions = {
   prompt: string
@@ -21,42 +21,25 @@ type GenerateResult =
   | { ok: true; text: string }
   | { ok: false; error: string; skipped?: boolean }
 
+/**
+ * Wrapper historique. Conserve la signature d'origine pour ne pas casser
+ * les call-sites existants. La logique réelle est dans `lib/ai/client.ts`.
+ */
 export async function generateText(opts: GenerateOptions): Promise<GenerateResult> {
-  const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) {
-    console.warn('[claude] ANTHROPIC_API_KEY not set, skipping generation')
-    return { ok: false, error: 'ANTHROPIC_API_KEY not set', skipped: true }
-  }
-
-  const body = {
-    model: opts.model ?? DEFAULT_MODEL,
-    max_tokens: opts.maxTokens ?? 2048,
+  const result = await aiGenerateText({
+    prompt: opts.prompt,
     system: opts.system,
-    messages: [{ role: 'user', content: opts.prompt }],
-  }
+    model: opts.model,
+    maxTokens: opts.maxTokens,
+    action: 'legacy_claude_wrapper',
+  })
 
-  try {
-    const res = await fetch(API, {
-      method: 'POST',
-      headers: {
-        'x-api-key': apiKey,
-        'anthropic-version': VERSION,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    })
-    if (!res.ok) {
-      const text = await res.text()
-      return { ok: false, error: `Claude ${res.status}: ${text}` }
-    }
-    const data = await res.json()
-    const text =
-      Array.isArray(data?.content) && data.content[0]?.text
-        ? (data.content[0].text as string)
-        : ''
-    return { ok: true, text }
-  } catch (e) {
-    const message = e instanceof Error ? e.message : 'unknown'
-    return { ok: false, error: message }
+  if (result.ok) {
+    return { ok: true, text: result.text }
+  }
+  return {
+    ok: false,
+    error: result.error,
+    skipped: result.skipped,
   }
 }

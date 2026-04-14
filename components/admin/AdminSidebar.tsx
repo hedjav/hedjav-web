@@ -86,7 +86,8 @@ export function AdminSidebar({ adminName, adminEmail, ebookCount, articleCount, 
     {
       title: 'BRVM & IA',
       items: [
-        { href: '/admin/brvm', label: 'Veille BRVM' },
+        { href: '/admin/brvm', label: 'Centre de veille BRVM' },
+        { href: '/admin/brvm/alertes', label: 'Alertes email' },
         { href: '/admin/ia/articles', label: 'Generateur articles' },
         { href: '/admin/ia/scoring', label: 'Scoring qualite' },
         { href: '/admin/ia', label: 'Logs IA' },

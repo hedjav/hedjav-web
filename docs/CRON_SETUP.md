@@ -31,7 +31,7 @@ Alternative CLI locale : `npx tsx scripts/cancel-stale-purchases.ts --hours=2`
 
 ## Veille BRVM (refonte 2026-04)
 
-Voir [`BRVM_ADMIN.md`](./BRVM_ADMIN.md) pour le détail du schéma, des routes et de l'admin.
+Voir [`BRVM.md`](./BRVM.md) (guide unifié) pour le détail du schéma, des routes et de l'admin.
 
 ### ⚠️ Important — utiliser `/scrape/async` pour les cronjobs
 
@@ -90,11 +90,11 @@ Pour monitorer la santé de la brique BRVM, ajouter un cron toutes les 30 min :
 
 Header : `Authorization: Bearer [INTERNAL_API_TOKEN]`.
 
-La réponse contient `report.overall_status` (`ok` / `warning` / `critical`). À utiliser dans un webhook vers Slack, un monitoring externe ou une simple alerte email si != `ok`. Voir [`BRVM_MAINTENANCE.md`](./BRVM_MAINTENANCE.md).
+La réponse contient `report.overall_status` (`ok` / `warning` / `critical`). À utiliser dans un webhook vers Slack, un monitoring externe ou une simple alerte email si != `ok`. Voir [`BRVM.md`](./BRVM.md) § 10.
 
 ## PDF downloader BRVM (à la demande)
 
-**⚠ Pas de cron par défaut** pour `/api/brvm/download`. Le téléchargement de PDFs se fait **à la demande** par l'admin depuis `/admin/brvm/downloader` ou via CLI (`scripts/download-brvm-pdfs.ts`).
+**⚠ Pas de cron par défaut** pour `/api/brvm/download`. Le téléchargement de PDFs se fait **à la demande** par l'admin depuis `/admin/brvm` (bouton « Archiver PDFs de la sélection » dans le hub) ou via CLI (`scripts/download-brvm-pdfs.ts`).
 
 Si tu veux un refresh historique mensuel automatique (ex: re-scanner et archiver les BOC du mois), ajouter :
 
@@ -112,4 +112,16 @@ Avec body JSON :
 }
 ```
 
-Voir [`BRVM_DOWNLOADER.md`](./BRVM_DOWNLOADER.md).
+Voir [`BRVM.md`](./BRVM.md) § 5.
+
+## Alertes email admin BRVM (nouveau, recommandé)
+
+Trois digests structurés (tri décroissant par groupe, liens directs, IA optionnelle). Route commune : `POST /api/brvm/alerts/digest`, body JSON.
+
+| Job | URL | Body | Fréquence |
+|-----|-----|------|-----------|
+| BRVM digest journalier | `https://egp.hedjav.com/api/brvm/alerts/digest` | `{"frequency":"daily"}` | Tous les jours, 19h00 |
+| BRVM digest hebdomadaire | `https://egp.hedjav.com/api/brvm/alerts/digest` | `{"frequency":"weekly"}` | Vendredi, 18h00 |
+| BRVM digest mensuel | `https://egp.hedjav.com/api/brvm/alerts/digest` | `{"frequency":"monthly"}` | Le 1er du mois, 09h00 |
+
+Header : `Authorization: Bearer [INTERNAL_API_TOKEN]`. Voir [`BRVM.md`](./BRVM.md) § 6.

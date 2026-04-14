@@ -4,15 +4,15 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const TABS = [
-  { href: '/admin/brvm', label: 'Documents' },
-  { href: '/admin/brvm/downloader', label: 'Downloader PDF' },
+  { href: '/admin/brvm', label: 'Veille & archivage' },
+  { href: '/admin/brvm/alertes', label: 'Alertes email' },
   { href: '/admin/brvm/maintenance', label: 'Maintenance' },
 ]
 
 /**
- * Sous-navigation partagée entre les 3 pages admin BRVM.
- * Rendu dans chaque `page.tsx` (pas de layout.tsx partagé pour rester
- * explicite sur chaque page).
+ * Sous-navigation du Centre de Veille BRVM.
+ * Le "downloader" n'est plus une page séparée : il est intégré au hub principal
+ * (filtre période + bouton « Archiver PDFs de la sélection »).
  */
 export function BrvmSubNav() {
   const pathname = usePathname()

@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
-import { generateText } from '@/lib/claude/client'
-import { logAiCall } from '@/lib/ai/log'
+import { generateText } from '@/lib/ai/client'
 
 /**
  * POST /api/admin/generate-article
@@ -60,24 +59,25 @@ EXTRAIT: [resume de 2 phrases maximum]
     ? `Sujet : ${subject}\nCategorie : ${category}\nInstructions supplementaires : ${instructions}`
     : `Sujet : ${subject}\nCategorie : ${category}`
 
-  const start = Date.now()
   const result = await generateText({
     system: systemPrompt,
     prompt: userPrompt,
     maxTokens: 4096,
+    action: 'article_generation',
   })
-  const duration = Date.now() - start
 
   if (!result.ok) {
-    await logAiCall({
-      action: 'article_generation',
-      prompt: userPrompt,
-      status: 'error',
-      error_message: result.error,
-      duration_ms: duration,
-      created_by: 'admin-generator',
-    })
-    return NextResponse.json({ ok: false, error: result.error }, { status: 500 })
+    // Les logs sont deja ecrits par la couche IA unifiee.
+    // On renvoie un statut distinct si l'IA est simplement non configuree.
+    const status = result.skipped ? 503 : 500
+    return NextResponse.json(
+      {
+        ok: false,
+        error: result.error,
+        skipped: result.skipped ?? false,
+      },
+      { status },
+    )
   }
 
   // Parse response
@@ -123,20 +123,13 @@ EXTRAIT: [resume de 2 phrases maximum]
     return NextResponse.json({ ok: false, error: error.message }, { status: 500 })
   }
 
-  await logAiCall({
-    action: 'article_generation',
-    prompt: userPrompt,
-    result: `Article cree: ${title} (${data.slug})`,
-    status: 'success',
-    duration_ms: duration,
-    created_by: 'admin-generator',
-  })
-
   return NextResponse.json({
     ok: true,
     id: data.id,
     title: data.title,
     slug: data.slug,
     excerpt,
+    provider: result.provider,
+    model: result.model,
   })
 }

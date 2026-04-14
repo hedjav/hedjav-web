@@ -31,7 +31,9 @@ const ROUTE_LABELS: Record<string, string> = {
   '/admin/ia': 'Logs IA',
   '/admin/ia/articles': 'Generateur articles',
   '/admin/ia/scoring': 'Scoring qualite',
-  '/admin/brvm': 'Veille BRVM',
+  '/admin/brvm': 'Centre de veille BRVM',
+  '/admin/brvm/alertes': 'Alertes email BRVM',
+  '/admin/brvm/maintenance': 'Maintenance BRVM',
   '/admin/membres': 'Equipe',
   '/admin/notifications': 'Notifications',
 }
