@@ -20,29 +20,53 @@ type AlertLog = {
   created_at: string
 }
 
+type FreqConfig = { daily: boolean; weekly: boolean; monthly: boolean }
+
+function adminDb() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false } },
+  )
+}
+
 async function getRecentAlerts(): Promise<AlertLog[]> {
   try {
-    const db = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      { auth: { persistSession: false } },
-    )
-    const { data } = await db
+    const { data } = await adminDb()
       .from('brvm_alert_log')
       .select('id, frequency, period_from, period_to, document_count, recipients_count, status, ai_provider, error_message, created_at')
       .order('created_at', { ascending: false })
       .limit(25)
     return (data as AlertLog[] | null) ?? []
   } catch {
-    // Migration 025 pas encore appliquée → liste vide, page toujours utilisable.
     return []
   }
 }
 
+async function getFrequenciesConfig(): Promise<FreqConfig> {
+  try {
+    const { data } = await adminDb()
+      .from('admin_settings')
+      .select('value')
+      .eq('key', 'brvm_alert_frequencies')
+      .maybeSingle()
+    const value = data?.value as Partial<FreqConfig> | null
+    return {
+      daily: value?.daily ?? true,
+      weekly: value?.weekly ?? true,
+      monthly: value?.monthly ?? true,
+    }
+  } catch {
+    // Migration 026 pas appliquée : toutes les fréquences actives par défaut.
+    return { daily: true, weekly: true, monthly: true }
+  }
+}
+
 export default async function BrvmAlertsPage() {
-  const [logs, aiStatus] = await Promise.all([
+  const [logs, aiStatus, freqs] = await Promise.all([
     getRecentAlerts(),
     Promise.resolve(getAiStatus()),
+    getFrequenciesConfig(),
   ])
 
   return (
@@ -68,13 +92,13 @@ export default async function BrvmAlertsPage() {
             maxWidth: 760,
           }}
         >
-          Envoie à tous les administrateurs un digest structuré (tri décroissant, groupé par catégorie,
-          liens directs vers PDFs et sources). Trois fréquences : journalière, hebdomadaire, mensuelle.
-          Analyse IA facultative (DeepSeek priorisé, sinon OpenAI, sinon Anthropic).
+          Trois fréquences coexistent et peuvent être cumulées : journalière, hebdomadaire,
+          mensuelle. Par défaut, les trois sont actives. Chaque digest est structuré,
+          groupé par catégorie, trié en ordre décroissant, avec liens directs vers les
+          PDFs et les sources. Analyse IA optionnelle.
         </p>
       </div>
 
-      {/* État IA */}
       <div
         style={{
           display: 'inline-flex',
@@ -101,11 +125,15 @@ export default async function BrvmAlertsPage() {
             background: aiStatus.available ? '#8BE07A' : '#6B7280',
           }}
         />
-        IA {aiStatus.available ? `active · ${aiStatus.provider}` : 'non configurée'}{' '}
-        {aiStatus.providers.length > 1 && <>({aiStatus.providers.join(', ')})</>}
+        IA {aiStatus.available ? `active · ${aiStatus.provider}` : 'non configurée'}
+        {aiStatus.providers.length > 1 && <> ({aiStatus.providers.join(', ')})</>}
       </div>
 
-      <BrvmAlertsClient logs={logs} aiAvailable={aiStatus.available} />
+      <BrvmAlertsClient
+        logs={logs}
+        aiAvailable={aiStatus.available}
+        initialFrequencies={freqs}
+      />
 
       <div
         style={{
@@ -128,11 +156,10 @@ export default async function BrvmAlertsPage() {
           Automatiser avec un cron externe
         </h3>
         <p style={{ fontSize: 13, color: 'var(--admin-text-muted)', lineHeight: 1.6 }}>
-          Configure sur cron-job.org trois jobs distincts, auth{' '}
-          <code style={{ background: 'var(--admin-bg)', padding: '2px 6px', borderRadius: 4 }}>
+          Chaque digest est une route distincte. Configurer un job par fréquence active.
+          Auth : <code style={{ background: 'var(--admin-bg)', padding: '2px 6px', borderRadius: 4 }}>
             Bearer INTERNAL_API_TOKEN
-          </code>{' '}
-          :
+          </code>.
         </p>
         <pre
           style={{
@@ -147,9 +174,9 @@ export default async function BrvmAlertsPage() {
           }}
         >
           {`POST https://egp.hedjav.com/api/brvm/alerts/digest
-body: { "frequency": "daily" }     // chaque jour 19h
-body: { "frequency": "weekly" }    // chaque vendredi 18h
-body: { "frequency": "monthly" }   // le 1er du mois 09h`}
+body: { "frequency": "daily" }     // chaque jour 19h UTC
+body: { "frequency": "weekly" }    // chaque vendredi 18h UTC
+body: { "frequency": "monthly" }   // le 1er du mois 09h UTC`}
         </pre>
       </div>
     </>

@@ -12,8 +12,12 @@ export default async function AdminNotificationsPage() {
     type: n.type,
     title: n.title,
     message: n.message ?? '',
-    priority: (n.metadata as Record<string, unknown>)?.priority as string ?? 'normal',
+    priority: n.priority ?? 'normal',
     is_read: n.is_read,
+    metadata: n.metadata ?? null,
+    target_url: n.target_url ?? null,
+    entity_type: n.entity_type ?? null,
+    entity_id: n.entity_id ?? null,
     created_at: n.created_at,
   }))
 

@@ -3,6 +3,11 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import {
+  notificationColor,
+  notificationIcon,
+  resolveNotificationTarget,
+} from '@/lib/notifications/target-url'
 
 type Notification = {
   id: string
@@ -10,6 +15,11 @@ type Notification = {
   title: string
   message: string | null
   is_read: boolean
+  priority?: 'low' | 'normal' | 'high' | 'urgent'
+  metadata?: Record<string, unknown> | null
+  target_url?: string | null
+  entity_type?: string | null
+  entity_id?: string | null
   created_at: string
 }
 
@@ -24,45 +34,6 @@ function timeAgo(dateStr: string): string {
   return `il y a ${days}j`
 }
 
-function typeIcon(type: string): string {
-  switch (type) {
-    case 'purchase': return '$'
-    case 'registration':
-    case 'member': return '+'
-    case 'newsletter':
-    case 'subscriber': return '@'
-    case 'unsubscribe': return '-'
-    case 'error': return '!'
-    default: return '!'
-  }
-}
-
-function typeColor(type: string): string {
-  switch (type) {
-    case 'purchase': return 'var(--admin-success)'
-    case 'newsletter':
-    case 'subscriber': return 'var(--admin-info)'
-    case 'registration':
-    case 'member': return 'var(--admin-accent)'
-    case 'error': return 'var(--admin-danger)'
-    default: return 'var(--admin-text)'
-  }
-}
-
-function typeLink(type: string): string {
-  switch (type) {
-    case 'purchase': return '/admin/ventes'
-    case 'registration':
-    case 'member': return '/admin/clients'
-    case 'newsletter':
-    case 'subscriber':
-    case 'unsubscribe': return '/admin/newsletter'
-    case 'report': return '/admin'
-    case 'error': return '/admin/ia'
-    default: return '/admin'
-  }
-}
-
 export function AdminNotifications({ initialCount }: { initialCount: number }) {
   const [open, setOpen] = useState(false)
   const [count, setCount] = useState(initialCount)
@@ -75,7 +46,6 @@ export function AdminNotifications({ initialCount }: { initialCount: number }) {
     setCount(initialCount)
   }, [initialCount])
 
-  // Close on click outside
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
@@ -87,7 +57,7 @@ export function AdminNotifications({ initialCount }: { initialCount: number }) {
   async function fetchNotifications() {
     setLoading(true)
     try {
-      const res = await fetch('/api/admin/notifications')
+      const res = await fetch('/api/admin/notifications', { cache: 'no-store' })
       if (res.ok) {
         const data = await res.json()
         setNotifications(data.notifications ?? [])
@@ -125,10 +95,12 @@ export function AdminNotifications({ initialCount }: { initialCount: number }) {
       setCount((c) => Math.max(0, c - 1))
     }
     setOpen(false)
-    router.push(typeLink(n.type))
+    // Destination : d'abord target_url en base, sinon résolu depuis metadata,
+    // jamais un /admin générique.
+    router.push(resolveNotificationTarget(n))
   }
 
-  // Sort: unread first, then by date
+  // Tri : non-lu d'abord, puis date DESC (jamais d'ordre inverse).
   const sorted = [...notifications]
     .sort((a, b) => {
       if (a.is_read !== b.is_read) return a.is_read ? 1 : -1
@@ -262,11 +234,11 @@ export function AdminNotifications({ initialCount }: { initialCount: number }) {
                     justifyContent: 'center',
                     fontSize: 12,
                     fontWeight: 700,
-                    color: typeColor(n.type),
+                    color: notificationColor(n.type),
                     flexShrink: 0,
                   }}
                 >
-                  {typeIcon(n.type)}
+                  {notificationIcon(n.type)}
                 </span>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 12, fontWeight: n.is_read ? 400 : 600, color: 'var(--admin-text)' }}>
@@ -287,6 +259,22 @@ export function AdminNotifications({ initialCount }: { initialCount: number }) {
                   )}
                   <div style={{ fontSize: 10, color: 'var(--admin-text-muted)', marginTop: 2 }}>
                     {timeAgo(n.created_at)}
+                    {n.priority === 'high' || n.priority === 'urgent' ? (
+                      <span
+                        style={{
+                          marginLeft: 6,
+                          padding: '1px 6px',
+                          borderRadius: 999,
+                          background: 'rgba(255, 107, 107, 0.15)',
+                          color: '#ff6b6b',
+                          fontSize: 9,
+                          fontWeight: 700,
+                          textTransform: 'uppercase',
+                        }}
+                      >
+                        {n.priority}
+                      </span>
+                    ) : null}
                   </div>
                 </div>
                 {!n.is_read && (
@@ -305,7 +293,6 @@ export function AdminNotifications({ initialCount }: { initialCount: number }) {
             ))
           )}
 
-          {/* Footer link */}
           <Link
             href="/admin/notifications"
             onClick={() => setOpen(false)}

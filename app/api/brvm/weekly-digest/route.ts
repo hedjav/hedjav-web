@@ -4,6 +4,7 @@ import { generateText } from '@/lib/ai/client'
 import { sendEmail } from '@/lib/email/smtp'
 import { brvmWeeklyEmail } from '@/lib/email/templates'
 import { createNotification } from '@/lib/notifications/queries'
+import { siteUrl as absoluteUrl } from '@/lib/url'
 
 /**
  * POST /api/brvm/weekly-digest
@@ -183,8 +184,7 @@ Le titre doit etre sur la premiere ligne, suivi d'une ligne vide, puis le corps 
     }
 
     // ── 4. Email admins ──────────────────────────────────────
-    const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://egp.hedjav.com'
-    const articleUrl = `${siteUrl}/admin/articles/${article.id}`
+    const articleUrl = absoluteUrl(`/admin/articles/${article.id}`)
 
     const { data: admins } = await db
       .from('profiles')

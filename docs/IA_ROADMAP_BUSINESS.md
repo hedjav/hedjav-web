@@ -150,9 +150,10 @@ Impact business élevé, coût de dev faible, ROI immédiat.
 - Moteur RAG sur articles + ebooks.
 - Reco après chaque lecture d'article.
 
-### 4. Pré-rédaction de posts LinkedIn / Twitter à partir d'articles
-- Pour la communication Hermann : à partir d'un article, générer 3 variantes
-  sociales adaptées (pédagogique, punch, question).
+### 4. Pré-rédaction de posts réseaux sociaux à partir d'articles
+- Pour la communication Hermann (Facebook, Instagram, X, TikTok — **jamais LinkedIn**) :
+  à partir d'un article, générer 3 variantes sociales adaptées (pédagogique,
+  punch, question).
 
 ### 5. Génération d'infographies (via DALL-E ou équivalent)
 - Pas prioritaire tant que l'UEMOA ne consomme pas beaucoup de visuels IA,

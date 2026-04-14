@@ -2,7 +2,9 @@ import { requireAdmin } from '@/lib/auth/session'
 import { createClient } from '@supabase/supabase-js'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
 import { AdminHeader } from '@/components/admin/AdminHeader'
+import { InactivityMonitor } from '@/components/features/InactivityMonitor'
 import { getUnreadCount } from '@/lib/notifications/queries'
+import { touchLastVisit } from '@/lib/dashboard/queries'
 
 async function getCounts() {
   const db = createClient(
@@ -19,6 +21,9 @@ async function getCounts() {
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const profile = await requireAdmin()
+  // Rafraîchit last_visit_at admin (alignement avec la logique dashboard membre).
+  // Essentiel pour l'expiration par inactivité côté proxy.
+  void touchLastVisit(profile.id)
   const [counts, unreadNotifs] = await Promise.all([getCounts(), getUnreadCount()])
 
   const adminName = profile.full_name ?? profile.email
@@ -50,6 +55,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           {children}
         </main>
       </div>
+      <InactivityMonitor />
     </div>
   )
 }

@@ -8,8 +8,9 @@ import {
   recordSend,
   advanceSubscriberStep,
 } from '@/lib/campaigns/queries'
+import { siteBase } from '@/lib/url'
 
-const SITE = process.env.NEXT_PUBLIC_APP_URL ?? 'https://egp.hedjav.com'
+const SITE = siteBase()
 
 /**
  * POST /api/campaigns/process
@@ -98,9 +99,8 @@ export async function POST(request: Request) {
 
 /** Remplace les liens <a href="..."> par des liens trackés */
 function injectTracking(html: string, sendId: string): string {
-  const site = process.env.NEXT_PUBLIC_APP_URL ?? 'https://egp.hedjav.com'
   return html.replace(
     /href="(https?:\/\/[^"]+)"/g,
-    (_, url) => `href="${site}/api/track/click?id=${sendId}&url=${encodeURIComponent(url)}"`,
+    (_, url) => `href="${SITE}/api/track/click?id=${sendId}&url=${encodeURIComponent(url)}"`,
   )
 }

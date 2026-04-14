@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import type { AdminNotification } from '@/lib/supabase/types'
+import { resolveNotificationTarget } from './target-url'
 
 function getDb() {
   return createClient(
@@ -9,18 +10,60 @@ function getDb() {
   )
 }
 
+export type CreateNotificationOptions = {
+  metadata?: Record<string, unknown>
+  priority?: 'low' | 'normal' | 'high' | 'urgent'
+  /** URL admin explicite (sinon déduite via resolveNotificationTarget). */
+  target_url?: string | null
+  entity_type?: string | null
+  entity_id?: string | null
+}
+
+/**
+ * Insère une notification admin.
+ *
+ * Signature historique (type, title, message, metadata) conservée par
+ * rétro-compat (les call-sites de 2025 passent metadata en 4e arg).
+ * Nouvelle signature préférée : passer un objet options pour target/entity.
+ */
 export async function createNotification(
   type: string,
   title: string,
   message?: string,
-  metadata?: Record<string, unknown>,
+  metadataOrOptions?: Record<string, unknown> | CreateNotificationOptions,
 ) {
   const db = getDb()
+
+  // Détection rétro-compat : si l'appelant passe directement un metadata,
+  // on le normalise en options.
+  let opts: CreateNotificationOptions = {}
+  if (metadataOrOptions) {
+    const maybe = metadataOrOptions as CreateNotificationOptions
+    if ('metadata' in maybe || 'priority' in maybe || 'target_url' in maybe || 'entity_type' in maybe || 'entity_id' in maybe) {
+      opts = maybe
+    } else {
+      opts = { metadata: metadataOrOptions as Record<string, unknown> }
+    }
+  }
+
+  const target_url =
+    opts.target_url ??
+    resolveNotificationTarget({
+      type,
+      metadata: opts.metadata ?? null,
+      entity_type: opts.entity_type ?? null,
+      entity_id: opts.entity_id ?? null,
+    })
+
   const { error } = await db.from('admin_notifications').insert({
     type,
     title,
     message: message ?? null,
-    metadata: metadata ?? {},
+    metadata: opts.metadata ?? {},
+    priority: opts.priority ?? 'normal',
+    target_url,
+    entity_type: opts.entity_type ?? null,
+    entity_id: opts.entity_id ?? null,
   })
   if (error) console.error('[notifications] insert failed', error)
 }

@@ -6,6 +6,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { sendEmail } from '@/lib/email/smtp'
 import { welcomeEmail } from '@/lib/email/templates'
 import { createNotification } from '@/lib/notifications/queries'
+import { siteUrl } from '@/lib/url'
 import { validatePassword } from '@/lib/utils/validation'
 
 type ActionResult = { ok: true } | { ok: false; error: string }
@@ -24,13 +25,12 @@ export async function signUpAction(formData: FormData): Promise<ActionResult> {
   if (!pwCheck.isValid) return { ok: false, error: pwCheck.errors.join('. ') }
 
   const supabase = await createSupabaseServerClient()
-  const origin = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
 
   const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      emailRedirectTo: `${origin}/dashboard`,
+      emailRedirectTo: siteUrl('/dashboard'),
       data: {
         full_name: fullName,
         country,
@@ -88,9 +88,8 @@ export async function requestPasswordResetAction(
   if (!email) return { ok: false, error: 'Email requis.' }
 
   const supabase = await createSupabaseServerClient()
-  const origin = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${origin}/reset-password`,
+    redirectTo: siteUrl('/reset-password'),
   })
   if (error) return { ok: false, error: error.message }
   return { ok: true }

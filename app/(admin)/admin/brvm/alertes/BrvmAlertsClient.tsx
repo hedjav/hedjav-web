@@ -18,8 +18,8 @@ type AlertLog = {
 }
 
 type DigestResult = {
+  frequency: Freq
   ok: boolean
-  frequency: string
   period?: { from: string | null; to: string | null; label: string }
   total_documents?: number
   recipients?: number
@@ -32,37 +32,84 @@ type DigestResult = {
   error?: string
 }
 
+const FREQUENCIES: Array<{ id: Freq; label: string; hint: string }> = [
+  { id: 'daily', label: 'Journalière', hint: 'Aujourd\u2019hui · envoyée chaque soir' },
+  { id: 'weekly', label: 'Hebdomadaire', hint: '7 derniers jours · envoyée le vendredi' },
+  { id: 'monthly', label: 'Mensuelle', hint: '30 derniers jours · envoyée le 1er du mois' },
+]
+
 export function BrvmAlertsClient({
   logs,
   aiAvailable,
+  initialFrequencies,
 }: {
   logs: AlertLog[]
   aiAvailable: boolean
+  initialFrequencies: Record<Freq, boolean>
 }) {
-  const [frequency, setFrequency] = useState<Freq>('daily')
+  // Multi-select : les 3 fréquences sont cochées par défaut.
+  const [selected, setSelected] = useState<Record<Freq, boolean>>(() => ({
+    daily: initialFrequencies.daily ?? true,
+    weekly: initialFrequencies.weekly ?? true,
+    monthly: initialFrequencies.monthly ?? true,
+  }))
   const [useAi, setUseAi] = useState<boolean>(aiAvailable)
   const [loading, setLoading] = useState<'preview' | 'send' | null>(null)
-  const [result, setResult] = useState<DigestResult | null>(null)
+  const [results, setResults] = useState<DigestResult[]>([])
+  const [savingConfig, setSavingConfig] = useState(false)
+  const [configSaved, setConfigSaved] = useState<string | null>(null)
+
+  const anySelected = Object.values(selected).some(Boolean)
+
+  function toggleFrequency(freq: Freq) {
+    setSelected((s) => ({ ...s, [freq]: !s[freq] }))
+  }
 
   async function trigger(dryRun: boolean) {
+    if (!anySelected) return
     setLoading(dryRun ? 'preview' : 'send')
-    setResult(null)
+    setResults([])
+    const out: DigestResult[] = []
+    const activeFreqs = (Object.keys(selected) as Freq[]).filter((f) => selected[f])
+    for (const freq of activeFreqs) {
+      try {
+        const res = await fetch('/api/brvm/alerts/digest', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ frequency: freq, dry_run: dryRun, ai: useAi }),
+        })
+        const data = (await res.json()) as Omit<DigestResult, 'frequency'>
+        out.push({ frequency: freq, ...data })
+      } catch (e) {
+        out.push({ frequency: freq, ok: false, error: e instanceof Error ? e.message : 'Erreur réseau' })
+      }
+      setResults([...out])
+    }
+    setLoading(null)
+  }
+
+  async function saveConfig() {
+    setSavingConfig(true)
+    setConfigSaved(null)
     try {
-      const res = await fetch('/api/brvm/alerts/digest', {
+      const res = await fetch('/api/admin/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ frequency, dry_run: dryRun, ai: useAi }),
+        body: JSON.stringify({
+          key: 'brvm_alert_frequencies',
+          value: selected,
+        }),
       })
-      const data = (await res.json()) as DigestResult
-      setResult(data)
-    } catch (e) {
-      setResult({
-        ok: false,
-        frequency,
-        error: e instanceof Error ? e.message : 'Erreur réseau',
-      })
+      if (res.ok) {
+        setConfigSaved('Préférences enregistrées.')
+      } else {
+        setConfigSaved('Erreur lors de l\u2019enregistrement.')
+      }
+    } catch {
+      setConfigSaved('Erreur réseau.')
     } finally {
-      setLoading(null)
+      setSavingConfig(false)
+      setTimeout(() => setConfigSaved(null), 4000)
     }
   }
 
@@ -82,29 +129,43 @@ export function BrvmAlertsClient({
         }}
       >
         <div>
-          <Label>Fréquence</Label>
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-            {(
-              [
-                { value: 'daily', label: 'Journalière (aujourd\'hui)' },
-                { value: 'weekly', label: 'Hebdomadaire (7 j)' },
-                { value: 'monthly', label: 'Mensuelle (30 j)' },
-              ] as Array<{ value: Freq; label: string }>
-            ).map((opt) => (
-              <button
-                key={opt.value}
-                type="button"
-                onClick={() => setFrequency(opt.value)}
-                style={pillStyle(frequency === opt.value)}
+          <Label>Fréquences actives (toutes cochées par défaut)</Label>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {FREQUENCIES.map((f) => (
+              <label
+                key={f.id}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  padding: '10px 14px',
+                  borderRadius: 10,
+                  background: selected[f.id] ? 'rgba(197,160,40,.08)' : 'var(--admin-bg)',
+                  border: selected[f.id] ? '1px solid var(--admin-accent)' : '1px solid var(--admin-border)',
+                  cursor: 'pointer',
+                }}
               >
-                {opt.label}
-              </button>
+                <input
+                  type="checkbox"
+                  checked={selected[f.id]}
+                  onChange={() => toggleFrequency(f.id)}
+                  style={{ margin: 0, accentColor: '#C5A028' }}
+                />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--admin-text)' }}>
+                    {f.label}
+                  </div>
+                  <div style={{ fontSize: 11, color: 'var(--admin-text-muted)', marginTop: 2 }}>
+                    {f.hint}
+                  </div>
+                </div>
+              </label>
             ))}
           </div>
         </div>
 
         <div>
-          <Label>Analyse IA</Label>
+          <Label>Analyse IA (facultative)</Label>
           <label
             style={{
               display: 'inline-flex',
@@ -133,104 +194,56 @@ export function BrvmAlertsClient({
             <p style={{ fontSize: 11, color: 'var(--admin-text-muted)', marginTop: 6 }}>
               Aucun provider IA configuré. Renseignez <code>DEEPSEEK_API_KEY</code>,{' '}
               <code>OPENAI_API_KEY</code> ou <code>ANTHROPIC_API_KEY</code> dans{' '}
-              <code>.env.local</code> puis redéployez.
+              <code>.env.local</code>.
             </p>
           )}
         </div>
 
         <div
           style={{
-            display: 'flex',
-            gap: 10,
-            borderTop: '1px solid var(--admin-border)',
-            paddingTop: 'var(--s4)',
-            flexWrap: 'wrap',
+            display: 'flex', gap: 10, flexWrap: 'wrap',
+            borderTop: '1px solid var(--admin-border)', paddingTop: 'var(--s4)',
+            alignItems: 'center',
           }}
         >
           <button
             type="button"
             onClick={() => trigger(true)}
-            disabled={loading !== null}
+            disabled={loading !== null || !anySelected}
             style={secondaryBtn(loading === 'preview')}
           >
-            {loading === 'preview' ? 'Chargement…' : '👁 Prévisualiser (dry-run)'}
+            {loading === 'preview' ? 'Chargement…' : '👁 Prévisualiser'}
           </button>
           <button
             type="button"
             onClick={() => trigger(false)}
-            disabled={loading !== null}
+            disabled={loading !== null || !anySelected}
             style={primaryBtn(loading === 'send')}
           >
-            {loading === 'send' ? 'Envoi…' : '✉ Envoyer maintenant aux admins'}
+            {loading === 'send' ? 'Envoi en cours…' : '✉ Envoyer aux admins'}
           </button>
+          <button
+            type="button"
+            onClick={saveConfig}
+            disabled={savingConfig}
+            style={secondaryBtn(false)}
+          >
+            {savingConfig ? 'Enregistrement…' : '💾 Enregistrer les préférences'}
+          </button>
+          {configSaved && (
+            <span style={{ fontSize: 12, color: 'var(--admin-success, #8BE07A)' }}>
+              {configSaved}
+            </span>
+          )}
         </div>
       </div>
 
-      {/* ── Résultat ── */}
-      {result && (
-        <div
-          style={{
-            padding: 'var(--s5)',
-            marginBottom: 'var(--s6)',
-            background: result.ok
-              ? 'rgba(139, 224, 122, 0.08)'
-              : 'rgba(231, 76, 60, 0.1)',
-            border: result.ok
-              ? '1px solid rgba(139, 224, 122, 0.3)'
-              : '1px solid rgba(231, 76, 60, 0.3)',
-            borderRadius: 12,
-          }}
-        >
-          <div
-            style={{
-              fontFamily: 'var(--fd)',
-              fontSize: 18,
-              fontWeight: 600,
-              color: result.ok ? '#8BE07A' : '#ff9b9b',
-              marginBottom: 8,
-            }}
-          >
-            {result.ok
-              ? result.dry_run
-                ? 'Prévisualisation OK'
-                : 'Digest envoyé'
-              : 'Échec'}
-          </div>
-          <div style={{ fontSize: 13, color: 'var(--admin-text)', lineHeight: 1.7 }}>
-            {result.error ? (
-              <div>Erreur : {result.error}</div>
-            ) : (
-              <>
-                <div>
-                  <strong>Période :</strong> {result.period?.label ?? '—'}
-                </div>
-                <div>
-                  <strong>Documents :</strong> {result.total_documents ?? 0}
-                </div>
-                <div>
-                  <strong>Destinataires :</strong> {result.recipients ?? 0} admin
-                  {(result.recipients ?? 0) > 1 ? 's' : ''}
-                </div>
-                {!result.dry_run && (
-                  <div>
-                    <strong>Envoi :</strong> {result.sent ?? 0} OK · {result.failed ?? 0} échec
-                    {(result.failed ?? 0) > 1 ? 's' : ''}
-                  </div>
-                )}
-                <div>
-                  <strong>IA :</strong>{' '}
-                  {result.ai?.provider
-                    ? `oui · ${result.ai.provider}`
-                    : result.ai?.enabled
-                      ? 'demandée mais skippée (pas de clé)'
-                      : 'désactivée'}
-                </div>
-                <div>
-                  <strong>Durée :</strong> {result.duration_ms ?? 0} ms
-                </div>
-              </>
-            )}
-          </div>
+      {/* ── Résultats ── */}
+      {results.length > 0 && (
+        <div style={{ marginBottom: 'var(--s6)', display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {results.map((r, i) => (
+            <ResultCard key={`${r.frequency}-${i}`} result={r} />
+          ))}
         </div>
       )}
 
@@ -257,8 +270,7 @@ export function BrvmAlertsClient({
         {logs.length === 0 ? (
           <p style={{ color: 'var(--admin-text-muted)', fontSize: 13, fontStyle: 'italic' }}>
             Aucun digest enregistré. Les envois apparaîtront ici après le premier déclenchement
-            (ou après application de la migration{' '}
-            <code>025_brvm_alerts.sql</code>).
+            (appliquer la migration <code>025_brvm_alerts.sql</code> si nécessaire).
           </p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -272,6 +284,74 @@ export function BrvmAlertsClient({
   )
 }
 
+function ResultCard({ result }: { result: DigestResult }) {
+  const freqLabel = FREQUENCIES.find((f) => f.id === result.frequency)?.label ?? result.frequency
+  return (
+    <div
+      style={{
+        padding: 'var(--s4) var(--s5)',
+        background: result.ok
+          ? 'rgba(139, 224, 122, 0.08)'
+          : 'rgba(231, 76, 60, 0.1)',
+        border: result.ok
+          ? '1px solid rgba(139, 224, 122, 0.3)'
+          : '1px solid rgba(231, 76, 60, 0.3)',
+        borderRadius: 12,
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
+        <span
+          style={{
+            padding: '3px 10px',
+            borderRadius: 999,
+            fontSize: 10,
+            fontWeight: 700,
+            background: 'rgba(197,160,40,.15)',
+            color: 'var(--admin-accent)',
+            textTransform: 'uppercase',
+          }}
+        >
+          {freqLabel}
+        </span>
+        <span
+          style={{
+            fontSize: 14,
+            fontWeight: 600,
+            color: result.ok ? '#8BE07A' : '#ff9b9b',
+          }}
+        >
+          {result.ok
+            ? result.dry_run
+              ? 'Prévisualisation OK'
+              : 'Digest envoyé'
+            : 'Échec'}
+        </span>
+        <span style={{ fontSize: 12, color: 'var(--admin-text-muted)', marginLeft: 'auto' }}>
+          {result.duration_ms ?? 0} ms
+        </span>
+      </div>
+      <div style={{ marginTop: 6, fontSize: 13, color: 'var(--admin-text)' }}>
+        {result.error ? (
+          <span>Erreur : {result.error}</span>
+        ) : (
+          <>
+            <strong>{result.total_documents ?? 0}</strong> document
+            {(result.total_documents ?? 0) > 1 ? 's' : ''}
+            {' · '}
+            {result.recipients ?? 0} admin{(result.recipients ?? 0) > 1 ? 's' : ''} cible
+            {(result.recipients ?? 0) > 1 ? 's' : ''}
+            {!result.dry_run && (
+              <> · {result.sent ?? 0} OK / {result.failed ?? 0} échec{(result.failed ?? 0) > 1 ? 's' : ''}</>
+            )}
+            {result.ai?.provider && <> · IA {result.ai.provider}</>}
+            {result.period?.label && <> · {result.period.label}</>}
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function LogRow({ log }: { log: AlertLog }) {
   const statusColor: Record<string, string> = {
     success: '#8BE07A',
@@ -281,10 +361,7 @@ function LogRow({ log }: { log: AlertLog }) {
   }
   const color = statusColor[log.status] ?? '#B0B5C5'
   const date = new Date(log.created_at).toLocaleString('fr-FR', {
-    day: 'numeric',
-    month: 'short',
-    hour: '2-digit',
-    minute: '2-digit',
+    day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
   })
   return (
     <div
@@ -333,18 +410,12 @@ function LogRow({ log }: { log: AlertLog }) {
   )
 }
 
-/* ── UI primitives ── */
-
 function Label({ children }: { children: React.ReactNode }) {
   return (
     <div
       style={{
-        fontSize: 11,
-        textTransform: 'uppercase',
-        letterSpacing: '.1em',
-        color: 'var(--admin-text-muted)',
-        fontWeight: 600,
-        marginBottom: 8,
+        fontSize: 11, textTransform: 'uppercase', letterSpacing: '.1em',
+        color: 'var(--admin-text-muted)', fontWeight: 600, marginBottom: 8,
       }}
     >
       {children}
@@ -352,30 +423,12 @@ function Label({ children }: { children: React.ReactNode }) {
   )
 }
 
-function pillStyle(active: boolean): React.CSSProperties {
-  return {
-    padding: '8px 16px',
-    background: active ? 'rgba(197,160,40,.18)' : 'var(--admin-bg)',
-    border: active ? '1px solid var(--admin-accent)' : '1px solid var(--admin-border)',
-    borderRadius: 999,
-    color: active ? 'var(--admin-accent)' : 'var(--admin-text)',
-    fontSize: 13,
-    fontWeight: active ? 700 : 500,
-    cursor: 'pointer',
-    fontFamily: 'var(--fb)',
-  }
-}
-
 function primaryBtn(busy: boolean): React.CSSProperties {
   return {
     padding: '10px 20px',
     background: busy ? 'rgba(197,160,40,.3)' : 'var(--admin-accent, #C5A028)',
-    color: '#0F1117',
-    border: 'none',
-    borderRadius: 8,
-    fontFamily: 'var(--fb)',
-    fontSize: 13,
-    fontWeight: 700,
+    color: '#0F1117', border: 'none', borderRadius: 8,
+    fontFamily: 'var(--fb)', fontSize: 13, fontWeight: 700,
     cursor: busy ? 'wait' : 'pointer',
   }
 }
@@ -383,13 +436,9 @@ function primaryBtn(busy: boolean): React.CSSProperties {
 function secondaryBtn(busy: boolean): React.CSSProperties {
   return {
     padding: '10px 20px',
-    background: 'transparent',
-    color: 'var(--admin-text)',
-    border: '1px solid var(--admin-border)',
-    borderRadius: 8,
-    fontFamily: 'var(--fb)',
-    fontSize: 13,
-    fontWeight: 600,
+    background: 'transparent', color: 'var(--admin-text)',
+    border: '1px solid var(--admin-border)', borderRadius: 8,
+    fontFamily: 'var(--fb)', fontSize: 13, fontWeight: 600,
     cursor: busy ? 'wait' : 'pointer',
   }
 }

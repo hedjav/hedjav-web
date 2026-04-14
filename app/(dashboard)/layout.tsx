@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
+import { InactivityMonitor } from '@/components/features/InactivityMonitor'
 import { requireUser, getCurrentProfile } from '@/lib/auth/session'
 import { touchLastVisit } from '@/lib/dashboard/queries'
 
@@ -81,6 +82,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         </div>
       </main>
       <Footer />
+      <InactivityMonitor />
     </>
   )
 }

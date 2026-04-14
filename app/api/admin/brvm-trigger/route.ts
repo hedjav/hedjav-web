@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { siteUrl } from '@/lib/url'
 
 /**
  * POST /api/admin/brvm-trigger
@@ -22,7 +23,6 @@ export async function POST() {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
   const token = process.env.INTERNAL_API_TOKEN
 
   if (!token) {
@@ -30,7 +30,7 @@ export async function POST() {
   }
 
   try {
-    const res = await fetch(`${appUrl}/api/brvm/scrape`, {
+    const res = await fetch(siteUrl('/api/brvm/scrape'), {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
     })

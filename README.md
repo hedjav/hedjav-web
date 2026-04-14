@@ -2,7 +2,7 @@
 
 > **École en ligne de la Gestion de Patrimoine — Zone UEMOA**
 >
-> Plateforme numérique de Hermann D. AVAHOUIN — analyste financier, 17 ans d'expérience à Bank of Africa Bénin, fondateur de KTALYZ Conseils.
+> Plateforme numérique de Hermann D. AVAHOUIN — analyste financier, 13 ans d'expérience à Bank of Africa Bénin, fondateur de KTALYZ Conseils.
 
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)](https://www.typescriptlang.org/)

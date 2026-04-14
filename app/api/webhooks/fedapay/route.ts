@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { sendEmail } from '@/lib/email/smtp'
 import { purchaseConfirmationEmail } from '@/lib/email/templates'
 import { createNotification } from '@/lib/notifications/queries'
+import { siteUrl } from '@/lib/url'
 
 /**
  * POST /api/webhooks/fedapay
@@ -152,7 +153,7 @@ export async function POST(request: Request) {
     ).catch((e) => console.error('[fedapay] notification failed', e))
 
     // Générer facture
-    fetch(`${process.env.NEXT_PUBLIC_APP_URL ?? 'https://egp.hedjav.com'}/api/invoices/generate`, {
+    fetch(siteUrl('/api/invoices/generate'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.INTERNAL_API_TOKEN}` },
       body: JSON.stringify({ purchase_id: purchase.id }),
