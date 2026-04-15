@@ -1,7 +1,15 @@
 import type { NextConfig } from 'next'
+import path from 'node:path'
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  // Next 16/Turbopack auto-détecte normalement le workspace root via les
+  // lockfiles, mais la détection échoue sur cette install Windows et il
+  // remonte à c:\Users\HP\Documents (pas de lockfile) → les imports CSS
+  // Tailwind v4 (`@import "tailwindcss"`) ne résolvent plus. On force.
+  turbopack: {
+    root: path.resolve(__dirname),
+  },
   images: {
     remotePatterns: [
       // Supabase Storage (covers uploadées via admin futures)
