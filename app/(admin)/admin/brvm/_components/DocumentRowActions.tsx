@@ -7,6 +7,7 @@ type AiScore = {
   importance: ImportanceLevel
   score_100: number
   rationale?: string
+  is_heuristic?: boolean
 }
 
 type Props = {
@@ -52,7 +53,7 @@ export function DocumentRowActions({
         fallback_used?: boolean
       }
       if (data.ok && data.content) {
-        setScore(data.content)
+        setScore({ ...data.content, is_heuristic: Boolean(data.fallback_used) })
         setFeedback(data.fallback_used ? 'Scoré (heuristique)' : 'Scoré (IA)')
       } else {
         setFeedback(data.error ?? 'Erreur scoring')
@@ -213,7 +214,10 @@ function ImportanceBadge({ score }: { score: AiScore }) {
   const t = themes[score.importance]
   return (
     <span
-      title={score.rationale ?? ''}
+      title={
+        (score.rationale ?? '') +
+        (score.is_heuristic ? ' · Heuristique (pas encore re-scoré via IA)' : ' · Score IA')
+      }
       style={{
         fontSize: 10,
         padding: '2px 8px',
@@ -224,9 +228,10 @@ function ImportanceBadge({ score }: { score: AiScore }) {
         textTransform: 'uppercase',
         letterSpacing: '.05em',
         whiteSpace: 'nowrap',
+        opacity: score.is_heuristic ? 0.85 : 1,
       }}
     >
-      {IMPORTANCE_LABELS[score.importance]} · {score.score_100}
+      {score.is_heuristic ? '~' : ''}{IMPORTANCE_LABELS[score.importance]} · {score.score_100}
     </span>
   )
 }

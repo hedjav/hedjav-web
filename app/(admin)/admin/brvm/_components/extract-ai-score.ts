@@ -4,6 +4,8 @@ type ExtractedScore = {
   importance: ImportanceLevel
   score_100: number
   rationale?: string
+  /** true = score issu de l'heuristique locale (provider null) ; false = score IA réelle. */
+  is_heuristic?: boolean
 } | null
 
 /**
@@ -19,6 +21,8 @@ export function extractAiScore(metadata: Record<string, unknown> | null | undefi
     importance?: unknown
     score_100?: unknown
     rationale?: unknown
+    provider?: unknown
+    fallback_used?: unknown
   }
   const imp = r.importance
   if (
@@ -28,9 +32,11 @@ export function extractAiScore(metadata: Record<string, unknown> | null | undefi
     return null
   }
   const score = typeof r.score_100 === 'number' ? r.score_100 : 0
+  const isHeuristic = r.provider == null || r.fallback_used === true
   return {
     importance: imp as ImportanceLevel,
     score_100: Math.max(0, Math.min(100, Math.round(score))),
     rationale: typeof r.rationale === 'string' ? r.rationale : undefined,
+    is_heuristic: isHeuristic,
   }
 }

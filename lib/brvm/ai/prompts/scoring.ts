@@ -104,6 +104,58 @@ export function parseScoringResult(raw: string): ScoringResult | null {
   }
 }
 
+/** Entrée minimale pour un scoring heuristique rapide (pas besoin du doc complet). */
+export type ScoringHints = {
+  doc_family?: string | null
+  doc_subtype?: string | null
+  doc_type?: string | null
+  sector?: string | null
+  indices?: string[]
+}
+
+/**
+ * Version "light" du scoring heuristique : prend juste les hints (pas besoin
+ * d'un EnrichedDocument). Utilisé par `upsertDocument` pour scorer chaque
+ * nouveau doc à l'insertion, sans coût IA.
+ */
+export function heuristicScoringFromHints(hints: ScoringHints): ScoringResult {
+  const family = hints.doc_family ?? null
+  const subtype = hints.doc_subtype ?? hints.doc_type ?? ''
+  const indices = hints.indices ?? []
+  const sector = hints.sector ?? null
+
+  let score = 30
+  if (family === 'report') score += 20
+  if (subtype === 'rapport_annuel') score += 20
+  if (subtype === 'notation_financiere') score += 15
+  if (subtype === 'convocation_ag') score += 10
+  if (subtype === 'franchissement_seuil') score += 10
+  if (subtype === 'changement_dirigeant') score += 15
+  if (subtype === 'boc') score += 5
+  if (subtype === 'bulletin_mensuel') score += 10
+  if (subtype === 'annee_boursiere') score += 20
+
+  if (indices.includes('BRVM-30')) score += 10
+  if (indices.includes('BRVM-PRES')) score += 10
+
+  if (sector === 'Télécommunications' || sector === 'Finance' || sector === 'Énergie') score += 8
+
+  score = Math.max(0, Math.min(100, score))
+  let importance: ImportanceLevel
+  if (score >= 70) importance = 'priority'
+  else if (score >= 50) importance = 'important'
+  else if (score >= 30) importance = 'useful'
+  else importance = 'noise'
+
+  return {
+    importance,
+    score_100: score,
+    rationale: `Heuristique : famille=${family ?? '?'} · subtype=${subtype || '?'} · indices=${indices.join(',') || '—'}`,
+    tags: [family, subtype, ...indices].filter((x): x is string => Boolean(x)),
+    editorial_hook: '',
+  }
+}
+
 /**
  * Scoring heuristique de secours quand l'IA n'est pas disponible.
  * Basé sur family+subtype+indices+secteur (règles simples).

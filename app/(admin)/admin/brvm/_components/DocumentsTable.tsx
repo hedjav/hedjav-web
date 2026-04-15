@@ -28,6 +28,7 @@ export type DocumentRow = {
     importance: ImportanceLevel
     score_100: number
     rationale?: string
+    is_heuristic?: boolean
   } | null
 }
 

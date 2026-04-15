@@ -2,6 +2,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { computeChecksum } from './checksum'
 import { resolvePeriod, type PeriodRange, type PeriodPreset } from './periods'
 import { getSourceBySlug } from './sources'
+import { heuristicScoringFromHints } from './ai/prompts/scoring'
 import type { BrvmDocument, DocFamily, DocType, DocumentInput } from './types'
 
 /** Infère doc_family depuis doc_type legacy si non fourni explicitement. */
@@ -60,6 +61,31 @@ export async function upsertDocument(input: DocumentInput): Promise<UpsertResult
   const docFamily = input.doc_family ?? inferDocFamily(input.doc_type)
   const docSubtype = input.doc_subtype ?? input.doc_type
 
+  // Scoring heuristique automatique à l'insertion (zéro coût IA).
+  // Le badge Importance apparaîtra immédiatement dans l'UI admin. Un
+  // re-score IA réel peut être lancé ensuite via /api/brvm/ai/score ou
+  // /api/brvm/ai/score-batch sans écraser les champs inutilement.
+  const heuristic = heuristicScoringFromHints({
+    doc_family: docFamily,
+    doc_subtype: docSubtype,
+    doc_type: input.doc_type,
+    sector: input.sector ?? null,
+    indices: input.market_index ? [input.market_index] : [],
+  })
+  const mergedMetadata: Record<string, unknown> = {
+    ...(input.metadata ?? {}),
+    ai_score: {
+      importance: heuristic.importance,
+      score_100: heuristic.score_100,
+      rationale: heuristic.rationale,
+      tags: heuristic.tags,
+      scored_at: new Date().toISOString(),
+      provider: null,
+      model: null,
+      fallback_used: true,
+    },
+  }
+
   const { data, error } = await db
     .from('brvm_documents')
     .insert({
@@ -79,7 +105,7 @@ export async function upsertDocument(input: DocumentInput): Promise<UpsertResult
       market_index: input.market_index ?? null,
       checksum,
       published_at: input.published_at ?? null,
-      metadata: input.metadata ?? {},
+      metadata: mergedMetadata,
     })
     .select('id')
     .single()
