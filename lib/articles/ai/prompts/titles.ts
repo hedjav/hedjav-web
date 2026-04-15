@@ -8,7 +8,8 @@ export const TITLES_PROMPT_VERSION = 'articles/titles@v1'
 
 export function buildTitlesPrompt(
   ctx: ArticleContext,
-  angle?: string
+  angle?: string,
+  expertPrompt: string | null = null,
 ): { system: string; prompt: string } {
   const system = composeArticleSystem(`
 Tu proposes **5 à 8 titres d'article** optimisés lecture + SEO pour le blog egp.hedjav.com.
@@ -29,7 +30,7 @@ Règles :
 - Pas de titres racoleurs type "CHOQUANT" ou "vous ne devinerez jamais".
 - Intégrer FCFA, UEMOA, BRVM quand c'est pertinent pour le sujet.
 - Ne jamais dépasser 70 caractères.
-`)
+`, expertPrompt)
 
   const angleHint = angle ? `ANGLE IMPOSÉ : ${angle}\n` : ''
   const task = `${angleHint}TÂCHE : Propose 5 à 8 titres au format JSON strict. Rien d'autre.`

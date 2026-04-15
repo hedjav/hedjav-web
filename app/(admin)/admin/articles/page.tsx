@@ -31,25 +31,57 @@ export default async function AdminArticlesPage() {
 
   return (
     <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--s8)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--s8)', flexWrap: 'wrap', gap: 12 }}>
         <h1 style={{ fontFamily: 'var(--fd)', fontSize: 'var(--text-4xl)', fontWeight: 600, color: 'var(--admin-text)' }}>
           Articles
         </h1>
-        <Link
-          href="/admin/articles/new"
-          style={{
-            background: 'var(--admin-accent)',
-            color: '#0F1117',
-            padding: '10px 20px',
-            borderRadius: 8,
-            fontWeight: 600,
-            fontSize: 13,
-            fontFamily: 'var(--fb)',
-            textDecoration: 'none',
-          }}
-        >
-          + Nouvel article
-        </Link>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+          <Link
+            href="/admin/articles/expert-prompt"
+            style={{
+              color: 'var(--admin-text-muted)',
+              fontSize: 12,
+              textDecoration: 'none',
+              padding: '8px 14px',
+              borderRadius: 8,
+              border: '1px solid var(--admin-border)',
+              fontFamily: 'var(--fb)',
+              fontWeight: 600,
+            }}
+          >
+            Prompt expert IA
+          </Link>
+          <Link
+            href="/admin/ia/articles"
+            style={{
+              color: 'var(--admin-accent)',
+              fontSize: 13,
+              textDecoration: 'none',
+              padding: '9px 16px',
+              borderRadius: 8,
+              border: '1px solid color-mix(in srgb, var(--admin-accent) 50%, transparent)',
+              fontFamily: 'var(--fb)',
+              fontWeight: 600,
+            }}
+          >
+            Générer avec IA
+          </Link>
+          <Link
+            href="/admin/articles/new"
+            style={{
+              background: 'var(--admin-accent)',
+              color: '#0F1117',
+              padding: '10px 20px',
+              borderRadius: 8,
+              fontWeight: 600,
+              fontSize: 13,
+              fontFamily: 'var(--fb)',
+              textDecoration: 'none',
+            }}
+          >
+            + Nouvel article
+          </Link>
+        </div>
       </div>
       <ArticlesTable rows={rows} />
     </>

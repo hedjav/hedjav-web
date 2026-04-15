@@ -18,16 +18,31 @@ export type ArticleSource = 'manual' | 'ai'
 /**
  * Type de source utilisé par la couche IA. Persistance dans
  * articles.metadata.source_type.
+ *
+ * - `manual`           : saisie directe admin
+ * - `ai_subject`       : sujet libre uniquement
+ * - `ai_brvm_single`   : 1 document BRVM de référence
+ * - `ai_brvm_batch`    : lot de documents BRVM (période, société, catégorie, sélection)
+ * - `ai_hybrid`        : sujet libre + documents BRVM combinés
  */
-export type ArticleAiSource = 'ai_subject' | 'ai_brvm' | 'manual'
+export type ArticleAiSource =
+  | 'manual'
+  | 'ai_subject'
+  | 'ai_brvm_single'
+  | 'ai_brvm_batch'
+  | 'ai_hybrid'
 
 /** Payload de traçabilité persisté dans articles.metadata. */
 export type ArticleTraceability = {
   source_type: ArticleAiSource
   source_documents?: string[]
+  /** Nombre de documents BRVM de référence (utile pour distinguer single vs batch sans parser source_type). */
+  source_documents_count?: number
   provider?: string | null
   model?: string | null
   prompt_version?: string
+  /** true si le prompt expert (site_config.articles_expert_prompt) était rempli au moment de la génération. */
+  expert_prompt_used?: boolean
   generated_at?: string
   subject?: string
   angle?: string

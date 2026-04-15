@@ -4,6 +4,7 @@ import type { DocFamily } from '@/lib/brvm/types'
 import type { ImportanceLevel } from '@/lib/brvm/ai/types'
 import { EmptyState } from './EmptyState'
 import { DocumentRowActions } from './DocumentRowActions'
+import { BatchGenerateBar } from './BatchGenerateBar'
 
 export type DocumentRow = {
   id: string
@@ -39,6 +40,8 @@ type Props = {
   emptyCta?: { href: string; label: string }
   showIssuer?: boolean
   showFamily?: boolean
+  /** Libellé du lot pour le bouton « Générer un article (N) » — ex: "BOC 7j". */
+  batchContextLabel?: string
 }
 
 function fmtDate(dateIso: string | null): string {
@@ -71,6 +74,7 @@ export function DocumentsTable({
   emptyCta,
   showIssuer = true,
   showFamily = false,
+  batchContextLabel,
 }: Props) {
   if (rows.length === 0) {
     return <EmptyState title="Rien à afficher" message={emptyMessage} cta={emptyCta} />
@@ -101,6 +105,10 @@ export function DocumentsTable({
           {total > rows.length ? ` / ${total}` : ''} document{rows.length > 1 ? 's' : ''}
           <span style={{ marginLeft: 10, opacity: 0.7 }}>· Tri : plus récent en haut</span>
         </span>
+        <BatchGenerateBar
+          visibleIds={rows.map((r) => r.id)}
+          contextLabel={batchContextLabel}
+        />
       </div>
       <div style={{ overflowX: 'auto' }}>
         <table

@@ -1,8 +1,19 @@
 /**
- * System prompt de base partagé par TOUTES les tâches IA articles
- * (angles, titres, draft, scoring).
+ * Architecture à 3 couches du system prompt articles :
  *
- * Un seul point d'édition : faire évoluer ici pour aligner l'ensemble.
+ *   1. ARTICLE_SYSTEM_BASE         — cadre Hedjav / EGP commun à tout (toujours actif)
+ *   2. task-specific instructions  — propres à angles / titres / draft / scoring
+ *   3. expert prompt (optionnel)   — injecté via site_config.articles_expert_prompt
+ *
+ * Tant que la couche 3 n'est pas renseignée, le système tourne avec les
+ * deux premières couches. Dès qu'un prompt expert est fourni par un
+ * analyste financier, il enrichit tous les use cases sans code change.
+ *
+ * Priorité d'instructions :
+ *   - La couche 3 est PLACÉE EN DERNIER volontairement : en LLMs, les
+ *     dernières instructions du system dominent quand il y a conflit.
+ *     C'est cohérent avec l'intention produit : « si l'expert dit
+ *     quelque chose de différent, il a raison ».
  */
 
 export const ARTICLE_SYSTEM_BASE = `Tu rédiges pour **egp.hedjav.com** — École en ligne de la Gestion de Patrimoine (marque Hedjav, maître d'œuvre KTALYZ SARL), dirigée par Hermann D. AVAHOUIN, analyste financier avec 13 ans d'expérience BOA Bénin.
@@ -24,9 +35,25 @@ Format markdown attendu dans le corps :
 - Pas de \`#\` de titre principal dans le corps (le champ \`title\` le porte).`
 
 /**
- * Compose le system prompt final : base + instructions spécifiques.
- * Identique au pattern BRVM pour cohérence maintenance.
+ * Compose le system prompt final avec 3 couches (la 3ème est optionnelle).
+ *
+ * @param taskExtra Instructions spécifiques à la tâche (angles, titres, draft, scoring).
+ * @param expertPrompt Prompt expert optionnel (chargé depuis site_config).
  */
-export function composeArticleSystem(extra: string): string {
-  return `${ARTICLE_SYSTEM_BASE}\n\n---\nInstructions spécifiques pour cette tâche :\n${extra.trim()}`
+export function composeArticleSystem(
+  taskExtra: string,
+  expertPrompt: string | null = null,
+): string {
+  const layers: string[] = [ARTICLE_SYSTEM_BASE]
+  const task = taskExtra.trim()
+  if (task) {
+    layers.push(`---\nInstructions spécifiques pour cette tâche :\n${task}`)
+  }
+  const expert = expertPrompt?.trim()
+  if (expert) {
+    layers.push(
+      `---\nInstructions de l'expert métier (à appliquer en priorité sur les règles ci-dessus en cas de conflit) :\n${expert}`,
+    )
+  }
+  return layers.join('\n\n')
 }

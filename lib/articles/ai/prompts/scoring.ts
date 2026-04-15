@@ -15,11 +15,14 @@ export type ArticleScoringResult = {
   feedback: string
 }
 
-export function buildScoringPrompt(article: {
-  title: string
-  category: string | null
-  body: string
-}): { system: string; prompt: string } {
+export function buildScoringPrompt(
+  article: {
+    title: string
+    category: string | null
+    body: string
+  },
+  expertPrompt: string | null = null,
+): { system: string; prompt: string } {
   const system = composeArticleSystem(`
 Tu notes un article déjà rédigé sur 5 critères, chacun noté sur 20 :
 
@@ -44,7 +47,7 @@ Sortie attendue : **JSON strict** (pas de fence ni de texte hors JSON) :
 }
 
 Le \`score_100\` DOIT être exactement la somme des cinq critères.
-`)
+`, expertPrompt)
 
   const truncated = article.body.slice(0, 4000)
   const prompt = `TITRE : ${article.title}

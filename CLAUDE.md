@@ -316,6 +316,7 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 27. `028_brvm_doc_taxonomy.sql` (**doc_family + doc_subtype + emetteur_id FK** sur brvm_documents, backfill depuis doc_type, indexes combinés)
 28. `029_brvm_market_timeseries.sql` (**séries temporelles marché** : brvm_market_snapshots + brvm_market_ticks + brvm_indices_ticks, upsert idempotent, RLS admin)
 29. `030_articles_workflow.sql` (**workflow éditorial articles** : enum `article_status` draft/review/published/archived, backfill depuis is_published, trigger de synchro, indexes pour listes admin/blog)
+30. `031_articles_expert_prompt.sql` (**prompt expert optionnel** : seed de la clé `articles_expert_prompt` dans site_config, category=ia, injectée en 3ème couche du system prompt IA articles sans redéploiement)
 
 ---
 

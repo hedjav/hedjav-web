@@ -9,7 +9,8 @@ export const DRAFT_PROMPT_VERSION = 'articles/draft@v1'
 
 export function buildDraftPrompt(
   ctx: ArticleContext,
-  opts: { angle?: string; title?: string } = {}
+  opts: { angle?: string; title?: string } = {},
+  expertPrompt: string | null = null,
 ): { system: string; prompt: string } {
   const categoriesList = ARTICLE_CATEGORIES.map((c) => `"${c}"`).join(', ')
 
@@ -31,7 +32,7 @@ Règles non négociables :
 - Aucun CTA agressif (pas de "Achetez notre ebook", pas de "Inscrivez-vous").
 - Exemples concrets UEMOA : Dakar, Abidjan, Cotonou, Lomé, Ouagadougou, FCFA, BRVM, OHADA, CREPMF, BCEAO.
 - La \`category\` DOIT être l'une des valeurs autorisées, copiée mot pour mot (casse + accent).
-`)
+`, expertPrompt)
 
   const parts: string[] = []
   if (opts.title) parts.push(`TITRE IMPOSÉ : ${opts.title}`)

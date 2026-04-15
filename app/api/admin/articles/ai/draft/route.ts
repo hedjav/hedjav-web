@@ -64,7 +64,14 @@ export async function POST(request: Request) {
 
   const category = normaliseCategory(body.category ?? null)
   const sourceDocs = hasDocs ? (body.brvm_document_ids ?? []).slice(0, 15) : []
-  const sourceType: ArticleAiSource = sourceDocs.length > 0 ? 'ai_brvm' : 'ai_subject'
+  const sourceType: ArticleAiSource =
+    sourceDocs.length === 0
+      ? 'ai_subject'
+      : hasSubject
+      ? 'ai_hybrid'
+      : sourceDocs.length === 1
+      ? 'ai_brvm_single'
+      : 'ai_brvm_batch'
 
   const result = await generateArticleDraft({
     subject: body.subject,
@@ -104,14 +111,17 @@ export async function POST(request: Request) {
     slug = `${baseSlug}-${i}`
   }
 
-  const traceability = buildTraceability({
-    source_type: sourceType,
-    response: result,
-    source_documents: sourceDocs,
-    subject: body.subject,
-    angle: body.angle,
-    instructions: body.instructions,
-  })
+  const traceability = {
+    ...buildTraceability({
+      source_type: sourceType,
+      response: result,
+      source_documents: sourceDocs,
+      subject: body.subject,
+      angle: body.angle,
+      instructions: body.instructions,
+    }),
+    source_documents_count: sourceDocs.length,
+  }
 
   const { data, error } = await db
     .from('articles')

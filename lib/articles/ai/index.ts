@@ -3,8 +3,9 @@
  *
  * Trois tâches génératives (angles / titres / draft) + une évaluation (score).
  * Chaque fonction :
+ *   - charge le prompt expert optionnel (site_config.articles_expert_prompt)
  *   - construit le contexte via `buildArticleContext()`
- *   - compose prompt + system via `prompts/*.ts`
+ *   - compose prompt + system via `prompts/*.ts` (3 couches : base + task + expert)
  *   - appelle `generateText` via la couche IA unifiée (`lib/ai/client.ts`)
  *   - retourne une réponse normalisée `ArticleAiResponse<T>` avec traçabilité
  *
@@ -13,6 +14,7 @@
 
 import { generateText, getAiStatus } from '@/lib/ai/client'
 import { buildArticleContext, type ArticleContextInput, type ArticleContext } from './context'
+import { loadArticlesExpertPrompt } from './expert-prompt'
 import { ANGLES_PROMPT_VERSION, buildAnglesPrompt, parseAnglesResponse } from './prompts/angles'
 import { TITLES_PROMPT_VERSION, buildTitlesPrompt, parseTitlesResponse } from './prompts/titles'
 import { DRAFT_PROMPT_VERSION, buildDraftPrompt, parseDraftResponse } from './prompts/draft'
@@ -38,6 +40,8 @@ export type ArticleAiResponse<T> = {
   provider: string | null
   model: string | null
   prompt_version: string
+  /** true = le prompt expert (site_config.articles_expert_prompt) était rempli et a été injecté. */
+  expert_prompt_used: boolean
   error?: string
   skipped?: boolean
   usage?: { total_tokens?: number; duration_ms?: number }
@@ -51,32 +55,49 @@ const DEFAULTS: Record<ArticleAiTask, { temperature: number; max_tokens: number;
 }
 
 export async function generateArticleAngles(
-  input: ArticleContextInput
+  input: ArticleContextInput,
 ): Promise<ArticleAiResponse<ArticleAngle[]>> {
-  const ctx = await buildArticleContext(input)
-  return runTask<ArticleAngle[]>('angles', ctx, buildAnglesPrompt, parseAnglesResponse)
+  const [ctx, expertPrompt] = await Promise.all([
+    buildArticleContext(input),
+    loadArticlesExpertPrompt(),
+  ])
+  return runTask<ArticleAngle[]>(
+    'angles',
+    ctx,
+    expertPrompt,
+    (c, expert) => buildAnglesPrompt(c, expert),
+    parseAnglesResponse,
+  )
 }
 
 export async function generateArticleTitles(
-  input: ArticleContextInput & { angle?: string }
+  input: ArticleContextInput & { angle?: string },
 ): Promise<ArticleAiResponse<ArticleTitleIdea[]>> {
-  const ctx = await buildArticleContext(input)
+  const [ctx, expertPrompt] = await Promise.all([
+    buildArticleContext(input),
+    loadArticlesExpertPrompt(),
+  ])
   return runTask<ArticleTitleIdea[]>(
     'titles',
     ctx,
-    (c) => buildTitlesPrompt(c, input.angle),
+    expertPrompt,
+    (c, expert) => buildTitlesPrompt(c, input.angle, expert),
     parseTitlesResponse,
   )
 }
 
 export async function generateArticleDraft(
-  input: ArticleContextInput & { angle?: string; title?: string }
+  input: ArticleContextInput & { angle?: string; title?: string },
 ): Promise<ArticleAiResponse<ArticleDraftContent>> {
-  const ctx = await buildArticleContext(input)
+  const [ctx, expertPrompt] = await Promise.all([
+    buildArticleContext(input),
+    loadArticlesExpertPrompt(),
+  ])
   return runTask<ArticleDraftContent>(
     'draft',
     ctx,
-    (c) => buildDraftPrompt(c, { angle: input.angle, title: input.title }),
+    expertPrompt,
+    (c, expert) => buildDraftPrompt(c, { angle: input.angle, title: input.title }, expert),
     parseDraftResponse,
   )
 }
@@ -88,7 +109,14 @@ export async function scoreArticleWithAi(article: {
 }): Promise<ArticleAiResponse<ArticleScoringResult>> {
   const defaults = DEFAULTS.scoring
   const status = getAiStatus()
-  const { system, prompt } = buildScoringPrompt(article)
+  const expertPrompt = await loadArticlesExpertPrompt()
+  const { system, prompt } = buildScoringPrompt(article, expertPrompt)
+
+  const baseResponse = {
+    task: 'scoring' as const,
+    prompt_version: defaults.version,
+    expert_prompt_used: Boolean(expertPrompt),
+  }
 
   const res = await generateText({
     prompt,
@@ -100,12 +128,11 @@ export async function scoreArticleWithAi(article: {
 
   if (!res.ok) {
     return {
+      ...baseResponse,
       ok: false,
-      task: 'scoring',
       content: null,
       provider: res.provider ?? null,
       model: res.model ?? null,
-      prompt_version: defaults.version,
       error: res.error,
       skipped: Boolean(res.skipped) || !status.available,
     }
@@ -114,23 +141,21 @@ export async function scoreArticleWithAi(article: {
   const parsed = parseScoringResponse(res.text)
   if (!parsed) {
     return {
+      ...baseResponse,
       ok: false,
-      task: 'scoring',
       content: null,
       provider: res.provider,
       model: res.model,
-      prompt_version: defaults.version,
       error: "Parsing JSON scoring échoué",
     }
   }
 
   return {
+    ...baseResponse,
     ok: true,
-    task: 'scoring',
     content: parsed,
     provider: res.provider,
     model: res.model,
-    prompt_version: defaults.version,
     usage: { total_tokens: res.usage?.total_tokens, duration_ms: res.duration_ms },
   }
 }
@@ -142,26 +167,32 @@ type Parser<T> = (raw: string) => T | null | T[]
 async function runTask<T>(
   task: ArticleAiTask,
   ctx: ArticleContext,
-  builder: (ctx: ArticleContext) => { system: string; prompt: string },
-  parser: Parser<T>
+  expertPrompt: string | null,
+  builder: (ctx: ArticleContext, expert: string | null) => { system: string; prompt: string },
+  parser: Parser<T>,
 ): Promise<ArticleAiResponse<T>> {
   const defaults = DEFAULTS[task]
   const status = getAiStatus()
 
+  const baseResponse = {
+    task,
+    prompt_version: defaults.version,
+    expert_prompt_used: Boolean(expertPrompt),
+  }
+
   if (!status.available) {
     return {
+      ...baseResponse,
       ok: false,
-      task,
       content: null,
       provider: null,
       model: null,
-      prompt_version: defaults.version,
       skipped: true,
       error: 'Aucun provider IA configuré',
     }
   }
 
-  const { system, prompt } = builder(ctx)
+  const { system, prompt } = builder(ctx, expertPrompt)
   const res = await generateText({
     prompt,
     system,
@@ -172,12 +203,11 @@ async function runTask<T>(
 
   if (!res.ok) {
     return {
+      ...baseResponse,
       ok: false,
-      task,
       content: null,
       provider: res.provider ?? null,
       model: res.model ?? null,
-      prompt_version: defaults.version,
       error: res.error,
       skipped: Boolean(res.skipped),
     }
@@ -186,23 +216,21 @@ async function runTask<T>(
   const parsed = parser(res.text)
   if (parsed == null || (Array.isArray(parsed) && parsed.length === 0)) {
     return {
+      ...baseResponse,
       ok: false,
-      task,
       content: null,
       provider: res.provider,
       model: res.model,
-      prompt_version: defaults.version,
       error: 'Parsing réponse IA échoué',
     }
   }
 
   return {
+    ...baseResponse,
     ok: true,
-    task,
     content: parsed as T,
     provider: res.provider,
     model: res.model,
-    prompt_version: defaults.version,
     usage: { total_tokens: res.usage?.total_tokens, duration_ms: res.duration_ms },
   }
 }
@@ -226,6 +254,7 @@ export function buildTraceability(args: {
     provider: args.response.provider ?? null,
     model: args.response.model ?? null,
     prompt_version: args.response.prompt_version,
+    expert_prompt_used: args.response.expert_prompt_used,
     generated_at: new Date().toISOString(),
     subject: args.subject,
     angle: args.angle,

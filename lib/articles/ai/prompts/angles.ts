@@ -5,7 +5,10 @@ import type { ArticleContext } from '../context'
 
 export const ANGLES_PROMPT_VERSION = 'articles/angles@v1'
 
-export function buildAnglesPrompt(ctx: ArticleContext): { system: string; prompt: string } {
+export function buildAnglesPrompt(
+  ctx: ArticleContext,
+  expertPrompt: string | null = null,
+): { system: string; prompt: string } {
   const system = composeArticleSystem(`
 Tu proposes **5 à 8 angles éditoriaux distincts** pour un article de blog.
 Chaque angle doit être concret, actionnable, et suffisamment différencié pour
@@ -26,7 +29,7 @@ Règles :
 - Pas plus de 8 angles. Si le sujet est étroit, 5 suffisent.
 - Pas d'angle redondant. Varier audience (particulier / entrepreneur / CGP / investisseur actions), horizon (court / long), niveau (initié / averti).
 - Pas de chiffre inventé dans \`why_now\`.
-`)
+`, expertPrompt)
 
   const prompt = buildUserPrompt(ctx, `TÂCHE : Propose 5 à 8 angles distincts au format JSON strict. Rien d'autre.`)
   return { system, prompt }
