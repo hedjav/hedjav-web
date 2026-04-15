@@ -1,22 +1,31 @@
-import { NextResponse } from 'next/server'
-import { checkInternalToken } from '@/lib/brvm/auth'
-import { scrapeRapportsIndex } from '@/lib/brvm/scrapers/brvm-org'
-import { upsertDocument } from '@/lib/brvm/documents'
-import { getSourceBySlugDetailed, markSourceScraped } from '@/lib/brvm/sources'
-import type { ScrapeResult } from '@/lib/brvm/types'
-
 /**
  * POST /api/brvm/scrape/rapports
  *
- * Scrape les rapports (annuels/trimestriels/semestriels) des sociétés cotées
- * depuis brvm.org. Remplace l'ancienne route /api/brvm/reports-scan.
+ * Scrape les rapports sociétés cotées :
+ *   - Legacy : rapports annuels / semestriels / trimestriels depuis l'index (brvm-org.ts)
+ *   - Extensions : états financiers et commentaires d'activité (_category.ts)
  *
- * Auth : Bearer INTERNAL_API_TOKEN
- * Cron recommandé : hebdomadaire dimanche 22h UTC
+ * Auth : Bearer INTERNAL_API_TOKEN OU session admin.
+ * Cron recommandé : hebdomadaire dimanche 22h UTC.
  */
+
+import { NextResponse } from 'next/server'
+import { checkAdminSession, checkInternalToken } from '@/lib/brvm/auth'
+import { scrapeRapportsIndex } from '@/lib/brvm/scrapers/brvm-org'
+import { scrapeRapportsExtensions } from '@/lib/brvm/scrapers/rapports-extensions'
+import { upsertDocument } from '@/lib/brvm/documents'
+import { getSourceBySlugDetailed, markSourceScraped } from '@/lib/brvm/sources'
+
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+export const maxDuration = 300
+
 export async function POST(request: Request) {
-  const unauthorized = checkInternalToken(request)
-  if (unauthorized) return unauthorized
+  const bearerCheck = checkInternalToken(request)
+  if (bearerCheck) {
+    const adminCheck = await checkAdminSession()
+    if (adminCheck.response) return adminCheck.response
+  }
 
   const start = Date.now()
   const sourceResult = await getSourceBySlugDetailed('brvm-org')
@@ -28,39 +37,43 @@ export async function POST(request: Request) {
   }
   const source = sourceResult.source
 
-  const result: ScrapeResult = {
-    source_slug: 'brvm-org',
-    doc_type: 'mixed',
-    discovered: 0,
-    skipped: 0,
-    errors: 0,
-    duration_ms: 0,
-    details: [],
-  }
-
   try {
-    const docs = await scrapeRapportsIndex()
-
-    for (const doc of docs) {
+    // 1. Legacy : rapports annuels/trim/sem depuis index
+    const legacyDocs = await scrapeRapportsIndex()
+    let legacyDiscovered = 0
+    let legacySkipped = 0
+    let legacyErrors = 0
+    for (const doc of legacyDocs) {
+      // Enforce doc_family report pour ces docs
+      doc.doc_family = 'report'
+      doc.doc_subtype = doc.doc_type
       const res = await upsertDocument(doc)
-      if (res.status === 'inserted') {
-        result.discovered++
-        result.details!.push({ title: doc.title, status: 'new' })
-      } else if (res.status === 'skipped') {
-        result.skipped++
-      } else {
-        result.errors++
-        result.details!.push({ title: doc.title, status: 'error', error: res.error })
-      }
+      if (res.status === 'inserted') legacyDiscovered++
+      else if (res.status === 'skipped') legacySkipped++
+      else legacyErrors++
     }
 
-    await markSourceScraped(source.id, { success: true })
-    result.duration_ms = Date.now() - start
-    return NextResponse.json({ ok: true, result })
+    // 2. Extensions : états financiers + commentaires d'activité
+    const extensions = await scrapeRapportsExtensions()
+
+    await markSourceScraped(source.id, {
+      success: legacyErrors === 0 && extensions.total_errors === 0,
+    })
+
+    return NextResponse.json({
+      ok: true,
+      duration_ms: Date.now() - start,
+      legacy: {
+        discovered: legacyDiscovered,
+        skipped: legacySkipped,
+        errors: legacyErrors,
+        total: legacyDocs.length,
+      },
+      extensions,
+    })
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'unknown'
     await markSourceScraped(source.id, { success: false, error: msg })
-    result.duration_ms = Date.now() - start
-    return NextResponse.json({ ok: false, error: msg, result }, { status: 500 })
+    return NextResponse.json({ ok: false, error: msg }, { status: 500 })
   }
 }

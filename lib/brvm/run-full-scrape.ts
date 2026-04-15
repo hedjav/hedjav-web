@@ -1,12 +1,17 @@
 /**
- * Orchestrateur BRVM partagé entre `/api/brvm/scrape` (sync) et
- * `/api/brvm/scrape/async` (fire-and-forget pour les crons externes).
+ * Orchestrateur BRVM (refonte 4 univers, 2026-04-15).
+ *
+ * Partagé entre `/api/brvm/scrape` (sync) et `/api/brvm/scrape/async`
+ * (fire-and-forget pour les crons externes).
  *
  * Étapes :
- *  1. Données marché (cours, indices, résumé séance) → brvm_data (sikafinance)
- *  2. Documents BOC                                    → brvm_documents (brvm.org)
- *  3. Rapports sociétés                                → brvm_documents (brvm.org)
- *  4. Annonces émetteurs                               → brvm_documents (brvm.org)
+ *  0. Référentiel émetteurs (seed + sync)                 → brvm_emetteurs
+ *  1. Données marché (séries temporelles nouvelles)       → brvm_market_* (brvm.org)
+ *  1bis. Données marché legacy (sikafinance, fallback)    → brvm_data
+ *  2. Publications (BOC + 6 autres sous-catégories)       → brvm_documents (brvm.org)
+ *  3. Rapports sociétés cotées (annuel/semestriel/trim +
+ *     états financiers + commentaires activité)           → brvm_documents
+ *  4. Annonces émetteurs (8 sous-catégories)              → brvm_documents
  *  5. Notification admin agrégée
  *
  * On ne télécharge JAMAIS les PDFs ici — métadonnées + URLs + checksum uniquement.
@@ -15,14 +20,20 @@
 import { createClient } from '@supabase/supabase-js'
 import {
   scrapeResumeSeance,
-  scrapeCoursActions,
-  scrapeIndices,
+  scrapeCoursActions as scrapeCoursActionsLegacy,
+  scrapeIndices as scrapeIndicesLegacy,
 } from '@/lib/brvm/scraper'
 import {
   scrapeBocListing,
   scrapeRapportsIndex,
-  scrapeAllAnnonces,
 } from '@/lib/brvm/scrapers/brvm-org'
+import { scrapeEmetteurs } from '@/lib/brvm/scrapers/emetteurs'
+import { scrapeResume } from '@/lib/brvm/scrapers/marche/resume'
+import { scrapeCoursActions } from '@/lib/brvm/scrapers/marche/cours-actions'
+import { scrapeIndices } from '@/lib/brvm/scrapers/marche/indices'
+import { scrapeAllAnnonces } from '@/lib/brvm/scrapers/annonces'
+import { scrapeAllPublications } from '@/lib/brvm/scrapers/publications'
+import { scrapeRapportsExtensions } from '@/lib/brvm/scrapers/rapports-extensions'
 import { upsertDocument } from '@/lib/brvm/documents'
 import { getSourceBySlugDetailed, markSourceScraped } from '@/lib/brvm/sources'
 import { createNotification } from '@/lib/notifications/queries'
@@ -50,11 +61,50 @@ export async function runFullScrape(): Promise<Record<string, unknown>> {
   const start = Date.now()
   const results: Record<string, unknown> = { date: dataDate }
 
-  // ── 1. Données marché → brvm_data (sikafinance, TLS strict, rapide) ──
+  // ── 0. Référentiel émetteurs (seed + sync brvm.org) ──
+  try {
+    const emetteursRes = await scrapeEmetteurs()
+    results.emetteurs = {
+      source: emetteursRes.source,
+      inserted: emetteursRes.inserted,
+      updated: emetteursRes.updated,
+      errors: emetteursRes.errors,
+    }
+  } catch (e) {
+    console.error('[run-full-scrape] emetteurs error:', e)
+    results.emetteurs = { error: e instanceof Error ? e.message : 'unknown' }
+  }
+
+  // ── 1. Séries temporelles marché (nouvelles tables brvm_market_*) ──
+  try {
+    const [resumeNew, coursNew, indicesNew] = await Promise.all([
+      scrapeResume().catch((e) => ({ ok: false, source: 'resume', error: String(e) })),
+      scrapeCoursActions().catch((e) => ({
+        ok: false,
+        source: 'cours-actions',
+        inserted: 0,
+        errors: 1,
+        error_messages: [String(e)],
+      })),
+      scrapeIndices().catch((e) => ({
+        ok: false,
+        source: 'indices',
+        inserted: 0,
+        errors: 1,
+        error_messages: [String(e)],
+      })),
+    ])
+    results.market_new = { resume: resumeNew, cours_actions: coursNew, indices: indicesNew }
+  } catch (e) {
+    console.error('[run-full-scrape] market-new error:', e)
+    results.market_new = { error: e instanceof Error ? e.message : 'unknown' }
+  }
+
+  // ── 1bis. Données marché legacy → brvm_data (sikafinance fallback) ──
   try {
     const [cours, indices, resume] = await Promise.all([
-      scrapeCoursActions(),
-      scrapeIndices(),
+      scrapeCoursActionsLegacy(),
+      scrapeIndicesLegacy(),
       scrapeResumeSeance(),
     ])
 
@@ -143,21 +193,44 @@ export async function runFullScrape(): Promise<Record<string, unknown>> {
   }
 
   try {
-    const [bocDocs, rapportDocs, annonceDocs] = await Promise.all([
+    // Legacy : BOC listing + rapports index (ingère via upsertDocument classique)
+    const [bocDocs, rapportDocs] = await Promise.all([
       scrapeBocListing(3),
       scrapeRapportsIndex(),
-      scrapeAllAnnonces(),
     ])
 
-    const [bocStats, rapportStats, annonceStats] = await Promise.all([
+    const [bocStats, rapportStats] = await Promise.all([
       ingest(bocDocs),
       ingest(rapportDocs),
-      ingest(annonceDocs),
     ])
 
     results.boc = bocStats
-    results.rapports = rapportStats
-    results.annonces = annonceStats
+    results.rapports_legacy = rapportStats
+
+    // Refonte 4 univers : les 8 annonces, les 7 publications et les 2
+    // extensions rapports se font via leur propre scrapeCategory qui ingest
+    // en interne (pas besoin d'ingest() supplémentaire ici).
+    const [annoncesRes, publicationsRes, rapportsExtRes] = await Promise.all([
+      scrapeAllAnnonces(),
+      scrapeAllPublications(),
+      scrapeRapportsExtensions(),
+    ])
+
+    results.annonces = {
+      discovered: annoncesRes.total_discovered,
+      skipped: annoncesRes.total_skipped,
+      errors: annoncesRes.total_errors,
+    }
+    results.publications = {
+      discovered: publicationsRes.total_discovered,
+      skipped: publicationsRes.total_skipped,
+      errors: publicationsRes.total_errors,
+    }
+    results.rapports_extensions = {
+      discovered: rapportsExtRes.total_discovered,
+      skipped: rapportsExtRes.total_skipped,
+      errors: rapportsExtRes.total_errors,
+    }
 
     await markSourceScraped(source.id, { success: true })
   } catch (e) {
@@ -167,19 +240,25 @@ export async function runFullScrape(): Promise<Record<string, unknown>> {
     await markSourceScraped(source.id, { success: false, error: msg })
   }
 
-  // ── 5. Notification admin agrégée ──
+  // ── 5. Notification admin agrégée (4 univers) ──
   const bocStats = results.boc as { new: number } | undefined
-  const rapportStats = results.rapports as { new: number } | undefined
-  const annonceStats = results.annonces as { new: number } | undefined
+  const rapportLegacy = results.rapports_legacy as { new: number } | undefined
+  const rapportExt = results.rapports_extensions as { discovered: number } | undefined
+  const annonces = results.annonces as { discovered: number } | undefined
+  const publications = results.publications as { discovered: number } | undefined
   const totalNew =
-    (bocStats?.new ?? 0) + (rapportStats?.new ?? 0) + (annonceStats?.new ?? 0)
+    (bocStats?.new ?? 0) +
+    (rapportLegacy?.new ?? 0) +
+    (rapportExt?.discovered ?? 0) +
+    (annonces?.discovered ?? 0) +
+    (publications?.discovered ?? 0)
 
   const duration = Math.round((Date.now() - start) / 1000)
   try {
     await createNotification(
       'report',
       `Veille BRVM ${dataDate} — ${totalNew} nouveauté(s)`,
-      `BOC: ${bocStats?.new ?? 0} | Rapports: ${rapportStats?.new ?? 0} | Annonces: ${annonceStats?.new ?? 0}. Durée : ${duration}s.`,
+      `Rapports: ${(rapportLegacy?.new ?? 0) + (rapportExt?.discovered ?? 0)} | Annonces: ${annonces?.discovered ?? 0} | Publications: ${(publications?.discovered ?? 0) + (bocStats?.new ?? 0)}. Durée : ${duration}s.`,
       { date: dataDate, results }
     )
   } catch (e) {

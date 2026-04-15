@@ -104,3 +104,75 @@ Dans FedaPay Dashboard -> Settings -> Webhooks :
 4. Configurer /admin/popup (activer pop-up lead magnet)
 5. Activer campagne dans /admin/campagnes
 6. Configurer cron-job.org
+
+---
+
+## Pré-prod — Audit iceberg (leçons)
+
+> Consolidation des fixes structurels pré-exploitation (fusion des anciens
+> `ICEBERG_AUDIT_FIXES.md` + `PHASE_EXPLOITATION_CHECKLIST.md`).
+
+### Correctifs structurels appliqués
+
+| # | Problème racine | Fix |
+|---|---|---|
+| 1 | Liens email localhost en prod | Helper unique `lib/url.ts` → `siteUrl(path)`, fallback `https://egp.hedjav.com`. Jamais de fallback localhost. |
+| 2 | Notifications `/admin` génériques | `admin_notifications.target_url` + `entity_type`/`entity_id`. Helper `lib/notifications/target-url.ts`. Trigger `notify_new_brvm_document` réécrit. |
+| 3 | Sessions illimitées | `proxy.ts` lit `profiles.last_visit_at` + seuils env : `ADMIN_INACTIVITY_MIN=30`, `MEMBER_INACTIVITY_DAYS=7`. `InactivityMonitor` ping `/api/auth/activity-touch`. Voir `SESSION_SECURITY_POLICY.md`. |
+| 4 | Crons 404 / docs contradictoires | Fusion doc cron unique. Retraits : `Sitemap Ping`, `BRVM Daily`, `BRVM Reports Scan`. Ajout 3 digests BRVM + supervision 30 min. |
+| 5 | Logs IA peu exploitables | CHECK élargi `success\|error\|skipped\|warning`. UI `/admin/ia` avec 6 KPIs + filtres + détail expansible. Indexes `idx_ai_logs_action_created`. |
+| 6 | Maintenance BRVM passive | `/api/brvm/maintenance` notifie auto sur `warning/critical` (dédup 6 h). |
+| 7 | Centre BRVM trop technique | Refonte 4 univers (voir `BRVM.md` § 1bis). |
+| 8 | Alertes fréquence unique | Multi-checkbox daily/weekly/monthly. Persistance `admin_settings.brvm_alert_frequencies`. |
+| 9 | Bio publique 17 ans vs 13 ans | `UPDATE site_config SET value = replace(value, '17 ans', '13 ans')` + fallback fichiers alignés. **CLAUDE.md : 13 ans partout**. |
+
+### Couche IA unifiée
+
+- `lib/ai/client.ts` — `generateText()` multi-provider (DeepSeek > OpenAI > Anthropic).
+- Auto-détection via `AI_PROVIDER=auto`. Dégradation propre (`{ ok: false, skipped: true }`).
+- Sanitization logs : clés redactées (`sk-***REDACTED***`, `Bearer ***REDACTED***`).
+- Timeouts 60 s + `AbortController`. Usage reporting (tokens, durée, provider).
+- Journalisation best-effort dans `ai_logs`.
+
+Variables env :
+```bash
+AI_PROVIDER=auto
+DEEPSEEK_API_KEY=
+OPENAI_API_KEY=
+ANTHROPIC_API_KEY=
+```
+
+### Checklist recette initiale (à exécuter post-déploiement)
+
+- [ ] Appliquer migrations pendantes (`024_content_exploitation`, `025_brvm_alerts`, `026_iceberg_audit`, et refonte BRVM `027/028/029`)
+- [ ] Seeds : `node scripts/seed-ebooks.mjs`, `seed-articles.mjs`, `seed-pages.mjs`, `seed-first-campaign.mjs`
+- [ ] Renseigner au moins une clé IA dans `.env.local`
+- [ ] Configurer pop-up lead magnet via `/admin/popup`
+- [ ] Activer campagne Bienvenue depuis `/admin/campagnes`
+- [ ] Configurer cron-job.org (voir `CRON_SETUP.md`)
+
+### Risques connus à surveiller
+
+- Rotation périodique `FEDAPAY_API_KEY`, `INTERNAL_API_TOKEN`, `FEDAPAY_WEBHOOK_SECRET`.
+- Vérifier SPF/DKIM sur `egp.hedjav.com` pour éviter emails en spam.
+- Seeds `upsert({ onConflict: 'slug' })` : contenu remplacé si slug existe. Précaution prod.
+
+### Commandes de recette rapides
+
+```bash
+# Type-check complet
+npx tsc --noEmit --skipLibCheck
+
+# Build prod
+npm run build
+
+# Health check BRVM
+curl -H "Authorization: Bearer $INTERNAL_API_TOKEN" \
+  https://egp.hedjav.com/api/brvm/maintenance | jq '.report.overall_status'
+
+# Test IA (dry run via newsletter)
+curl -X POST -H "Authorization: Bearer $INTERNAL_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"dry_run": true}' \
+  https://egp.hedjav.com/api/newsletter/send
+```

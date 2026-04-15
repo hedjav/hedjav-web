@@ -1,168 +1,357 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { createClient } from '@supabase/supabase-js'
 import { BRVMTriggerButton } from './BRVMTriggerButton'
-import { BrvmHubPanel } from './BrvmHubPanel'
-import { BrvmSubNav } from './BrvmSubNav'
-import { listDocuments, getDocumentStats } from '@/lib/brvm/documents'
+import { PageHeader } from './_components/PageHeader'
+import { listDocuments } from '@/lib/brvm/documents'
+import { listSnapshots, getLatestIndexValues } from '@/lib/brvm/market'
+import { listEmetteurs } from '@/lib/brvm/emetteurs'
 import { getAllSources } from '@/lib/brvm/sources'
-import { DOC_TYPE_LABELS } from '@/lib/brvm/types'
+import { DOC_FAMILY_LABELS, type DocFamily } from '@/lib/brvm/types'
 
 export const metadata: Metadata = { title: 'Admin — Centre de Veille BRVM' }
 export const dynamic = 'force-dynamic'
 
-export default async function AdminBRVMPage() {
-  // Parallèle : stats + toutes les sources + première fenêtre (7 derniers jours)
-  const [stats, sources, initial] = await Promise.all([
-    getDocumentStats().catch(() => ({
-      total: 0,
-      boc_total: 0,
-      new_today: 0,
-      new_7d: 0,
-      new_boc_today: 0,
-      new_boc_7d: 0,
-      unprocessed: 0,
-    })),
-    getAllSources().catch(() => []),
-    listDocuments({ period: '7d', sort: 'discovered_desc', limit: 200 }).catch(() => ({
+function db() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false } }
+  )
+}
+
+async function familyStats(): Promise<Record<DocFamily, { total: number; last7d: number }>> {
+  const d = db()
+  const sevenDays = new Date(Date.now() - 7 * 86_400_000).toISOString()
+  const families: DocFamily[] = ['market', 'report', 'announcement', 'publication']
+  const init = Object.fromEntries(
+    families.map((f) => [f, { total: 0, last7d: 0 }])
+  ) as Record<DocFamily, { total: number; last7d: number }>
+
+  const totals = await Promise.all(
+    families.map((f) =>
+      d.from('brvm_documents').select('*', { count: 'exact', head: true }).eq('doc_family', f)
+    )
+  )
+  const last7d = await Promise.all(
+    families.map((f) =>
+      d
+        .from('brvm_documents')
+        .select('*', { count: 'exact', head: true })
+        .eq('doc_family', f)
+        .gte('discovered_at', sevenDays)
+    )
+  )
+  families.forEach((f, i) => {
+    init[f] = { total: totals[i].count ?? 0, last7d: last7d[i].count ?? 0 }
+  })
+  return init
+}
+
+export default async function AdminBRVMOverviewPage() {
+  const [stats, latestDocs, emetteurs, snapshots, indices, sources] = await Promise.all([
+    familyStats(),
+    listDocuments({ period: 'all', sort: 'discovered_desc', limit: 4 }).catch(() => ({
       rows: [],
       total: 0,
-      period: { preset: '7d' as const, from: null, to: null, label: '7 derniers jours' },
     })),
+    listEmetteurs({ limit: 1 }).catch(() => ({ rows: [], total: 0 })),
+    listSnapshots({ limit: 1 }).catch(() => []),
+    getLatestIndexValues().catch(() => []),
+    getAllSources().catch(() => []),
   ])
 
-  const statCards = [
+  const universes: Array<{
+    key: DocFamily
+    label: string
+    description: string
+    href: string
+    accent: string
+    total: number
+    last7d: number
+    extra?: string
+  }> = [
     {
-      label: 'Nouveaux BOC (aujourd\'hui)',
-      value: String(stats.new_boc_today),
-      accent: 'var(--admin-accent, #C5A028)',
-      hint: 'Priorité métier',
+      key: 'market',
+      label: DOC_FAMILY_LABELS.market,
+      description: 'Résumé séance, cours actions et obligations, indices BRVM.',
+      href: '/admin/brvm/marche',
+      accent: '#1a4480',
+      total: snapshots.length,
+      last7d: indices.length,
+      extra: snapshots[0]
+        ? `Dernière séance : ${new Date(snapshots[0].snapshot_date).toLocaleDateString('fr-FR')}`
+        : 'Aucun snapshot',
     },
     {
-      label: 'Nouveautés (7 derniers jours)',
-      value: String(stats.new_7d),
-      accent: '#8BE07A',
-      hint: `${stats.new_boc_7d} BOC`,
+      key: 'report',
+      label: DOC_FAMILY_LABELS.report,
+      description:
+        'Rapports annuels, semestriels, trimestriels, états financiers et commentaires.',
+      href: '/admin/brvm/rapports',
+      accent: '#1e5631',
+      total: stats.report.total,
+      last7d: stats.report.last7d,
+      extra: emetteurs.total ? `${emetteurs.total} sociétés cotées` : 'Référentiel vide',
     },
     {
-      label: 'Total documents indexés',
-      value: String(stats.total),
-      accent: 'var(--admin-info, #4A90D9)',
-      hint: `${stats.boc_total} BOC · toutes sources`,
+      key: 'announcement',
+      label: DOC_FAMILY_LABELS.announcement,
+      description:
+        'Convocations AG, résolutions, notations, ESV, communiqués, franchissements, dirigeants.',
+      href: '/admin/brvm/annonces',
+      accent: '#7a4a0c',
+      total: stats.announcement.total,
+      last7d: stats.announcement.last7d,
     },
     {
-      label: 'Nouveautés à traiter',
-      value: String(stats.unprocessed),
-      accent: stats.unprocessed > 0 ? '#ff9b9b' : '#8BE07A',
-      hint: stats.unprocessed > 0 ? 'À réviser' : 'À jour',
+      key: 'publication',
+      label: DOC_FAMILY_LABELS.publication,
+      description:
+        'BOC, bulletins mensuels, statistiques trimestrielles, années boursières, avis, données économiques, valeurs liquidatives.',
+      href: '/admin/brvm/publications',
+      accent: '#4a2978',
+      total: stats.publication.total,
+      last7d: stats.publication.last7d,
     },
   ]
 
   return (
     <>
-      <BrvmSubNav />
+      <PageHeader
+        title="Centre de Veille BRVM"
+        subtitle="Hub unifié, 4 univers fidèles à la logique métier de la BRVM : données de marché, rapports sociétés cotées, annonces émetteurs, publications. Tri décroissant partout, plus récent en haut."
+        right={<BRVMTriggerButton />}
+      />
 
-      {/* Header */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: 'var(--s6)',
-          flexWrap: 'wrap',
-          gap: 16,
-        }}
-      >
-        <div>
-          <h1
-            style={{
-              fontFamily: 'var(--fd)',
-              fontSize: 'var(--text-4xl)',
-              fontWeight: 600,
-              color: 'var(--admin-text)',
-            }}
-          >
-            Centre de Veille BRVM
-          </h1>
-          <p
-            style={{
-              color: 'var(--admin-text-muted)',
-              fontSize: 'var(--text-sm)',
-              marginTop: 4,
-              maxWidth: 720,
-            }}
-          >
-            Publications BRVM suivies bout-en-bout : BOC, rapports, communiqués, avis, annonces.
-            Filtrez, classez, archivez et traitez depuis une seule page. Tri toujours décroissant,
-            priorité BOC mais aucun type négligé.
-          </p>
-        </div>
-        <BRVMTriggerButton />
-      </div>
-
-      {/* KPIs */}
+      {/* 4 cards univers */}
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: 'var(--s4)',
           marginBottom: 'var(--s6)',
         }}
       >
-        {statCards.map((card) => (
-          <div
-            key={card.label}
+        {universes.map((u) => (
+          <Link
+            key={u.key}
+            href={u.href}
             style={{
               background: 'var(--admin-surface)',
-              borderRadius: 12,
-              padding: 'var(--s5)',
               border: '1px solid var(--admin-border)',
+              borderRadius: 14,
+              padding: 'var(--s5)',
+              textDecoration: 'none',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 12,
+              minHeight: 200,
+              transition: 'border-color 0.15s, transform 0.15s',
             }}
           >
-            <p
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span
+                style={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: '50%',
+                  background: u.accent,
+                  display: 'inline-block',
+                }}
+              />
+              <span
+                style={{
+                  fontFamily: 'var(--fb)',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '.08em',
+                  color: 'var(--admin-text-muted)',
+                }}
+              >
+                Univers
+              </span>
+            </div>
+            <h2
               style={{
-                fontSize: 11,
-                color: 'var(--admin-text-muted)',
-                textTransform: 'uppercase',
-                letterSpacing: '.1em',
-                marginBottom: 6,
+                fontFamily: 'var(--fd)',
+                fontSize: 24,
                 fontWeight: 600,
+                color: 'var(--admin-text)',
+                lineHeight: 1.15,
               }}
             >
-              {card.label}
-            </p>
+              {u.label}
+            </h2>
             <p
               style={{
-                fontSize: 32,
-                fontWeight: 700,
-                color: card.accent,
-                fontFamily: 'var(--fm)',
-                lineHeight: 1,
+                fontSize: 13,
+                color: 'var(--admin-text-muted)',
+                lineHeight: 1.5,
+                flex: 1,
               }}
             >
-              {card.value}
+              {u.description}
             </p>
-            {card.hint && (
-              <p style={{ fontSize: 11, color: 'var(--admin-text-muted)', marginTop: 8 }}>
-                {card.hint}
-              </p>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'baseline',
+                gap: 16,
+                marginTop: 4,
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: 'var(--fm)',
+                  fontSize: 26,
+                  fontWeight: 700,
+                  color: 'var(--admin-text)',
+                  lineHeight: 1,
+                }}
+              >
+                {u.total.toLocaleString('fr-FR')}
+              </span>
+              <span
+                style={{
+                  fontSize: 11.5,
+                  color: 'var(--admin-text-muted)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '.05em',
+                }}
+              >
+                {u.key === 'market' ? 'snapshots' : 'documents'} · +{u.last7d} sur 7 j
+              </span>
+            </div>
+            {u.extra && (
+              <div
+                style={{
+                  fontSize: 12,
+                  color: 'var(--admin-text-muted)',
+                  borderTop: '1px solid var(--admin-border)',
+                  paddingTop: 10,
+                }}
+              >
+                {u.extra}
+              </div>
             )}
-          </div>
+          </Link>
         ))}
       </div>
 
-      {/* État des sources */}
+      {/* Dernières publications (preview transversale) */}
+      <section style={{ marginBottom: 'var(--s6)' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 'var(--s4)',
+          }}
+        >
+          <h2
+            style={{
+              fontFamily: 'var(--fd)',
+              fontSize: 22,
+              fontWeight: 600,
+              color: 'var(--admin-text)',
+            }}
+          >
+            Dernières nouveautés
+          </h2>
+          <Link
+            href="/admin/brvm/publications"
+            style={{
+              fontSize: 13,
+              color: 'var(--admin-accent, #C5A028)',
+              textDecoration: 'none',
+              fontWeight: 600,
+            }}
+          >
+            Voir tout →
+          </Link>
+        </div>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+            gap: 'var(--s3)',
+          }}
+        >
+          {latestDocs.rows.length === 0 ? (
+            <p style={{ fontSize: 13, color: 'var(--admin-text-muted)' }}>
+              Aucun document indexé pour l’instant. Lancez la veille pour peupler les 4 univers.
+            </p>
+          ) : (
+            latestDocs.rows.map((doc) => (
+              <a
+                key={doc.id}
+                href={doc.pdf_url ?? doc.source_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  background: 'var(--admin-surface)',
+                  border: '1px solid var(--admin-border)',
+                  borderRadius: 10,
+                  padding: 'var(--s4)',
+                  textDecoration: 'none',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 8,
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: 'var(--fm)',
+                    fontSize: 11,
+                    color: 'var(--admin-text-muted)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '.05em',
+                  }}
+                >
+                  {doc.doc_date
+                    ? new Date(doc.doc_date).toLocaleDateString('fr-FR', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric',
+                      })
+                    : '—'}
+                </span>
+                <span
+                  style={{
+                    fontSize: 13.5,
+                    color: 'var(--admin-text)',
+                    fontWeight: 600,
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {doc.title}
+                </span>
+                {doc.issuer_name && (
+                  <span style={{ fontSize: 12, color: 'var(--admin-text-muted)' }}>
+                    {doc.issuer_name}
+                  </span>
+                )}
+              </a>
+            ))
+          )}
+        </div>
+      </section>
+
+      {/* Sources */}
       {sources.length > 0 && (
         <div
           style={{
             background: 'var(--admin-surface)',
+            border: '1px solid var(--admin-border)',
             borderRadius: 12,
             padding: 'var(--s4) var(--s5)',
-            border: '1px solid var(--admin-border)',
-            marginBottom: 'var(--s5)',
             display: 'flex',
             gap: 20,
             flexWrap: 'wrap',
-            fontSize: 12,
+            fontSize: 12.5,
+            alignItems: 'center',
           }}
         >
           <span
@@ -171,6 +360,7 @@ export default async function AdminBRVMPage() {
               textTransform: 'uppercase',
               letterSpacing: '.08em',
               fontWeight: 700,
+              fontSize: 11,
             }}
           >
             Sources
@@ -188,12 +378,7 @@ export default async function AdminBRVMPage() {
             return (
               <span
                 key={s.id}
-                style={{
-                  color: 'var(--admin-text)',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6,
-                }}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}
                 title={s.last_error ?? ''}
               >
                 <span
@@ -204,62 +389,13 @@ export default async function AdminBRVMPage() {
                     background: ok ? '#8BE07A' : s.last_scraped_at ? '#ff9b9b' : '#6B7280',
                   }}
                 />
-                <span style={{ fontWeight: 600 }}>{s.name}</span>
+                <span style={{ color: 'var(--admin-text)', fontWeight: 600 }}>{s.name}</span>
                 <span style={{ color: 'var(--admin-text-muted)' }}>· {scrapeText}</span>
               </span>
             )
           })}
         </div>
       )}
-
-      {/* Hub central : filtres + tableau + actions inline */}
-      <BrvmHubPanel
-        initialRows={initial.rows.map((d) => ({
-          id: d.id,
-          doc_type: d.doc_type,
-          doc_type_label: DOC_TYPE_LABELS[d.doc_type] ?? d.doc_type,
-          doc_date: d.doc_date,
-          title: d.title,
-          source_name: d.source_name,
-          source_slug: d.source_slug,
-          source_url: d.source_url,
-          pdf_url: d.pdf_url,
-          issuer_slug: d.issuer_slug,
-          issuer_name: d.issuer_name,
-          sector: (d as unknown as { sector: string | null }).sector ?? null,
-          market_index: (d as unknown as { market_index: string | null }).market_index ?? null,
-          is_new: d.is_new,
-          is_processed: d.is_processed,
-          discovered_at: d.discovered_at,
-        }))}
-        initialTotal={initial.total}
-        sources={sources.map((s) => ({ slug: s.slug, name: s.name }))}
-      />
-
-      {/* Footer nav */}
-      <div
-        style={{
-          marginTop: 'var(--s6)',
-          textAlign: 'center',
-          display: 'flex',
-          gap: 16,
-          justifyContent: 'center',
-          flexWrap: 'wrap',
-        }}
-      >
-        <Link
-          href="/admin/articles?category=BRVM"
-          style={{ color: 'var(--admin-text-muted)', fontSize: 13, textDecoration: 'none' }}
-        >
-          Voir les articles générés depuis la veille →
-        </Link>
-        <Link
-          href="/admin/brvm/maintenance"
-          style={{ color: 'var(--admin-text-muted)', fontSize: 13, textDecoration: 'none' }}
-        >
-          Maintenance & diagnostics →
-        </Link>
-      </div>
     </>
   )
 }

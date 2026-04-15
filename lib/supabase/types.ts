@@ -55,6 +55,8 @@ export type Article = {
   published_at: string | null
   featured: boolean
   is_published: boolean
+  /** Workflow éditorial (migration 030). Source de vérité — is_published en est dérivé. */
+  status: 'draft' | 'review' | 'published' | 'archived'
   created_by: string | null
   source: 'manual' | 'ai'
   quality_score: number | null

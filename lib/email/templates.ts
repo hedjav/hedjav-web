@@ -3,7 +3,7 @@
  * Charte navy/or/cream, fonts génériques (les clients mail ne chargent pas Google Fonts).
  */
 
-const C = {
+export const C = {
   navy: '#1B2A4A',
   navyDeep: '#0D1628',
   gold: '#C5A028',
@@ -22,7 +22,7 @@ const SITE_URL = siteBase()
 
 /* ── Layout partagé ──────────────────────────────────────────── */
 
-function layout(opts: { preheader?: string; bodyHtml: string }): string {
+export function layout(opts: { preheader?: string; bodyHtml: string }): string {
   const { preheader = '', bodyHtml } = opts
   return `<!doctype html>
 <html lang="fr">
@@ -74,7 +74,7 @@ function layout(opts: { preheader?: string; bodyHtml: string }): string {
 </html>`
 }
 
-function btn(label: string, href: string): string {
+export function btn(label: string, href: string): string {
   return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:24px auto;">
     <tr>
       <td style="background:${C.gold};border-radius:8px;">
@@ -84,11 +84,11 @@ function btn(label: string, href: string): string {
   </table>`
 }
 
-function hr(): string {
+export function hr(): string {
   return `<hr style="margin:32px 0;border:none;border-top:1px solid ${C.border};" />`
 }
 
-function smallNote(text: string): string {
+export function smallNote(text: string): string {
   return `<p style="margin:0;font-size:13px;color:${C.muted};">${text}</p>`
 }
 
@@ -750,7 +750,7 @@ export function brvmDocDigestEmail(props: BrvmDocDigestProps) {
   }
 }
 
-function escapeHtml(s: string): string {
+export function escapeHtml(s: string): string {
   return String(s)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -758,6 +758,6 @@ function escapeHtml(s: string): string {
     .replace(/"/g, '&quot;')
 }
 
-function escapeAttr(s: string): string {
+export function escapeAttr(s: string): string {
   return escapeHtml(s).replace(/'/g, '&#39;')
 }

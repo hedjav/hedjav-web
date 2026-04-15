@@ -1,59 +1,49 @@
-import { NextResponse } from 'next/server'
-import { checkInternalToken } from '@/lib/brvm/auth'
-import { scrapeAllAnnonces } from '@/lib/brvm/scrapers/brvm-org'
-import { upsertDocument } from '@/lib/brvm/documents'
-import { getSourceBySlugDetailed, markSourceScraped } from '@/lib/brvm/sources'
-import type { ScrapeResult } from '@/lib/brvm/types'
-
 /**
  * POST /api/brvm/scrape/annonces
  *
- * Scrape toutes les catégories d'annonces brvm.org (communiqués, changements
- * de dirigeants, franchissements de seuil, AG, etc.).
+ * Boucle sur les 8 sous-catégories d'annonces émetteurs (refonte 4 univers).
+ * Remplace l'ancien scrapeAllAnnonces plat.
  *
- * Auth : Bearer INTERNAL_API_TOKEN
- * Cron recommandé : quotidien 19h UTC (après BOC)
+ * Auth : Bearer INTERNAL_API_TOKEN OU session admin.
+ * Query : `?subtype=convocation_ag` pour ne scraper qu'une sous-catégorie.
  */
+
+import { NextResponse } from 'next/server'
+import { checkAdminSession, checkInternalToken } from '@/lib/brvm/auth'
+import { scrapeAllAnnonces, scrapeAnnonceSubtype } from '@/lib/brvm/scrapers/annonces'
+import { getSourceBySlug, markSourceScraped } from '@/lib/brvm/sources'
+
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+export const maxDuration = 300
+
 export async function POST(request: Request) {
-  const unauthorized = checkInternalToken(request)
-  if (unauthorized) return unauthorized
-
-  const start = Date.now()
-  const sourceResult = await getSourceBySlugDetailed('brvm-org')
-  if (!sourceResult.ok) {
-    return NextResponse.json(
-      { ok: false, error: sourceResult.error, reason: sourceResult.reason },
-      { status: 500 }
-    )
+  const bearerCheck = checkInternalToken(request)
+  if (bearerCheck) {
+    const adminCheck = await checkAdminSession()
+    if (adminCheck.response) return adminCheck.response
   }
-  const source = sourceResult.source
 
-  const result: ScrapeResult = {
-    source_slug: 'brvm-org',
-    doc_type: 'mixed',
-    discovered: 0,
-    skipped: 0,
-    errors: 0,
-    duration_ms: 0,
-  }
+  const url = new URL(request.url)
+  const subtype = url.searchParams.get('subtype')
 
   try {
-    const docs = await scrapeAllAnnonces()
+    const source = await getSourceBySlug('brvm-org')
+    const result = subtype
+      ? await scrapeAnnonceSubtype(subtype)
+      : await scrapeAllAnnonces()
 
-    for (const doc of docs) {
-      const res = await upsertDocument(doc)
-      if (res.status === 'inserted') result.discovered++
-      else if (res.status === 'skipped') result.skipped++
-      else result.errors++
+    const ok = 'total_errors' in result ? result.total_errors === 0 : result.errors === 0
+    if (source) {
+      await markSourceScraped(source.id, {
+        success: ok,
+        error: ok ? null : 'scrape annonces avec erreurs',
+      })
     }
-
-    await markSourceScraped(source.id, { success: true })
-    result.duration_ms = Date.now() - start
     return NextResponse.json({ ok: true, result })
   } catch (e) {
-    const msg = e instanceof Error ? e.message : 'unknown'
-    await markSourceScraped(source.id, { success: false, error: msg })
-    result.duration_ms = Date.now() - start
-    return NextResponse.json({ ok: false, error: msg, result }, { status: 500 })
+    const msg = e instanceof Error ? e.message : String(e)
+    console.error('[api/brvm/scrape/annonces]', msg)
+    return NextResponse.json({ ok: false, error: msg }, { status: 500 })
   }
 }

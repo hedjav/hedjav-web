@@ -2,6 +2,12 @@ import { NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { siteUrl } from '@/lib/url'
 
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+// Le scrape complet peut durer 3-6 min (4 univers × ~40 catégories).
+// On aligne sur /api/brvm/scrape côté route cible.
+export const maxDuration = 600
+
 /**
  * POST /api/admin/brvm-trigger
  * Proxy pour /api/brvm/scrape (orchestrateur veille BRVM).
