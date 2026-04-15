@@ -1,38 +1,63 @@
-import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-import { generateText, getAiStatus } from '@/lib/ai/client'
-import { listDocumentsGroupedByType } from '@/lib/brvm/documents'
-import { resolvePeriod, type PeriodPreset } from '@/lib/brvm/periods'
-import { DOC_TYPE_LABELS } from '@/lib/brvm/types'
-import { sendEmail } from '@/lib/email/smtp'
-import { brvmDocDigestEmail } from '@/lib/email/templates'
-import { checkAdminSession } from '@/lib/brvm/auth'
-
 /**
  * POST /api/brvm/alerts/digest
  *
- * Digest email admin des publications BRVM sur une fréquence donnée.
+ * Digest email admin BRVM — refonte coordonnée (2026-04-15 section 9).
  *
- * Auth :
- *  - Bearer INTERNAL_API_TOKEN (cron externe), OU
- *  - Session admin (bouton « Envoyer maintenant » dans /admin/brvm/alertes).
+ * - Utilise la couche IA unifiée `lib/brvm/ai` (contexte enrichi 4 univers).
+ * - Utilise le module email refondu `lib/email/brvm` (structure stable,
+ *   cohérente entre daily/weekly/monthly/alerte).
+ * - Déduplique les documents déjà envoyés dans un digest récent (24h
+ *   pour daily, pas pour weekly/monthly qui synthétisent une période).
+ * - Persiste les document_ids dans brvm_alert_log.metadata pour audit + dédup.
  *
  * Body JSON :
- *  {
- *    frequency: 'daily' | 'weekly' | 'monthly' | 'manual',  // défaut 'daily'
- *    dry_run?: boolean,     // si true : calcule mais n'envoie pas
- *    ai?: boolean,          // désactive l'IA même si configurée (défaut true)
- *  }
+ *   {
+ *     frequency: 'daily' | 'weekly' | 'monthly' | 'manual',   // défaut 'daily'
+ *     dry_run?: boolean,
+ *     ai?: boolean,      // par défaut true si provider disponible
+ *   }
+ *
+ * Auth : Bearer INTERNAL_API_TOKEN OU session admin.
  */
 
-function periodForFrequency(frequency: string): PeriodPreset {
-  switch (frequency) {
+import { NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
+import { getAiStatus } from '@/lib/ai/client'
+import { checkAdminSession } from '@/lib/brvm/auth'
+import { sendEmail } from '@/lib/email/smtp'
+import { buildBrvmAiContext } from '@/lib/brvm/ai/context'
+import { generateBrvmContent } from '@/lib/brvm/ai'
+type DigestAiKind = 'daily_digest' | 'weekly_digest' | 'monthly_digest'
+import {
+  buildBrvmDigestEmail,
+  filterDedup,
+  getRecentlySentDocIds,
+  hashDocIds,
+  type DigestFrequency,
+} from '@/lib/email/brvm'
+import type { DocFamily } from '@/lib/brvm/types'
+
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+export const maxDuration = 180
+
+function frequencyToAiKind(freq: DigestFrequency): DigestAiKind {
+  switch (freq) {
+    case 'weekly':
+      return 'weekly_digest'
+    case 'monthly':
+      return 'monthly_digest'
+    default:
+      return 'daily_digest'
+  }
+}
+
+function frequencyToPeriod(freq: DigestFrequency): 'today' | '7d' | '30d' {
+  switch (freq) {
     case 'weekly':
       return '7d'
     case 'monthly':
       return '30d'
-    case 'daily':
-    case 'manual':
     default:
       return 'today'
   }
@@ -40,7 +65,10 @@ function periodForFrequency(frequency: string): PeriodPreset {
 
 async function isAuthorized(request: Request): Promise<boolean> {
   const auth = request.headers.get('authorization') ?? ''
-  if (process.env.INTERNAL_API_TOKEN && auth === `Bearer ${process.env.INTERNAL_API_TOKEN}`) {
+  if (
+    process.env.INTERNAL_API_TOKEN &&
+    auth === `Bearer ${process.env.INTERNAL_API_TOKEN}`
+  ) {
     return true
   }
   const session = await checkAdminSession()
@@ -61,104 +89,89 @@ export async function POST(request: Request) {
 
   const frequency = (['daily', 'weekly', 'monthly', 'manual'].includes(body.frequency ?? '')
     ? body.frequency
-    : 'daily') as 'daily' | 'weekly' | 'monthly' | 'manual'
+    : 'daily') as DigestFrequency
   const dryRun = Boolean(body.dry_run)
   const aiEnabled = body.ai !== false
 
-  const period = resolvePeriod(periodForFrequency(frequency))
   const startedAt = Date.now()
 
-  // ── 1. Charger les documents groupés par type ────────────────
-  const grouped = await listDocumentsGroupedByType(period, { limit_per_type: 25 })
-  const totalCount = Object.values(grouped).reduce((acc, arr) => acc + arr.length, 0)
+  // ── 1. Contexte BRVM enrichi (4 univers + société + secteur + indice) ──
+  const ctx = await buildBrvmAiContext({
+    period: frequencyToPeriod(frequency),
+    max_docs_per_family: 40,
+  })
 
-  const groupedForEmail: Record<string, { label: string; docs: Array<Record<string, unknown>> }> = {}
-  for (const [key, docs] of Object.entries(grouped)) {
-    groupedForEmail[key] = {
-      label: (DOC_TYPE_LABELS as Record<string, string>)[key] ?? key,
-      docs: docs.map((d) => ({
-        id: d.id,
-        doc_type: d.doc_type,
-        doc_type_label: (DOC_TYPE_LABELS as Record<string, string>)[d.doc_type] ?? d.doc_type,
-        title: d.title,
-        issuer_name: d.issuer_name,
-        source_name: d.source_name,
-        doc_date: d.doc_date,
-        discovered_at: d.discovered_at,
-        pdf_url: d.pdf_url,
-        source_url: d.source_url,
-      })),
-    }
+  // ── 2. Déduplication : retire les docs déjà envoyés dans un digest récent
+  const sentIds = await getRecentlySentDocIds(frequency)
+  const dedupedDocs: Partial<Record<DocFamily, typeof ctx.docs extends Partial<Record<DocFamily, infer U>> ? U : never>> = {}
+  let totalKept = 0
+  let totalSkipped = 0
+  const allKeptIds: string[] = []
+
+  for (const [family, list] of Object.entries(ctx.docs) as Array<
+    [DocFamily, (typeof ctx.docs)[DocFamily]]
+  >) {
+    const { kept, skipped_count } = filterDedup(list ?? [], sentIds)
+    dedupedDocs[family] = kept
+    totalKept += kept.length
+    totalSkipped += skipped_count
+    for (const d of kept) allKeptIds.push(d.id)
   }
+  ctx.docs = dedupedDocs
+  ctx.total_docs = totalKept
 
-  // ── 2. Analyse IA optionnelle (DeepSeek prioritaire) ─────────
+  // ── 3. Analyse IA optionnelle (sur le contexte dédupé) ─────────────
   let aiAnalysis: string | null = null
-  let aiProvider: string | null = null
+  let aiProviderLabel: string | null = null
   const aiStatus = getAiStatus()
 
-  if (aiEnabled && totalCount > 0 && aiStatus.available) {
-    const headlines = Object.entries(groupedForEmail)
-      .flatMap(([, g]) => g.docs.slice(0, 5).map((d) => `- [${g.label}] ${d.title}${d.issuer_name ? ` (${d.issuer_name})` : ''}`))
-      .slice(0, 40)
-      .join('\n')
-
-    const prompt = `Tu es analyste financier senior couvrant la BRVM (Bourse Régionale des Valeurs Mobilières, zone UEMOA).
-
-Voici les ${totalCount} publications BRVM de la période ${period.label.toLowerCase()} :
-
-${headlines}
-
-Rédige en 120 à 180 mots, en français professionnel, une note de synthèse pour les administrateurs de l'École de la Gestion de Patrimoine (EGP / Hedjav). Mets en avant :
-- ce qui mérite une lecture prioritaire (BOC, rapports annuels, annonces majeures)
-- les secteurs ou émetteurs particulièrement actifs cette période
-- les signaux qui peuvent déclencher une note d'analyse ou un article éditorial
-
-Style : direct, concret, pas de phrases creuses. Pas d'introduction type "voici la synthèse". Entre directement dans le vif.`
-
-    const result = await generateText({
-      system:
-        "Tu rédiges pour l'équipe éditoriale de egp.hedjav.com. Priorité produit : BOC, rapports cotés UEMOA. Langue : français. Concret, factuel.",
-      prompt,
-      maxTokens: 520,
-      temperature: 0.5,
-      action: `brvm_digest_${frequency}`,
+  if (aiEnabled && totalKept > 0 && aiStatus.available) {
+    const kind = frequencyToAiKind(frequency)
+    // Re-buildBrvmAiContext est inutile : generateBrvmContent l'appelle en interne
+    // avec les mêmes options. Mais ici on veut l'analyse IA sur le set dédupé.
+    // generateBrvmContent accepte une période, il refait le fetch. Impact minime
+    // (1 query). Acceptable pour garder l'architecture simple et réutilisable.
+    const aiResult = await generateBrvmContent(kind, {
+      period: frequencyToPeriod(frequency),
+      max_docs_per_family: 40,
     })
-
-    if (result.ok) {
-      aiAnalysis = result.text
-      aiProvider = `${result.provider}:${result.model}`
+    if (aiResult.ok && aiResult.content) {
+      aiAnalysis = aiResult.content
+      aiProviderLabel =
+        aiResult.provider && aiResult.model
+          ? `${aiResult.provider}:${aiResult.model}`
+          : null
     }
   }
 
-  // ── 3. Destinataires : tous les admins actifs ────────────────
+  // ── 4. Construction email (nouveau module lib/email/brvm) ──────────
+  const email = buildBrvmDigestEmail({
+    frequency,
+    ctx,
+    aiAnalysis,
+    aiProvider: aiProviderLabel,
+    dedup_skipped: totalSkipped,
+  })
+
+  // ── 5. Destinataires admin ─────────────────────────────────────────
   const db = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { persistSession: false } },
+    { auth: { persistSession: false } }
   )
 
   const { data: admins } = await db
     .from('profiles')
     .select('email, full_name')
     .eq('role', 'admin')
-
   const recipients = (admins ?? []).map((a) => a.email).filter(Boolean) as string[]
 
-  // ── 4. Rendu + envoi ─────────────────────────────────────────
-  const email = brvmDocDigestEmail({
-    frequency,
-    periodLabel: period.label,
-    groupedDocs: groupedForEmail as Parameters<typeof brvmDocDigestEmail>[0]['groupedDocs'],
-    totalCount,
-    aiAnalysis,
-    aiProvider,
-  })
-
+  // ── 6. Envoi ───────────────────────────────────────────────────────
   let sent = 0
   let failed = 0
   const errors: string[] = []
 
-  if (!dryRun && recipients.length > 0) {
+  if (!dryRun && recipients.length > 0 && totalKept > 0) {
     for (const to of recipients) {
       const res = await sendEmail({
         to,
@@ -174,47 +187,54 @@ Style : direct, concret, pas de phrases creuses. Pas d'introduction type "voici 
     }
   }
 
-  // ── 5. Log dans brvm_alert_log ───────────────────────────────
-  const status: 'success' | 'partial' | 'error' | 'empty' =
-    dryRun
-      ? 'success'
-      : totalCount === 0
-        ? 'empty'
-        : failed > 0 && sent > 0
-          ? 'partial'
-          : failed > 0
-            ? 'error'
-            : 'success'
+  // ── 7. Log + persistance dédup ────────────────────────────────────
+  const status: 'success' | 'partial' | 'error' | 'empty' = dryRun
+    ? 'success'
+    : totalKept === 0
+      ? 'empty'
+      : failed > 0 && sent > 0
+        ? 'partial'
+        : failed > 0
+          ? 'error'
+          : 'success'
 
   try {
     await db.from('brvm_alert_log').insert({
       frequency,
-      period_from: period.from,
-      period_to: period.to,
-      document_count: totalCount,
+      period_from: ctx.period.from,
+      period_to: ctx.period.to,
+      document_count: totalKept,
       recipients_count: recipients.length,
       status,
       error_message: errors.length > 0 ? errors.slice(0, 5).join(' | ') : null,
-      ai_provider: aiProvider,
-      ai_model: aiProvider ? aiProvider.split(':')[1] : null,
-      metadata: { dry_run: dryRun, sent, failed },
+      ai_provider: aiProviderLabel,
+      ai_model: aiProviderLabel ? aiProviderLabel.split(':')[1] ?? null : null,
+      metadata: {
+        dry_run: dryRun,
+        sent,
+        failed,
+        document_ids: allKeptIds,
+        content_hash: hashDocIds(allKeptIds),
+        dedup_skipped: totalSkipped,
+      },
     })
   } catch {
-    // brvm_alert_log absent : on ne bloque pas le digest (migration 025 pas appliquée).
+    // brvm_alert_log absent : on ne bloque pas.
   }
 
   return NextResponse.json({
     ok: true,
     frequency,
-    period: { from: period.from, to: period.to, label: period.label },
-    total_documents: totalCount,
+    period: { from: ctx.period.from, to: ctx.period.to, label: ctx.period.label },
+    total_documents: totalKept,
+    dedup_skipped: totalSkipped,
     recipients: recipients.length,
     sent,
     failed,
     ai: {
       enabled: aiEnabled,
       available: aiStatus.available,
-      provider: aiProvider,
+      provider: aiProviderLabel,
     },
     status,
     dry_run: dryRun,
@@ -224,7 +244,7 @@ Style : direct, concret, pas de phrases creuses. Pas d'introduction type "voici 
 
 /**
  * GET /api/brvm/alerts/digest
- * Permet d'inspecter sans envoyer (équivalent POST { dry_run: true }).
+ * Aperçu sans envoi (équivalent POST { dry_run: true }).
  */
 export async function GET(request: Request) {
   return POST(
@@ -235,6 +255,6 @@ export async function GET(request: Request) {
         frequency: new URL(request.url).searchParams.get('frequency') ?? 'daily',
         dry_run: true,
       }),
-    }),
+    })
   )
 }

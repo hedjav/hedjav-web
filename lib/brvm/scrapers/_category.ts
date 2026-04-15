@@ -177,10 +177,19 @@ export async function scrapeCategory(config: CategoryConfig): Promise<ScrapeResu
   }
 
   const seenPdfs = new Set<string>()
+  let allCandidatesFailed = false
   for (const candidates of allCandidates) {
     const fetched = await fetchFirstOk(candidates)
     if (!fetched.html) {
-      console.warn(`[scrape/${config.doc_subtype}] fetch failed: ${fetched.error}`)
+      // Premier fetch en échec = catégorie absente côté BRVM : on log en info
+      // (pas warning) pour ne pas polluer les logs. BRVM supprime ou renomme
+      // régulièrement des sections, les configs fallback sont là pour cela.
+      if (!allCandidatesFailed) {
+        console.info(
+          `[scrape/${config.doc_subtype}] aucune URL candidat OK (${fetched.error ?? 'n/a'}) — catégorie probablement absente ou renommée`
+        )
+      }
+      allCandidatesFailed = true
       break // on arrête la pagination dès qu'une page rate
     }
 

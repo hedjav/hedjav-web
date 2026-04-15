@@ -75,6 +75,13 @@ const SECTIONS: NavSection[] = [
     ],
   },
   {
+    title: 'Assistant IA',
+    items: [
+      { href: '/admin/brvm/ia', label: 'Digests, brouillons, suggestions', exact: true },
+    ],
+    defaultOpen: true,
+  },
+  {
     title: 'Opérations',
     items: [
       { href: '/admin/brvm/alertes', label: 'Alertes email' },

@@ -54,10 +54,13 @@ const CATEGORIES: CategoryConfig[] = [
     doc_family: 'announcement',
     doc_subtype: 'esv',
     doc_type_legacy: 'annonce',
+    // Sur brvm.org, les « Événements sur valeurs » correspondent aux bilans
+    // des contrats de liquidité (dividende, split, pacte, etc.). Fallback sur
+    // les autres slugs historiques pour robustesse future.
     listing_urls: [
+      `${BASE}/fr/emetteurs/type-annonces/bilan-des-contrats-de-liquidite`,
       `${BASE}/fr/emetteurs/type-annonces/evenements-sur-valeurs`,
       `${BASE}/fr/emetteurs/type-annonces/esv`,
-      `${BASE}/fr/emetteurs/type-annonces/evenement-sur-valeurs`,
     ],
     paginate: true,
     max_pages: 10,
@@ -106,13 +109,17 @@ const CATEGORIES: CategoryConfig[] = [
     doc_family: 'announcement',
     doc_subtype: 'information_permanente',
     doc_type_legacy: 'note_information',
+    // Sur brvm.org, les « informations permanentes » ne sont pas une page
+    // dédiée — elles vivent dans la section avis & publications ainsi qu'en
+    // notes d'information réglementaires. On fallback proprement.
     listing_urls: [
+      `${BASE}/fr/marche/avis-et-publications/publications`,
       `${BASE}/fr/emetteurs/type-annonces/informations-permanentes`,
-      `${BASE}/fr/emetteurs/type-annonces/information-permanente`,
       `${BASE}/fr/emetteurs/type-annonces/notes-information`,
     ],
     paginate: true,
-    max_pages: 10,
+    max_pages: 5,
+    filename_filter: /(information|permanente|note_information|note_dinformation|amf_|obligations_permanentes)/i,
   },
 ]
 
