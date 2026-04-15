@@ -148,6 +148,11 @@ export function DocumentRowActions({
             label="Alerter les admins"
             sub="Envoi email instantané + dédup 12h"
           />
+          <MenuLink
+            href={`/admin/ia/articles?document_ids=${encodeURIComponent(documentId)}`}
+            label="Générer un article"
+            sub="Ouvre le wizard IA pré-rempli"
+          />
         </div>
       )}
 
@@ -201,6 +206,24 @@ function MenuButton({
       </div>
       <div style={{ fontSize: 11, color: 'var(--admin-text-muted)' }}>{sub}</div>
     </button>
+  )
+}
+
+function MenuLink({ href, label, sub }: { href: string; label: string; sub: string }) {
+  return (
+    <a
+      href={href}
+      style={{
+        display: 'block',
+        padding: '8px 12px',
+        color: 'var(--admin-text)',
+        textDecoration: 'none',
+        fontSize: 13,
+      }}
+    >
+      <div style={{ fontWeight: 600, marginBottom: 2 }}>{label}</div>
+      <div style={{ fontSize: 11, color: 'var(--admin-text-muted)' }}>{sub}</div>
+    </a>
   )
 }
 

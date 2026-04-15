@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { DataTable, type Column } from '@/components/admin/DataTable'
+import { ARTICLE_STATUS_LABELS, type ArticleStatus } from '@/lib/articles/types'
 
 type Row = {
   id: string
@@ -10,8 +11,15 @@ type Row = {
   category: string
   source: string
   quality_score: number | null
-  is_published: boolean
+  status: ArticleStatus
   created_at: string
+}
+
+const STATUS_STYLES: Record<ArticleStatus, { bg: string; fg: string }> = {
+  draft: { bg: 'rgba(255,255,255,.08)', fg: 'var(--admin-text-muted)' },
+  review: { bg: 'rgba(245,158,11,.15)', fg: 'var(--admin-warning)' },
+  published: { bg: 'rgba(34,197,94,.15)', fg: 'var(--admin-success)' },
+  archived: { bg: 'rgba(239,68,68,.12)', fg: 'var(--admin-danger)' },
 }
 
 const columns: Column<Row>[] = [
@@ -61,17 +69,20 @@ const columns: Column<Row>[] = [
     },
   },
   {
-    key: 'is_published',
+    key: 'status',
     label: 'Statut',
-    render: (row) => (
-      <span style={{
-        padding: '2px 10px', borderRadius: 9999, fontSize: 11, fontWeight: 600,
-        background: row.is_published ? 'rgba(34,197,94,.15)' : 'rgba(255,255,255,.08)',
-        color: row.is_published ? 'var(--admin-success)' : 'var(--admin-text-muted)',
-      }}>
-        {row.is_published ? 'Publie' : 'Brouillon'}
-      </span>
-    ),
+    sortable: true,
+    render: (row) => {
+      const style = STATUS_STYLES[row.status]
+      return (
+        <span style={{
+          padding: '2px 10px', borderRadius: 9999, fontSize: 11, fontWeight: 600,
+          background: style.bg, color: style.fg,
+        }}>
+          {ARTICLE_STATUS_LABELS[row.status]}
+        </span>
+      )
+    },
   },
   {
     key: 'created_at',

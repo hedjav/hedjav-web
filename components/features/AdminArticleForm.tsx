@@ -4,20 +4,18 @@ import { useState } from 'react'
 import { upsertArticleAction, deleteArticleAction } from '@/lib/admin/actions'
 import { MediaPicker } from '@/components/admin/MediaPicker'
 import type { Article } from '@/lib/supabase/types'
+import { ARTICLE_CATEGORIES } from '@/lib/articles/categories'
+import { ARTICLE_STATUSES, ARTICLE_STATUS_LABELS, type ArticleStatus } from '@/lib/articles/types'
 
-const CATEGORIES = [
-  'BRVM',
-  'Patrimoine',
-  'IA & productivite',
-  'Immobilier',
-  'Entrepreneuriat',
-  'Finance personnelle',
-]
+const CATEGORIES: string[] = [...ARTICLE_CATEGORIES]
 
 type Props = { article?: Article | null }
 
 export function AdminArticleForm({ article }: Props) {
   const [coverUrl, setCoverUrl] = useState(article?.cover_image_url ?? '')
+  const initialStatus: ArticleStatus =
+    article?.status ?? (article?.is_published ? 'published' : 'draft')
+  const [status, setStatus] = useState<ArticleStatus>(initialStatus)
   const [categoryMode, setCategoryMode] = useState<'select' | 'custom'>(
     article?.category && !CATEGORIES.includes(article.category) ? 'custom' : 'select',
   )
@@ -38,6 +36,7 @@ export function AdminArticleForm({ article }: Props) {
       {article?.id && <input type="hidden" name="id" value={article.id} />}
       <input type="hidden" name="cover_image_url" value={coverUrl} />
       <input type="hidden" name="category" value={categoryValue} />
+      <input type="hidden" name="status" value={status} />
 
       <Field label="Titre" name="title" defaultValue={article?.title ?? ''} required />
       <Field label="Slug (auto si vide)" name="slug" defaultValue={article?.slug ?? ''} />
@@ -102,12 +101,21 @@ export function AdminArticleForm({ article }: Props) {
         required
       />
 
-      <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
-        <Checkbox
-          label="Publie"
-          name="is_published"
-          defaultChecked={article?.is_published ?? false}
-        />
+      <div style={{ display: 'flex', gap: 20, alignItems: 'center', flexWrap: 'wrap' }}>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <span style={labelStyle}>Statut</span>
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value as ArticleStatus)}
+            style={{ ...inputStyle, minWidth: 180 }}
+          >
+            {ARTICLE_STATUSES.map((s) => (
+              <option key={s} value={s}>
+                {ARTICLE_STATUS_LABELS[s]}
+              </option>
+            ))}
+          </select>
+        </label>
         <Checkbox label="Featured" name="featured" defaultChecked={article?.featured ?? false} />
       </div>
 

@@ -201,7 +201,11 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 - `/admin/config` — configuration site_config (formulaire groupé par catégorie)
 
 ### API
-- `POST /api/articles` (bearer `INTERNAL_API_TOKEN`) — injection IA d'articles
+- `POST /api/articles` (bearer `INTERNAL_API_TOKEN`) — injection IA d'articles (legacy, toujours actif pour agents externes)
+- `POST /api/admin/articles/ai/angles` (session admin) — 5-8 angles éditoriaux à partir d'un sujet et/ou documents BRVM
+- `POST /api/admin/articles/ai/titles` (session admin) — 5-8 titres SEO à partir d'un sujet/angle/documents
+- `POST /api/admin/articles/ai/draft` (session admin) — génère un brouillon complet + persiste `status='draft'` + traçabilité complète dans `metadata`. Body : `{ subject?, angle?, title?, category?, brvm_document_ids?, instructions? }`
+- `POST /api/admin/articles/ai/score` (session admin) — évalue un article sur 5 critères UEMOA, persiste `quality_score` + breakdown dans `metadata`. Remplace l'ancien `/api/articles/score`
 - `POST /api/newsletter/subscribe` — public, insère dans `newsletter_subscribers`
 - `POST /api/newsletter/send` (bearer `INTERNAL_API_TOKEN`) — génère via Claude + envoie via SMTP
 - `POST /api/newsletter/weekly` (bearer `INTERNAL_API_TOKEN`) — newsletter hebdo template statique via SMTP
@@ -311,6 +315,7 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 26. `027_brvm_emetteurs.sql` (**référentiel sociétés cotées** — slug, ticker, ISIN, country, sector, market, indices[], aliases[], is_active, RLS admin)
 27. `028_brvm_doc_taxonomy.sql` (**doc_family + doc_subtype + emetteur_id FK** sur brvm_documents, backfill depuis doc_type, indexes combinés)
 28. `029_brvm_market_timeseries.sql` (**séries temporelles marché** : brvm_market_snapshots + brvm_market_ticks + brvm_indices_ticks, upsert idempotent, RLS admin)
+29. `030_articles_workflow.sql` (**workflow éditorial articles** : enum `article_status` draft/review/published/archived, backfill depuis is_published, trigger de synchro, indexes pour listes admin/blog)
 
 ---
 

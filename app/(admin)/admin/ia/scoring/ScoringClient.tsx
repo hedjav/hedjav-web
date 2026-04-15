@@ -37,7 +37,7 @@ export function ScoringClient({ articles: initial }: { articles: Article[] }) {
   async function scoreOne(id: string) {
     setScoring((prev) => ({ ...prev, [id]: true }))
     try {
-      const res = await fetch('/api/articles/score', {
+      const res = await fetch('/api/admin/articles/ai/score', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ article_id: id }),
@@ -55,7 +55,7 @@ export function ScoringClient({ articles: initial }: { articles: Article[] }) {
   async function scoreAll() {
     setScoringAll(true)
     try {
-      const res = await fetch('/api/articles/score', {
+      const res = await fetch('/api/admin/articles/ai/score', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ all: true }),

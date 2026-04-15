@@ -90,13 +90,19 @@ export async function upsertArticleAction(formData: FormData) {
   const category = String(formData.get('category') ?? '').trim()
   const cover_image_url = String(formData.get('cover_image_url') ?? '') || null
   const author = String(formData.get('author') ?? 'Hermann D. AVAHOUIN')
-  const is_published = formData.get('is_published') === 'on'
+  const statusRaw = String(formData.get('status') ?? 'draft')
+  const status = (['draft', 'review', 'published', 'archived'] as const).includes(
+    statusRaw as 'draft' | 'review' | 'published' | 'archived',
+  )
+    ? (statusRaw as 'draft' | 'review' | 'published' | 'archived')
+    : 'draft'
   const featured = formData.get('featured') === 'on'
-  const published_at = is_published ? new Date().toISOString() : null
 
+  // Pour la création (pas d'id), on laisse le trigger articles_sync_is_published_trg
+  // gérer is_published + published_at. On ne les envoie pas explicitement.
   const row = {
     title, slug, excerpt, body, category,
-    cover_image_url, author, is_published, featured, published_at,
+    cover_image_url, author, featured, status,
     source: 'manual',
     created_by: 'admin-ui',
   }

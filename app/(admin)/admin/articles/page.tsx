@@ -13,9 +13,10 @@ export default async function AdminArticlesPage() {
   )
   const { data: articles } = await supabase
     .from('articles')
-    .select('id, title, slug, category, source, is_published, featured, quality_score, created_at')
+    .select('id, title, slug, category, source, status, is_published, featured, quality_score, created_at')
     .order('created_at', { ascending: false })
 
+  type ArticleStatus = 'draft' | 'review' | 'published' | 'archived'
   const rows = (articles ?? []).map((a) => ({
     id: a.id as string,
     title: a.title as string,
@@ -23,7 +24,8 @@ export default async function AdminArticlesPage() {
     category: (a.category as string) ?? '',
     source: (a.source as string) ?? 'manual',
     quality_score: a.quality_score as number | null,
-    is_published: a.is_published as boolean,
+    status: ((a.status as ArticleStatus) ??
+      (a.is_published ? 'published' : 'draft')) as ArticleStatus,
     created_at: a.created_at as string,
   }))
 
