@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { createClient } from '@supabase/supabase-js'
-import { BrvmSubNav } from '../BrvmSubNav'
+import { PageHeader } from '../_components/PageHeader'
 import { BrvmAlertsClient } from './BrvmAlertsClient'
 import { getAiStatus } from '@/lib/ai/client'
 
@@ -71,33 +71,14 @@ export default async function BrvmAlertsPage() {
 
   return (
     <>
-      <BrvmSubNav />
-
-      <div style={{ marginBottom: 'var(--s6)' }}>
-        <h1
-          style={{
-            fontFamily: 'var(--fd)',
-            fontSize: 'var(--text-4xl)',
-            fontWeight: 600,
-            color: 'var(--admin-text)',
-          }}
-        >
-          Alertes email admin BRVM
-        </h1>
-        <p
-          style={{
-            color: 'var(--admin-text-muted)',
-            fontSize: 'var(--text-sm)',
-            marginTop: 4,
-            maxWidth: 760,
-          }}
-        >
-          Trois fréquences coexistent et peuvent être cumulées : journalière, hebdomadaire,
-          mensuelle. Par défaut, les trois sont actives. Chaque digest est structuré,
-          groupé par catégorie, trié en ordre décroissant, avec liens directs vers les
-          PDFs et les sources. Analyse IA optionnelle.
-        </p>
-      </div>
+      <PageHeader
+        title="Alertes email admin BRVM"
+        subtitle="Trois fréquences coexistent et se cumulent : journalière, hebdomadaire, mensuelle. Chaque digest est structuré, groupé par catégorie, trié en ordre décroissant, avec liens directs vers les PDFs et les sources. Analyse IA optionnelle."
+        crumbs={[
+          { href: '/admin/brvm', label: 'Centre BRVM' },
+          { label: 'Alertes email' },
+        ]}
+      />
 
       <div
         style={{

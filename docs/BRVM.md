@@ -2,7 +2,8 @@
 
 > Ce fichier regroupe et remplace les anciens docs séparés :
 > `BRVM_ADMIN.md`, `BRVM_DOWNLOADER.md`, `BRVM_MAINTENANCE.md`,
-> `BRVM_PARSER_STRATEGY.md`, `BRVM_URL_PATTERNS.md`, `BRVM_FINAL_AUDIT.md`.
+> `BRVM_PARSER_STRATEGY.md`, `BRVM_URL_PATTERNS.md`, `BRVM_FINAL_AUDIT.md`,
+> `BRVM_PRODUCT_REDESIGN.md`.
 >
 > Historique complet des versions intermédiaires : `git log -- docs/BRVM_*.md`.
 
@@ -10,15 +11,70 @@
 
 ## 1. Vision produit
 
-La veille BRVM tracke les publications de `brvm.org` (priorité), `bfin.brvm.org`
-et `sikafinance.com`. Elle stocke **uniquement les métadonnées** (titre, date,
-URL, checksum) par défaut. Les PDFs sont téléchargés **à la demande** via le hub
-admin. Priorité métier inconditionnelle : **Bulletin Officiel de la Cote (BOC)**.
+Le **Centre de Veille BRVM** (`/admin/brvm`) est un hub structuré autour de
+**4 univers métiers fidèles à la logique BRVM / RichBourse** :
 
-Depuis le refactor `feature/brvm-hub-veille-ia`, les anciens modules séparés
-(« Veille BRVM » + « Téléchargeur PDF ») ont été fusionnés dans un seul hub :
-**Centre de Veille BRVM** (`/admin/brvm`). Le hub offre filtre période, multi-type,
-source, tri décroissant, archivage inline et digests email admin.
+1. **Données de marché** — résumé séance, cours actions, cours obligations, indices
+2. **Rapports sociétés cotées** — hiérarchie `société → type → documents`
+3. **Annonces émetteurs** — 8 sous-catégories (AG, résolutions, notations, ESV, communiqués, dirigeants, franchissements, informations permanentes)
+4. **Publications** — BOC, bulletins mensuels, stats trimestrielles, années boursières, avis, données économiques, valeurs liquidatives
+
+Sources : `brvm.org` (priorité), `bfin.brvm.org`, `sikafinance.com`. Le système
+stocke **les métadonnées** (titre, date, URL, checksum) par défaut. Les PDFs
+sont téléchargés à la demande dans le bucket privé `brvm-documents`.
+
+Priorité métier : **BOC important, non dominant**. Il redevient une sous-catégorie
+parmi les 7 de Publications.
+
+---
+
+## 1bis. Logique produit 4 univers (refonte 2026-04-15)
+
+Spec complète : `docs/superpowers/specs/2026-04-15-brvm-refonte-4-univers-design.md`.
+
+### Navigation cible (sidebar à gauche)
+
+```
+CENTRE BRVM
+├ Vue d'ensemble
+├ Données de marché       (Résumé · Actions · Obligations · Indices)
+├ Rapports cotées         (Liste sociétés → [slug] → Tout · Annuels · États fin · Semestriels · Trimestriels · Commentaires activité)
+├ Annonces émetteurs      (Toutes · Convocations AG · Projets résolution · Notations · ESV · Communiqués · Changements dirigeants · Franchissements seuil · Informations permanentes)
+├ Publications            (BOC · Bulletins mensuels · Stats trimestrielles · Années boursières · Avis · Données économiques · Valeurs liquidatives)
+├ Maintenance             (diagnostic admin simple)
+└ Alertes                 (digests email)
+```
+
+### Règles non négociables
+
+- **Tri décroissant partout** — `order by doc_date desc nulls last, discovered_at desc` verrouillé dans `lib/brvm/documents.ts` et `lib/brvm/market.ts`.
+- **Pas de BOC-centricité** — BOC = une sous-catégorie de Publications, pas un onglet.
+- **Liens prod = `https://egp.hedjav.com`** partout, jamais localhost (helper `lib/url.ts`).
+- **Pas d'onglets vides** — `EmptyState` éditorial si rien à afficher.
+- **Badges sobres, pas d'artefacts** — `DocTypeBadge` stable (`display:inline-block`, `min-width`, `white-space:nowrap`).
+
+### Logique de classement (6 axes + familles)
+
+| Axe | Colonne | Source |
+|---|---|---|
+| Famille | `doc_family` | CHECK (market / report / announcement / publication) |
+| Sous-type métier | `doc_subtype` | text libre, mappé via taxonomie fixe |
+| Société | `emetteur_id → brvm_emetteurs` | FK normalisée |
+| Secteur | `brvm_emetteurs.sector` via jointure | text |
+| Indice | `brvm_emetteurs.indices[]` | text[] |
+| Date | `doc_date`, `discovered_at`, `published_at` | timestamptz |
+| Source URL | `source_url` | text |
+| PDF URL | `pdf_url` + `metadata.storage_path` | text |
+
+Voir § 2 pour le schéma DB complet.
+
+### Alertes email (multi-fréquence)
+
+- **daily / weekly / monthly** cumulables, cochées par défaut.
+- Envoi séquentiel depuis `/admin/brvm/alertes`.
+- Groupement email par famille, puis sous-type, puis date DESC.
+- IA optionnelle (DeepSeek > OpenAI > Anthropic). Jamais bloquant.
+- Journalisation `brvm_alert_log` (migration 025).
 
 ---
 

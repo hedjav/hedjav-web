@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { BrvmSubNav } from '../BrvmSubNav'
+import { PageHeader } from '../_components/PageHeader'
 import { generateMaintenanceReport, type CheckStatus, type MaintenanceReport } from '@/lib/brvm/maintenance'
 
 export const metadata: Metadata = { title: 'Admin — BRVM Maintenance' }
@@ -48,29 +48,14 @@ export default async function BrvmMaintenancePage() {
 
   return (
     <>
-      <BrvmSubNav />
-
-      <div style={{ marginBottom: 'var(--s6)' }}>
-        <h1
-          style={{
-            fontFamily: 'var(--fd)',
-            fontSize: 'var(--text-4xl)',
-            fontWeight: 600,
-            color: 'var(--admin-text)',
-          }}
-        >
-          Maintenance BRVM
-        </h1>
-        <p
-          style={{
-            color: 'var(--admin-text-muted)',
-            fontSize: 'var(--text-sm)',
-            marginTop: 4,
-          }}
-        >
-          Rapport de santé généré à {new Date(report.generated_at).toLocaleString('fr-FR')}
-        </p>
-      </div>
+      <PageHeader
+        title="Maintenance BRVM"
+        subtitle={`Diagnostic admin — rapport de santé généré le ${new Date(report.generated_at).toLocaleString('fr-FR')}. Supervision cron 30 min via /api/brvm/maintenance.`}
+        crumbs={[
+          { href: '/admin/brvm', label: 'Centre BRVM' },
+          { label: 'Maintenance' },
+        ]}
+      />
 
       {/* Overall status badge */}
       <div

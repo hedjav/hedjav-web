@@ -2,7 +2,26 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { computeChecksum } from './checksum'
 import { resolvePeriod, type PeriodRange, type PeriodPreset } from './periods'
 import { getSourceBySlug } from './sources'
-import type { BrvmDocument, DocType, DocumentInput } from './types'
+import type { BrvmDocument, DocFamily, DocType, DocumentInput } from './types'
+
+/** Infère doc_family depuis doc_type legacy si non fourni explicitement. */
+function inferDocFamily(t: DocType): DocFamily {
+  switch (t) {
+    case 'boc':
+    case 'avis':
+      return 'publication'
+    case 'rapport_annuel':
+    case 'rapport_semestriel':
+    case 'rapport_trimestriel':
+      return 'report'
+    case 'communique':
+    case 'annonce':
+    case 'note_information':
+      return 'announcement'
+    default:
+      return 'publication'
+  }
+}
 
 function adminClient(): SupabaseClient {
   return createClient(
@@ -38,11 +57,17 @@ export async function upsertDocument(input: DocumentInput): Promise<UpsertResult
     return { status: 'skipped', id: existing.id }
   }
 
+  const docFamily = input.doc_family ?? inferDocFamily(input.doc_type)
+  const docSubtype = input.doc_subtype ?? input.doc_type
+
   const { data, error } = await db
     .from('brvm_documents')
     .insert({
       source_id: source.id,
       doc_type: input.doc_type,
+      doc_family: docFamily,
+      doc_subtype: docSubtype,
+      emetteur_id: input.emetteur_id ?? null,
       doc_date: input.doc_date ?? null,
       title: input.title,
       description: input.description ?? null,
@@ -50,6 +75,8 @@ export async function upsertDocument(input: DocumentInput): Promise<UpsertResult
       pdf_url: input.pdf_url ?? null,
       issuer_slug: input.issuer_slug ?? null,
       issuer_name: input.issuer_name ?? null,
+      sector: input.sector ?? null,
+      market_index: input.market_index ?? null,
       checksum,
       published_at: input.published_at ?? null,
       metadata: input.metadata ?? {},
@@ -102,6 +129,14 @@ export type DocumentListFilters = {
   doc_type?: DocType
   /** Filtre multi-types (préféré pour l'UI hub). */
   doc_types?: DocType[]
+  /** Filtre famille 4 univers (refonte 2026-04-15). */
+  doc_family?: DocFamily
+  /** Filtre sous-type métier (refonte 2026-04-15). */
+  doc_subtype?: string
+  /** Sous-types multiples. */
+  doc_subtypes?: string[]
+  /** FK émetteur (pour vues "par société"). */
+  emetteur_id?: string
   source_slug?: string
   is_new?: boolean
   is_processed?: boolean
@@ -176,6 +211,15 @@ export async function listDocuments(filters: DocumentListFilters = {}): Promise<
     query = query.eq('doc_type', filters.doc_type)
   }
 
+  // Filtres 4 univers (refonte 2026-04-15)
+  if (filters.doc_family) query = query.eq('doc_family', filters.doc_family)
+  if (filters.doc_subtypes && filters.doc_subtypes.length > 0) {
+    query = query.in('doc_subtype', filters.doc_subtypes)
+  } else if (filters.doc_subtype) {
+    query = query.eq('doc_subtype', filters.doc_subtype)
+  }
+  if (filters.emetteur_id) query = query.eq('emetteur_id', filters.emetteur_id)
+
   if (filters.is_new !== undefined) query = query.eq('is_new', filters.is_new)
   if (filters.is_processed !== undefined) query = query.eq('is_processed', filters.is_processed)
   if (filters.issuer_slug) query = query.eq('issuer_slug', filters.issuer_slug)
@@ -186,12 +230,16 @@ export async function listDocuments(filters: DocumentListFilters = {}): Promise<
 
   if (filters.source_slug) query = query.eq('brvm_sources.slug', filters.source_slug)
 
-  // Secteur / indice : via metadata (souple, pas besoin de migration pour le v1)
+  // Secteur / indice : colonnes dédiées (025) + fallback metadata pour compat
   if (filters.sector) {
-    query = query.eq('metadata->>sector', filters.sector)
+    query = query.or(
+      `sector.eq.${filters.sector},metadata->>sector.eq.${filters.sector}`
+    )
   }
   if (filters.market_index) {
-    query = query.eq('metadata->>market_index', filters.market_index)
+    query = query.or(
+      `market_index.eq.${filters.market_index},metadata->>market_index.eq.${filters.market_index}`
+    )
   }
 
   if (filters.search) {
