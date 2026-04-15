@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { PageHeader } from './PageHeader'
 import { DocumentsTable, type DocumentRow } from './DocumentsTable'
+import { extractAiScore } from './extract-ai-score'
 import { listDocuments } from '@/lib/brvm/documents'
 import { DOC_FAMILY_LABELS, type DocFamily } from '@/lib/brvm/types'
 
@@ -74,6 +75,7 @@ export async function CategoryListPage({
     market_index: r.market_index,
     is_new: r.is_new,
     is_processed: r.is_processed,
+    ai_score: extractAiScore(r.metadata),
   }))
 
   const resolvedTitle =

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { PageHeader } from '../../_components/PageHeader'
 import { DocumentsTable, type DocumentRow } from '../../_components/DocumentsTable'
+import { extractAiScore } from '../../_components/extract-ai-score'
 import { getEmetteurBySlug } from '@/lib/brvm/emetteurs'
 import { listDocuments } from '@/lib/brvm/documents'
 import { DOC_SUBTYPE_LABELS, DOC_SUBTYPES } from '@/lib/brvm/types'
@@ -73,6 +74,7 @@ export default async function EmetteurDetailPage({
     market_index: r.market_index,
     is_new: r.is_new,
     is_processed: r.is_processed,
+    ai_score: extractAiScore(r.metadata),
   }))
 
   // KPI par subtype

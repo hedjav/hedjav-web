@@ -544,7 +544,128 @@ SELECT * FROM storage.buckets WHERE id = 'brvm-documents';
 
 ---
 
-## 14. Historique des PRs clés
+## 14. Couche IA d'exploitation (`lib/brvm/ai/`) — refonte 2026-04-15
+
+La couche IA BRVM exploite la structure 4 univers pour produire **digests,
+brouillons d'articles, suggestions éditoriales et scoring**. L'IA enrichit —
+elle ne casse pas la cohérence produit.
+
+### 14.1 Architecture
+
+```
+lib/brvm/ai/
+├── types.ts                       # BrvmAiUseCase (7), BrvmAiContext, EnrichedDocument
+├── context.ts                     # buildBrvmAiContext() enrichit docs + facettes + marché
+├── prompts/
+│   ├── _system.ts                 # Base factorisée — 1 point à remplacer pour futur expert
+│   ├── admin-alert.ts             # P1 — alertes admin actionnables
+│   ├── daily-digest.ts            # P2 — 150-220 mots
+│   ├── weekly-digest.ts           # P2 — sections **gras** markdown
+│   ├── monthly-digest.ts          # P2 — 400-600 mots stratégique
+│   ├── article-draft.ts           # P3 — JSON {title, excerpt, category, body}
+│   ├── editorial-suggestions.ts   # P4 — 5-8 idées JSON
+│   └── scoring.ts                 # P5 — noise/useful/important/priority + fallback heuristique
+└── index.ts                       # Façade generateBrvmContent + helpers dédiés
+```
+
+### 14.2 Context builder (`context.ts`)
+
+`buildBrvmAiContext({ period, max_docs_per_family, focus_* })` charge les
+documents de la période, joint `brvm_sources` + `brvm_emetteurs` (pour
+secteur + indices), regroupe par famille, calcule des facettes (top secteurs,
+indices chauds, top émetteurs) et inclut un snippet marché (snapshot +
+indices). Retourne un `BrvmAiContext` consommable par tous les prompts.
+
+### 14.3 System prompt factorisé
+
+`prompts/_system.ts` expose `BRVM_SYSTEM_BASE` + `composeSystem(extra)`. Pour
+changer le ton / l'expertise IA de TOUS les use cases, éditer uniquement
+`BRVM_SYSTEM_BASE`. Les 7 prompts en héritent via `composeSystem`.
+
+### 14.4 Routes API IA
+
+| Route | Méthode | Body | Rôle |
+|---|---|---|---|
+| `/api/brvm/ai/digest` | POST | `{ kind, period?, focus_* }` | 4 digests (admin_alert/daily/weekly/monthly) |
+| `/api/brvm/ai/article-draft` | POST | `{ period?, topic?, document_ids? }` | Brouillon JSON |
+| `/api/brvm/ai/suggestions` | POST | `{ period? }` | 5-8 idées d'articles |
+| `/api/brvm/ai/score` | POST | `{ document_id }` | Qualification + persistance `metadata.ai_score` |
+
+Auth : Bearer `INTERNAL_API_TOKEN` OU session admin. Fallback propre si IA
+absente. Logs `ai_logs` avec action `brvm_<use_case>`.
+
+### 14.5 UI `/admin/brvm/ia`
+
+Page Server + client component qui expose les 4 use cases (digest / article /
+suggestions / implicitement scoring via le bouton IA sur chaque document).
+Affiche le statut provider en tête + l'historique des 15 derniers appels IA
+BRVM (filtrés `action LIKE 'brvm_%'`).
+
+---
+
+## 15. Emails BRVM coordonnés (`lib/email/brvm/`)
+
+Module refondu pour que **alertes + digests** partagent la même structure,
+la même charte et la même logique de classement (univers → sous-type → doc).
+
+### 15.1 Structure de fichiers
+
+```
+lib/email/brvm/
+├── primitives.ts    # FAMILY_PALETTE, badge, familyTag, sectionTitle,
+│                    # subtypeHeader, docRow, aiBlock, kpiRow, emptyBlock, ctaButton
+├── digest.ts        # buildBrvmDigestEmail (daily/weekly/monthly/manual)
+├── alert.ts         # buildBrvmAlertEmail (1-10 docs prioritaires)
+├── dedup.ts         # getRecentlySentDocIds, filterDedup, hashDocIds
+└── index.ts         # Façade
+```
+
+### 15.2 Digest
+
+Construit à partir d'un `BrvmAiContext` déjà enrichi. Structure fixe :
+1. Badge fréquence + titre + période
+2. KPIs (total, émetteurs actifs, secteurs, indice dominant)
+3. Encart IA sobre (optionnel)
+4. 4 sections univers dans l'ordre fixe : **publication → report → announcement → market**
+5. Chaque univers regroupe par `doc_subtype`, docs triés DESC
+6. CTA "Ouvrir le Centre de Veille BRVM"
+7. Footer (fréquence, provider IA, dédup info)
+
+### 15.3 Alerte instantanée
+
+`buildBrvmAlertEmail({ docs, headline?, rationale?, importance })` pour 1-10
+documents prioritaires. Badge importance (rouge `priority` / or `important` /
+navy `useful`). Tag famille. Liste courte. Route POST `/api/brvm/alerts/instant`.
+
+### 15.4 Déduplication
+
+`getRecentlySentDocIds(frequency)` :
+- **daily** : fenêtre 24h
+- **manual** : fenêtre 12h
+- **weekly / monthly** : pas de dédup (synthèse de période = tout inclure)
+
+Persistance dans `brvm_alert_log.metadata` :
+```json
+{
+  "document_ids": ["uuid1", "uuid2", ...],
+  "content_hash": "fnv1a_hex",
+  "dedup_skipped": 3,
+  "alert_type": "instant" | null
+}
+```
+
+Aucune migration requise (colonne `metadata jsonb` existe déjà en 025).
+
+### 15.5 Cohérence IA → email
+
+Le **système** sélectionne + classe (univers/subtype/emetteur/secteur/indice).
+L'IA **enrichit** au-dessus (note d'analyse au-dessus), jamais dans la
+structure. Résultat : les emails restent structurellement stables et
+professionnels, que l'IA soit disponible ou non.
+
+---
+
+## 16. Historique des PRs clés
 
 - #52 — Export BRVM + recherche UI.
 - #53 — Scraper sikafinance.

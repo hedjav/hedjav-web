@@ -1,7 +1,9 @@
 import Link from 'next/link'
 import { DOC_SUBTYPE_LABELS, DOC_TYPE_LABELS } from '@/lib/brvm/types'
 import type { DocFamily } from '@/lib/brvm/types'
+import type { ImportanceLevel } from '@/lib/brvm/ai/types'
 import { EmptyState } from './EmptyState'
+import { DocumentRowActions } from './DocumentRowActions'
 
 export type DocumentRow = {
   id: string
@@ -21,6 +23,12 @@ export type DocumentRow = {
   market_index: string | null
   is_new: boolean
   is_processed: boolean
+  /** Scoring IA persisté dans metadata.ai_score (si déjà scoré). */
+  ai_score?: {
+    importance: ImportanceLevel
+    score_100: number
+    rationale?: string
+  } | null
 }
 
 type Props = {
@@ -114,7 +122,7 @@ export function DocumentsTable({
               <Th width={150}>Type</Th>
               {showIssuer && <Th width={180}>Émetteur</Th>}
               <Th width={120}>Source</Th>
-              <Th width={140} align="right">
+              <Th width={260} align="right">
                 Actions
               </Th>
             </tr>
@@ -185,16 +193,12 @@ export function DocumentsTable({
                   </span>
                 </Td>
                 <Td align="right">
-                  <div style={{ display: 'inline-flex', gap: 8 }}>
-                    <ActionLink href={row.source_url} external>
-                      Source
-                    </ActionLink>
-                    {row.pdf_url && (
-                      <ActionLink href={row.pdf_url} external>
-                        PDF
-                      </ActionLink>
-                    )}
-                  </div>
+                  <DocumentRowActions
+                    documentId={row.id}
+                    sourceUrl={row.source_url}
+                    pdfUrl={row.pdf_url}
+                    initialAiScore={row.ai_score ?? null}
+                  />
                 </Td>
               </tr>
             ))}
@@ -254,36 +258,6 @@ function Td({
     >
       {children}
     </td>
-  )
-}
-
-function ActionLink({
-  href,
-  children,
-  external,
-}: {
-  href: string
-  children: React.ReactNode
-  external?: boolean
-}) {
-  return (
-    <a
-      href={href}
-      target={external ? '_blank' : undefined}
-      rel={external ? 'noopener noreferrer' : undefined}
-      style={{
-        fontSize: 12,
-        color: 'var(--admin-accent, #C5A028)',
-        textDecoration: 'none',
-        padding: '4px 10px',
-        border: '1px solid color-mix(in srgb, var(--admin-accent, #C5A028) 40%, transparent)',
-        borderRadius: 999,
-        fontWeight: 600,
-        whiteSpace: 'nowrap',
-      }}
-    >
-      {children} {external ? '↗' : ''}
-    </a>
   )
 }
 

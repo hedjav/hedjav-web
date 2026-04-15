@@ -82,6 +82,14 @@ Maître d'œuvre : **KTALYZ SARL**.
 - Toutes les routes API (`/api/articles`, `/api/newsletter/subscribe`, `/api/purchases/create`, `/api/webhooks/fedapay`) sont conçues pour être appelables par un agent IA.
 - L'admin UI a une section `/admin/ia` avec placeholders pour les futurs outils IA.
 
+### BRVM — règles IA (refonte 2026-04-15)
+
+- **Prompts factorisés** dans `lib/brvm/ai/prompts/*.ts`. Jamais hardcoder un prompt BRVM dans une route — passer par la façade `generateBrvmContent(kind, options)` ou les helpers dédiés (`generateBrvmArticleDraft`, `generateBrvmEditorialSuggestions`, `scoreBrvmDocument`).
+- **System prompt de base** (`lib/brvm/ai/prompts/_system.ts` → `BRVM_SYSTEM_BASE`) : un seul point à éditer pour faire évoluer tous les use cases. Les prompts spécifiques composent via `composeSystem(extra)`.
+- **Contexte enrichi obligatoire** : utiliser `buildBrvmAiContext({ period, focus_* })` pour fournir univers/société/secteur/indice aux prompts. Ne jamais passer des docs bruts non enrichis.
+- **Emails BRVM** : module `lib/email/brvm/` pour toute nouvelle communication BRVM admin. Ne plus étendre `brvmDocDigestEmail` legacy. Les 4 formats (digest daily/weekly/monthly + alerte instantanée) partagent les primitives (`FAMILY_PALETTE`, `docRow`, `aiBlock`, `kpiRow`, …) pour cohérence.
+- **Dédup** : `getRecentlySentDocIds(frequency)` + persistance `document_ids` + `content_hash` dans `brvm_alert_log.metadata`. Pas de re-création de migration — la colonne jsonb existe.
+
 ### BRVM — règles durables (après refonte veille documentaire)
 - **Le dossier `/hedjav-scrap/` (ou `/hedjav-scrapp/`) NE DOIT JAMAIS être committé.** Il fait 236 MB et est un miroir HTTrack local pour rétro-ingénierie. Les deux orthographes sont dans `.gitignore`.
 - **Priorité des sources** (non négociable) : `brvm.org` > `bfin.brvm.org` > `sikafinance.com`. Toute nouvelle intégration doit respecter cet ordre.
@@ -224,14 +232,24 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 - `POST /api/brvm/scrape/annonces` (bearer) — toutes catégories annonces brvm.org
 - `GET /api/brvm/documents` (session admin) — liste paginée avec filtres (doc_type, source, is_new, date, search)
 - `POST /api/brvm/documents/[id]/process` (session admin) — marquer traité
-- `POST /api/brvm/summarize` (bearer) — résumé IA + email admins (inchangé)
-- `POST /api/brvm/weekly-digest` (bearer) — synthèse hebdo legacy → article brouillon
-- `POST /api/brvm/alerts/digest` (bearer OU session admin) — digest email admin des publications (daily / weekly / monthly / manual) avec analyse IA optionnelle (DeepSeek prioritaire). Body : `{ frequency, dry_run?, ai? }`. Journalise dans `brvm_alert_log` (migration 025).
+- `POST /api/brvm/scrape/emetteurs` (bearer OU session admin) — seed + sync référentiel sociétés cotées (fallback `EMETTEURS_SEED`)
+- `POST /api/brvm/scrape/marche` (bearer OU session admin) — résumé séance + cours actions + cours obligations + indices
+- `POST /api/brvm/scrape/publications` (bearer OU session admin) — boucle sur 7 sous-catégories de publications
+- `GET /api/brvm/emetteurs` / `/[slug]` / `/[slug]/documents` (session admin) — référentiel + détail + docs par société
+- `GET /api/brvm/marche/{snapshots,ticks,indices}` (session admin) — séries temporelles marché
+- `POST /api/brvm/alerts/digest` (bearer OU session admin) — digest email admin refondu (`lib/email/brvm/`) avec contexte IA enrichi (`lib/brvm/ai/`) + dédup 24h (daily) / 12h (manual). Body : `{ frequency, dry_run?, ai? }`. Journalise dans `brvm_alert_log` (migration 025).
+- `POST /api/brvm/alerts/instant` (bearer OU session admin) — alerte instantanée 1-10 docs avec `importance`, dédup 12h
 - `POST /api/admin/brvm-trigger` (session admin) — proxy vers `/api/brvm/scrape`
+
+### BRVM — Couche IA d'exploitation (`lib/brvm/ai/`)
+- `POST /api/brvm/ai/digest` (bearer OU session admin) — 4 use cases : admin_alert / daily_digest / weekly_digest / monthly_digest
+- `POST /api/brvm/ai/article-draft` (bearer OU session admin) — brouillon JSON `{title, excerpt, category, body}`
+- `POST /api/brvm/ai/suggestions` (bearer OU session admin) — 5-8 idées d'articles avec priorité et univers
+- `POST /api/brvm/ai/score` (bearer OU session admin) — qualification noise/useful/important/priority, persistance `brvm_documents.metadata.ai_score`, fallback heuristique
 - `POST /api/brvm/download` (session admin OU bearer) — télécharge les PDFs d'une période dans le bucket privé `brvm-documents` ; dédup via `metadata.storage_path`. Voir `docs/BRVM.md` § 5
 - `GET /api/brvm/download?document_id=XXX` (session admin) — signed URL 5 min vers un PDF archivé
 - `GET /api/brvm/maintenance` (session admin OU bearer) — rapport de santé complet (tables, sources, documents, anomalies, recommandations). Voir `docs/BRVM.md` § 10
-- **Supprimées** : `/api/brvm/daily` → remplacée par `/api/brvm/scrape`. `/api/brvm/reports-scan` → remplacée par `/api/brvm/scrape/rapports`.
+- **Supprimées** : `/api/brvm/daily` → `/api/brvm/scrape`. `/api/brvm/reports-scan` → `/api/brvm/scrape/rapports`. `/api/brvm/summarize` → `/api/brvm/ai/digest`. `/api/brvm/weekly-digest` → `/api/brvm/ai/article-draft`.
 
 ### Ebooks — Livraison (hotfix)
 - `GET /api/ebooks/download?ebook_id=XXX` (session user) — signed URL 5 min après vérification purchase paid
@@ -289,6 +307,10 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 22. `023_brvm_clean_reset.sql` (reset propre des tables brvm_sources + brvm_documents avec check contraints, indexes et trigger notification — base actuelle)
 23. `024_content_exploitation.sql` (articles enrichis + contenu homepage premium + première campagne bienvenue)
 24. `025_brvm_alerts.sql` (table `brvm_alert_log` + colonnes `sector` / `market_index` sur brvm_documents + RLS admin — additif)
+25. `026_iceberg_audit.sql` (audit iceberg : `admin_notifications.target_url/entity_type/entity_id` + `ai_logs` status étendu + `admin_settings.brvm_alert_frequencies`)
+26. `027_brvm_emetteurs.sql` (**référentiel sociétés cotées** — slug, ticker, ISIN, country, sector, market, indices[], aliases[], is_active, RLS admin)
+27. `028_brvm_doc_taxonomy.sql` (**doc_family + doc_subtype + emetteur_id FK** sur brvm_documents, backfill depuis doc_type, indexes combinés)
+28. `029_brvm_market_timeseries.sql` (**séries temporelles marché** : brvm_market_snapshots + brvm_market_ticks + brvm_indices_ticks, upsert idempotent, RLS admin)
 
 ---
 
