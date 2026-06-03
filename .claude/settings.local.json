@@ -33,7 +33,14 @@
       "mcp__plugin_supabase_supabase__execute_sql",
       "Bash(npx next:*)",
       "Bash(npm ci:*)",
-      "Bash(taskkill //F //IM node.exe)"
+      "Bash(taskkill //F //IM node.exe)",
+      "Bash(wget --version)",
+      "Bash(winget install *)",
+      "Bash(mkdir -p /c/Users/hp/Documents/egp/fluxbourse-mirror)",
+      "Bash(mv /c/Users/hp/Documents/egp/hedjav-web/C%3A/Users/hp/Documents/egp/fluxbourse-mirror/fluxbourse.com /c/Users/hp/Documents/egp/fluxbourse-mirror/)",
+      "Bash(rm -rf \"/c/Users/hp/Documents/egp/hedjav-web/C%3A\")",
+      "Bash(python -c 'import json;d=json.load\\(open\\(r'\\\\''/c/Users/hp/Documents/egp/fluxbourse-mirror/fluxbourse.com/brvm_data.json'\\\\''\\)\\);print\\(type\\(d\\)\\);print\\(list\\(d.keys\\(\\)\\) if isinstance\\(d,dict\\) else '\\\\''LISTE len='\\\\''+str\\(len\\(d\\)\\)\\)')",
+      "Bash(python -c 'import json;d=json.load\\(open\\(r'\\\\''__TRACKED_VAR__/brvm_history.json'\\\\''\\)\\);print\\(type\\(d\\)\\);print\\(list\\(d.keys\\(\\)\\)[:20] if isinstance\\(d,dict\\) else '\\\\''LISTE len='\\\\''+str\\(len\\(d\\)\\)\\)')"
     ]
   }
 }
