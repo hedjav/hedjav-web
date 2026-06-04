@@ -80,7 +80,7 @@ Maître d'œuvre : **KTALYZ SARL**.
 - **Rien n'est figé.** Tout contenu passe par Supabase, jamais hardcodé.
 - Chaque table a un champ `metadata jsonb default '{}'` pour ajouter des données arbitraires sans migration (scoring IA, tags, A/B test, telemetry).
 - Toutes les routes API (`/api/articles`, `/api/newsletter/subscribe`, `/api/purchases/create`, `/api/webhooks/fedapay`) sont conçues pour être appelables par un agent IA.
-- L'admin UI a une section `/admin/ia` avec placeholders pour les futurs outils IA.
+- L'admin UI (rasée le 03/06/2026, en reconstruction) prévoira une section `/admin/ia` pour les futurs outils IA.
 
 ### BRVM — règles IA (refonte 2026-04-15)
 
@@ -94,7 +94,7 @@ Maître d'œuvre : **KTALYZ SARL**.
 - **Le dossier `/hedjav-scrap/` (ou `/hedjav-scrapp/`) NE DOIT JAMAIS être committé.** Il fait 236 MB et est un miroir HTTrack local pour rétro-ingénierie. Les deux orthographes sont dans `.gitignore`.
 - **Priorité des sources** (non négociable) : `brvm.org` > `bfin.brvm.org` > `sikafinance.com`. Toute nouvelle intégration doit respecter cet ordre.
 - **Priorité métier** : le **BOC (Bulletin Officiel de la Cote)** passe avant tout. Les triggers PG et les KPIs admin le mettent en évidence (`priority='high'` pour les notifications BOC).
-- **Stockage des documents BRVM** : par défaut **métadonnées uniquement** (`brvm_documents.title/doc_date/pdf_url/checksum`). Les PDFs ne sont téléchargés **qu'à la demande** via le hub `/admin/brvm` (bouton « Archiver PDFs de la sélection »), `POST /api/brvm/download` ou `scripts/download-brvm-pdfs.ts`, et uniquement dans le bucket privé Supabase Storage `brvm-documents`. Jamais en base en `bytea`.
+- **Stockage des documents BRVM** : par défaut **métadonnées uniquement** (`brvm_documents.title/doc_date/pdf_url/checksum`). Les PDFs ne sont téléchargés **qu'à la demande** via `POST /api/brvm/download` ou `scripts/download-brvm-pdfs.ts` (le hub `/admin/brvm` a été rasé avec l'ancien admin, à recréer), et uniquement dans le bucket privé Supabase Storage `brvm-documents`. Jamais en base en `bytea`.
 - **IA via couche unifiée `lib/ai/client.ts`** — providers supportés : DeepSeek (prioritaire), OpenAI, Anthropic. Jamais de clé en dur, toujours `process.env`. Dégradation propre (`{ ok: false, skipped: true }`) si aucun provider. Les routes qui appellent l'IA doivent toujours avoir un fallback non-IA (voir `/api/brvm/alerts/digest`, `/api/newsletter/send`, `/api/campaigns/generate-email`).
 - **Maintenance périodique obligatoire** : `GET /api/brvm/maintenance` doit être requêté au moins toutes les 30 min par un monitoring externe. Voir `docs/BRVM.md` § 10.
 - **Rétro-ingénierie via miroir** : toute modification d'un scraper doit d'abord être testée contre le miroir HTTrack via `scripts/import-brvm-history.ts --dry-run`. Voir `docs/BRVM.md` §§ 8-9.
@@ -133,7 +133,7 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 
 ## Comptes & rôles
 - Premier admin : créer un compte via `/register`, puis promouvoir via `node scripts/promote-admin.mjs <email>` ou SQL direct (`update profiles set role='admin' where email='...'`).
-- Promouvoir/rétrograder ensuite depuis `/admin/membres` (impossible de rétrograder le dernier admin).
+- Promouvoir/rétrograder : se faisait depuis `/admin/membres` (**admin rasé** — passer par SQL direct en attendant le nouvel admin ; règle à conserver : impossible de rétrograder le dernier admin).
 - Le proxy `proxy.ts` protège `/admin` (admin role) et `/dashboard` (user connecté).
 
 ## Dashboard membre
@@ -182,7 +182,14 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 - `/dashboard/mes-ebooks` — bibliothèque (purchases status='paid')
 - `/dashboard/mes-commandes` — historique
 
-### Admin (protégé `role='admin'`)
+### Admin — ⚠️ RASÉ (03/06/2026, commit 653842c)
+
+**L'ancien back-office a été entièrement supprimé** (`app/(admin)/`, `app/api/admin/`, `components/admin/`, `lib/admin/` — 106 fichiers, ~15 600 lignes) pour être reconstruit à neuf. Les données Supabase, l'auth, le site public et le dashboard membre sont **intacts**. `proxy.ts` protège toujours `/admin` (prêt pour le nouvel admin). Les libs partagées (`lib/auth/session.ts` avec `requireAdmin`, `lib/*/queries.ts`) sont conservées pour le rebranchage.
+
+**Cron à rebrancher** : l'annulation horaire des achats abandonnés passait par `/api/admin/purchases/cancel-stale` (supprimée) → utiliser `npx tsx scripts/cancel-stale-purchases.ts` en attendant.
+
+La liste ci-dessous décrit l'**ancien admin** et sert de **spécification pour la reconstruction** :
+
 - `/admin` — dashboard CRM avec Recharts (revenue, membres, ventes, newsletter, sparklines, graphique revenue 12 mois, activité récente, widget campagnes)
 - `/admin/ebooks` `/new` `/[id]` — CRUD avec cover preview, lead_magnet
 - `/admin/articles` `/new` `/[id]` — CRUD avec badges source (manual/ai) et score coloré
@@ -202,10 +209,7 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 
 ### API
 - `POST /api/articles` (bearer `INTERNAL_API_TOKEN`) — injection IA d'articles (legacy, toujours actif pour agents externes)
-- `POST /api/admin/articles/ai/angles` (session admin) — 5-8 angles éditoriaux à partir d'un sujet et/ou documents BRVM
-- `POST /api/admin/articles/ai/titles` (session admin) — 5-8 titres SEO à partir d'un sujet/angle/documents
-- `POST /api/admin/articles/ai/draft` (session admin) — génère un brouillon complet + persiste `status='draft'` + traçabilité complète dans `metadata`. Body : `{ subject?, angle?, title?, category?, brvm_document_ids?, instructions? }`
-- `POST /api/admin/articles/ai/score` (session admin) — évalue un article sur 5 critères UEMOA, persiste `quality_score` + breakdown dans `metadata`. Remplace l'ancien `/api/articles/score`
+- ~~`POST /api/admin/articles/ai/{angles,titles,draft,score}`~~ — **supprimées avec l'admin rasé**, à recréer dans le nouvel admin (spec : angles/titres SEO/brouillon persisté draft/score 5 critères UEMOA)
 - `POST /api/newsletter/subscribe` — public, insère dans `newsletter_subscribers`
 - `POST /api/newsletter/send` (bearer `INTERNAL_API_TOKEN`) — génère via Claude + envoie via SMTP
 - `POST /api/newsletter/weekly` (bearer `INTERNAL_API_TOKEN`) — newsletter hebdo template statique via SMTP
@@ -220,9 +224,7 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 - `POST /api/purchases/create` — crée purchase pending + transaction FedaPay server-side
 - `POST /api/webhooks/fedapay` (HMAC-SHA256) — confirme paiement + email + facture + notification
 - `POST /api/invoices/generate` (bearer `INTERNAL_API_TOKEN`) — genere facture PDF pour un achat
-- `GET /api/admin/notifications` (session admin) — liste notifications + compteur non-lues
-- `POST /api/admin/notifications/read` (session admin) — marquer lu (id ou all)
-- `GET /api/admin/ventes/export` (session admin) — export CSV des ventes
+- ~~`GET /api/admin/notifications`~~, ~~`POST /api/admin/notifications/read`~~, ~~`GET /api/admin/ventes/export`~~ — **supprimées avec l'admin rasé** (les tables `admin_notifications` et les libs `lib/notifications/queries.ts` restent en place)
 - `POST /api/media/upload` (session admin) — upload fichier dans bucket media
 - `DELETE /api/media/delete` (session admin) — supprime fichier du bucket media
 - `POST /api/notifications/send-email` (bearer `INTERNAL_API_TOKEN`) — envoie par email les admin_notifications non envoyées (individuel ou digest)
@@ -243,7 +245,7 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 - `GET /api/brvm/marche/{snapshots,ticks,indices}` (session admin) — séries temporelles marché
 - `POST /api/brvm/alerts/digest` (bearer OU session admin) — digest email admin refondu (`lib/email/brvm/`) avec contexte IA enrichi (`lib/brvm/ai/`) + dédup 24h (daily) / 12h (manual). Body : `{ frequency, dry_run?, ai? }`. Journalise dans `brvm_alert_log` (migration 025).
 - `POST /api/brvm/alerts/instant` (bearer OU session admin) — alerte instantanée 1-10 docs avec `importance`, dédup 12h
-- `POST /api/admin/brvm-trigger` (session admin) — proxy vers `/api/brvm/scrape`
+- ~~`POST /api/admin/brvm-trigger`~~ — **supprimée avec l'admin rasé** (appeler `/api/brvm/scrape` en bearer directement)
 
 ### BRVM — Couche IA d'exploitation (`lib/brvm/ai/`)
 - `POST /api/brvm/ai/digest` (bearer OU session admin) — 4 use cases : admin_alert / daily_digest / weekly_digest / monthly_digest
@@ -257,7 +259,7 @@ Selon le CDC, ces composants viendront s'ajouter dans les phases suivantes :
 
 ### Ebooks — Livraison (hotfix)
 - `GET /api/ebooks/download?ebook_id=XXX` (session user) — signed URL 5 min après vérification purchase paid
-- `POST /api/admin/ebooks/upload-file` (session admin, multipart) — upload PDF/ePub/ZIP dans bucket privé `ebook-files`
+- ~~`POST /api/admin/ebooks/upload-file`~~ — **supprimée avec l'admin rasé**, à recréer (upload PDF/ePub/ZIP dans bucket privé `ebook-files`)
 
 ---
 
@@ -380,7 +382,7 @@ L'architecture est prête pour :
 - **Centre de Veille BRVM** : hub unifié (scraping + filtre + archivage + alertes email) — voir [`docs/BRVM.md`](./docs/BRVM.md) pour tout le module (tables, UI, routes API, alertes email multi-fréquence, scripts)
 - **Génération de covers** SVG/PNG à partir du titre
 
-Tout ça se branchera dans `/admin/ia` qui est déjà câblé avec 7 placeholder cards.
+Tout ça se branchera dans `/admin/ia` du **nouvel admin** (l'ancien, qui avait 7 placeholder cards, a été rasé).
 
 ### Pages institutionnelles
 - Toutes en table `pages` (CGV, mentions légales, politique de confidentialité)
